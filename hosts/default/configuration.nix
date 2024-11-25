@@ -115,6 +115,8 @@
   # Allow unfree packages (e.g., proprietary software)
   nixpkgs.config.allowUnfree = true;
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # Set NixOS system state version (should match the version you're using)
   system.stateVersion = "24.05";  # Update this to match the NixOS release version you're using
 
