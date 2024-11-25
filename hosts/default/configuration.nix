@@ -19,7 +19,7 @@
     # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
     networkmanager.enable = true;
 
-  # Configure network proxy if necessary
+    # Configure network proxy if necessary
     # networking.proxy = {
       # default = "http://user:password@proxy:port/";
       # noProxy = "127.0.0.1,localhost,internal.domain";
@@ -40,15 +40,15 @@
     defaultLocale = "en_US.UTF-8";
 
     extraLocaleSettings = {
-    LC_ADDRESS = "en_US.UTF-8";
-    LC_IDENTIFICATION = "en_US.UTF-8";
-    LC_MEASUREMENT = "en_US.UTF-8";
-    LC_MONETARY = "en_US.UTF-8";
-    LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
-    LC_PAPER = "en_US.UTF-8";
-    LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
+      LC_ADDRESS = "en_US.UTF-8";
+      LC_IDENTIFICATION = "en_US.UTF-8";
+      LC_MEASUREMENT = "en_US.UTF-8";
+      LC_MONETARY = "en_US.UTF-8";
+      LC_NAME = "en_US.UTF-8";
+      LC_NUMERIC = "en_US.UTF-8";
+      LC_PAPER = "en_US.UTF-8";
+      LC_TELEPHONE = "en_US.UTF-8";
+      LC_TIME = "en_US.UTF-8";
     };
   };
   
@@ -60,24 +60,24 @@
     xserver = {
       enable = true;
 
-  # Enable the GNOME Desktop Environment.
+      # Enable the GNOME Desktop Environment.
       displayManager.gdm.enable = true;
       desktopManager.gnome.enable = true;
 
-  # Configure keymap for X11 (optional)
+      # Configure keymap for X11 (optional)
       xkb = {
-    layout = "us";  # Set keymap layout
-    variant = "";    # Use the default variant
+        layout = "us"; # Set keymap layout
+        variant = "";  # Use the default variant
+      };
     };
-  };
 
-  # Enable CUPS to print documents.
+    # Enable CUPS to print documents.
     printing.enable = true;
 
-  # Configure audio
+    # Configure audio
     pipewire = {
-      enable = true;     # Enable PipeWire for audio
-      alsa.enable = true;  # Enable ALSA support for PipeWire
+      enable = true;        # Enable PipeWire for audio
+      alsa.enable = true;   # Enable ALSA support for PipeWire
       pulse.enable = true;  # Enable PulseAudio emulation for PipeWire
     };
 
@@ -96,7 +96,7 @@
     isNormalUser = true;
     description = "syg";
     extraGroups = [ "wheel" ];  # Add user to 'wheel' group for sudo access
-    # shell = pkgs.zsh;           # Use zsh as the shell
+    # shell = pkgs.zsh;         # Use zsh as the shell
   };
 
   # Set up sudo for the 'wheel' group
@@ -105,11 +105,11 @@
 
   # Install system-wide packages
   environment.systemPackages = with pkgs; [
-    curl      # Command-line tool for transferring data
-    firefox   # Web browser
+    curl
+    firefox
     git
-    wget      # Download utility
-    vim       # Text editor for configuration editing
+    wget
+    vim
   ];
 
   # Allow unfree packages (e.g., proprietary software)
