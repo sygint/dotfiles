@@ -100,8 +100,10 @@
   };
 
   # Set up sudo for the 'wheel' group
-  security.sudo.enable = true;
-  security.sudo.wheelNeedsPassword = true;
+  security.sudo = {
+    enable = true;
+    wheelNeedsPassword = true;
+  };
 
   # Install system-wide packages
   environment.systemPackages = with pkgs; [
