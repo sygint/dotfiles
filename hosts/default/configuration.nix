@@ -8,28 +8,38 @@
       ./hardware-configuration.nix
     ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+  };
 
   # Basic system settings
-  networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking = {
+    hostName = "nixos"; # Define your hostname.
+    # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+    networkmanager.enable = true;
 
   # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+    # networking.proxy = {
+      # default = "http://user:password@proxy:port/";
+      # noProxy = "127.0.0.1,localhost,internal.domain";
+    # };
 
-  # Enable networking
-  networking.networkmanager.enable = true;
+    # Enable firewall (optional)
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ 22 80 443 ];  # Allow SSH and HTTP/HTTPS ports
+    };
+  };
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
+  i18n = {
+    defaultLocale = "en_US.UTF-8";
 
-  i18n.extraLocaleSettings = {
+    extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
     LC_IDENTIFICATION = "en_US.UTF-8";
     LC_MEASUREMENT = "en_US.UTF-8";
@@ -39,29 +49,47 @@
     LC_PAPER = "en_US.UTF-8";
     LC_TELEPHONE = "en_US.UTF-8";
     LC_TIME = "en_US.UTF-8";
+    };
   };
+  
+  # Disable PulseAudio (will use PipeWire)
+  hardware.pulseaudio.enable = false;
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  services = {
+    xserver = {
+      enable = true;
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+      displayManager.gdm.enable = true;
+      desktopManager.gnome.enable = true;
 
   # Configure keymap for X11 (optional)
-  services.xserver.xkb = {
+      xkb = {
     layout = "us";  # Set keymap layout
     variant = "";    # Use the default variant
+    };
   };
 
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+    printing.enable = true;
 
   # Configure audio
-  hardware.pulseaudio.enable = false;  # Disable PulseAudio (will use PipeWire)
-  services.pipewire.enable = true;     # Enable PipeWire for audio
-  services.pipewire.alsa.enable = true;  # Enable ALSA support for PipeWire
-  services.pipewire.pulse.enable = true;  # Enable PulseAudio emulation for PipeWire
+    pipewire = {
+      enable = true;     # Enable PipeWire for audio
+      alsa.enable = true;  # Enable ALSA support for PipeWire
+      pulse.enable = true;  # Enable PulseAudio emulation for PipeWire
+    };
+
+    # Configure SSH server (optional)
+    openssh.enable = true;
+
+    # Enable the systemd service for automatic login (if you want autologin)
+    displayManager.autoLogin = {
+      enable = true;
+      user = "syg";
+    };
+  };
 
   # User configuration (set up user account)
   users.users.syg = {
@@ -74,17 +102,6 @@
   # Set up sudo for the 'wheel' group
   security.sudo.enable = true;
   security.sudo.wheelNeedsPassword = true;
-
-  # Enable firewall (optional)
-  networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 80 443 ];  # Allow SSH and HTTP/HTTPS ports
-
-  # Configure SSH server (optional)
-  services.openssh.enable = true;
-
-  # Enable the systemd service for automatic login (if you want autologin)
-  services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "syg";
 
   # Install system-wide packages
   environment.systemPackages = with pkgs; [
