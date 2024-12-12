@@ -164,12 +164,15 @@
     };
 
     systemPackages = with pkgs; [
+      # CLI applications
       curl
-      firefox
       git
-      kitty
       wget
       vim
+
+      # Desktop applications
+      firefox
+      kitty
     ];
   };
 
