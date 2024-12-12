@@ -164,6 +164,11 @@
     };
 
     systemPackages = with pkgs; [
+      # Nix utilities
+      nh
+      nix-output-monitor
+      nvd
+
       # CLI applications
       curl
       git
