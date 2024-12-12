@@ -172,7 +172,10 @@
       # CLI applications
       curl
       git
+      killall
       wget
+      tree
+      unzip
       vim
 
       # Desktop applications
