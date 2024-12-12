@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     # Uncomment and configure home-manager if you want to use it:
     # home-manager = {
     #   url = "github:nix-community/home-manager";
@@ -10,14 +11,25 @@
     # };
   };
 
-  outputs = { nixpkgs, ... } @ inputs: {
+  outputs = { nixpkgs, home-manager, ... } @ inputs:
+  let
+    lib = nixpkgs.lib;
+    system = "x86_64-linux";  # Make sure to specify the system architecture
+    host = "nixos";
+    username = "syg";
+  in
+  {
     nixosConfigurations = {
-      nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        system = "x86_64-linux";  # Make sure to specify the system architecture
+      "${host}" = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit system;
+          inherit inputs;
+          inherit username;
+          inherit host;
+        };
         modules = [
-          ./hosts/default/configuration.nix
-          # inputs.home-manager.nixosModules.default  # Uncomment to include home-manager
+          ./hosts/${host}/configuration.nix
+          {nixpkgs.overlays = [inputs.hyprpanel.overlay];}
         ];
       };
     };
