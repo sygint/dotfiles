@@ -181,6 +181,9 @@
       # Desktop applications
       firefox
       kitty
+
+      # System GUI applications
+      hyprpanel
     ];
   };
 

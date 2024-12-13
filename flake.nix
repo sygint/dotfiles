@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+    hyprpanel.url = "github:Jas-SinghFSU/HyprPanel";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -28,6 +29,8 @@
         };
         modules = [
           ./hosts/${host}/configuration.nix
+
+          {nixpkgs.overlays = [inputs.hyprpanel.overlay];}
 
           home-manager.nixosModules.home-manager
           {
