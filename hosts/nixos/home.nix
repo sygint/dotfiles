@@ -13,6 +13,10 @@ in
   home.homeDirectory = "/home/${username}";
   home.stateVersion = "24.05";
 
+  home.file = {
+    ".config/hypr/hyprland.conf".source = ../../config/hypr/hyprland.conf;
+  };
+
   # Install & Configure Git
   programs = {
     home-manager.enable = true;
