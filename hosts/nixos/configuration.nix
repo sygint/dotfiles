@@ -179,11 +179,14 @@
       vim
 
       # Desktop applications
+      brave
       firefox
       kitty
 
       # System GUI applications
       hyprpanel
+      nemo
+      rofi-wayland
     ];
   };
 

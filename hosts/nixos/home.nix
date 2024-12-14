@@ -21,6 +21,7 @@ in
   # Install & Configure Git
   programs = {
     home-manager.enable = true;
+    rofi.enable = true;
 
     btop = {
       enable = true;
