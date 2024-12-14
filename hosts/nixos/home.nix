@@ -14,6 +14,7 @@ in
   home.stateVersion = "24.05";
 
   home.file = {
+    ".gitconfig".source = ../../config/.gitconfig;
     ".config/hypr/hyprland.conf".source = ../../config/hypr/hyprland.conf;
   };
 
@@ -26,12 +27,6 @@ in
       settings = {
         vim_keys = true;
       };
-    };
-
-    git = {
-      enable = true;
-      userName = "${gitUsername}";
-      userEmail = "${gitEmail}";
     };
 
     kitty = {
