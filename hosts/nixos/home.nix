@@ -2,6 +2,7 @@
   pkgs,
   username,
   host,
+  inputs,
   ...
 }:
 let
@@ -13,9 +14,18 @@ in
   home.homeDirectory = "/home/${username}";
   home.stateVersion = "24.11";
 
+  imports = [
+    inputs.hyprland.homeManagerModules.default
+  ];
+
   home.file = {
     ".gitconfig".source = ../../config/.gitconfig;
-    ".config/hypr/hyprland.conf".source = ../../config/hypr/hyprland.conf;
+  };
+
+  wayland.windowManager.hyprland = {
+    enable = true;
+    # plugins = [];
+    extraConfig = (import ../../config/hypr/hyprland.nix);
   };
 
   # Install & Configure Git

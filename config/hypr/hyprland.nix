@@ -1,3 +1,4 @@
+"
 # Please note not all available settings / options are set here.
 # For a full list, see the wiki
 
@@ -11,7 +12,7 @@
 ################
 
 # See https://wiki.hyprland.org/Configuring/Monitors/
-monitor=,preferred,auto,auto
+monitor = ,preferred,auto,auto
 
 
 ###################
@@ -132,7 +133,7 @@ animations {
 }
 
 # Ref https://wiki.hyprland.org/Configuring/Workspace-Rules/
-# "Smart gaps" / "No gaps when only"
+# 'Smart gaps' / 'No gaps when only'
 # uncomment all if you wish to use that.
 # workspace = w[tv1], gapsout:0, gapsin:0
 # workspace = f[1], gapsout:0, gapsin:0
@@ -198,8 +199,8 @@ device {
 ###################
 
 # See https://wiki.hyprland.org/Configuring/Keywords/
-$modMain = SUPER # Sets "Windows" key as main modifier
-$modSecondary = CONTROL # Sets "Windows" key as main modifier
+$modMain = SUPER # Sets 'Windows' key as main modifier
+$modSecondary = CONTROL # Sets 'Windows' key as main modifier
 
 # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
 
@@ -211,9 +212,9 @@ bind = $modMain, E, exec, $fileManager
 bind = $modMain, W, exec, $webBrowser
 # bind = $modMain, P, pseudo, # dwindle
 # bind = $modMain, J, togglesplit, # dwindle
-# bind = $modMain SHIFT, S, screenshootin
+# bind = $modMain $modSecondary SHIFT, S, exec, screenshootin
 
-bind = $modMain, M, exit,
+bind = $modMain, M, exit
 
 # Fullscreen/Floating
 bind = $modMain, F, fullscreen
@@ -306,3 +307,4 @@ windowrulev2 = suppressevent maximize, class:.*
 
 # Fix some dragging issues with XWayland
 windowrulev2 = nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0
+"
