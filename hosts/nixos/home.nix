@@ -41,7 +41,7 @@ in
     kitty = {
       enable = true;
       package = pkgs.kitty;
-      extraConfig =  (import ../../config/kitty/kitty.nix);
+      extraConfig = (import ../../config/kitty/kitty.nix);
     };
   };
 
