@@ -12,7 +12,7 @@
 ################
 
 # See https://wiki.hyprland.org/Configuring/Monitors/
-monitor = ,preferred,auto,auto
+monitor = ,preferred, auto, auto
 
 
 ###################
@@ -22,10 +22,10 @@ monitor = ,preferred,auto,auto
 # See https://wiki.hyprland.org/Configuring/Keywords/
 
 # Set programs that you use
-$terminal = kitty
+$terminal    = kitty
 $fileManager = nemo
-$webBrowser = brave
-$menu = rofi -show drun
+$webBrowser  = brave
+$menu        = rofi -show drun
 
 
 #################
@@ -47,8 +47,8 @@ exec-once = hyprpanel
 
 # See https://wiki.hyprland.org/Configuring/Environment-variables/
 
-env = XCURSOR_SIZE,24
-env = HYPRCURSOR_SIZE,24
+env = XCURSOR_SIZE,    24
+env = HYPRCURSOR_SIZE, 24
 
 
 #####################
@@ -59,22 +59,21 @@ env = HYPRCURSOR_SIZE,24
 
 # https://wiki.hyprland.org/Configuring/Variables/#general
 general {
-    gaps_in = 5
-    gaps_out = 20
-
+    gaps_in     = 5
+    gaps_out    = 20
     border_size = 2
 
     # https://wiki.hyprland.org/Configuring/Variables/#variable-types for info about colors
-    col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
+    col.active_border   = rgba(33ccffee) rgba(00ff99ee) 45deg
     col.inactive_border = rgba(595959aa)
 
     # Set to true enable resizing windows by clicking and dragging on borders and gaps
     resize_on_border = false
 
     # Please see https://wiki.hyprland.org/Configuring/Tearing/ before you turn this on
-    allow_tearing = false
+    allow_tearing    = false
 
-    layout = dwindle
+    layout           = dwindle
 }
 
 # https://wiki.hyprland.org/Configuring/Variables/#decoration
@@ -82,22 +81,21 @@ decoration {
     rounding = 10
 
     # Change transparency of focused and unfocused windows
-    active_opacity = 1.0
+    active_opacity   = 1.0
     inactive_opacity = 1.0
 
     shadow {
-        enabled = true
-        range = 4
+        enabled      = true
+        range        = 4
         render_power = 3
-        color = rgba(1a1a1aee)
+        color        = rgba(1a1a1aee)
     }
 
     # https://wiki.hyprland.org/Configuring/Variables/#blur
     blur {
-        enabled = true
-        size = 3
-        passes = 1
-
+        enabled  = true
+        size     = 3
+        passes   = 1
         vibrancy = 0.1696
     }
 }
@@ -108,43 +106,43 @@ animations {
 
     # Default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
 
-    bezier = easeOutQuint,0.23,1,0.32,1
-    bezier = easeInOutCubic,0.65,0.05,0.36,1
-    bezier = linear,0,0,1,1
-    bezier = almostLinear,0.5,0.5,0.75,1.0
-    bezier = quick,0.15,0,0.1,1
+    bezier = easeOutQuint,   0.23, 1,    0.32, 1
+    bezier = easeInOutCubic, 0.65, 0.05, 0.36, 1
+    bezier = linear,         0,    0,    1,    1
+    bezier = almostLinear,   0.5,  0.5,  0.75, 1.0
+    bezier = quick,          0.15, 0,    0.1,  1
 
-    animation = global, 1, 10, default
-    animation = border, 1, 5.39, easeOutQuint
-    animation = windows, 1, 4.79, easeOutQuint
-    animation = windowsIn, 1, 4.1, easeOutQuint, popin 87%
-    animation = windowsOut, 1, 1.49, linear, popin 87%
-    animation = fadeIn, 1, 1.73, almostLinear
-    animation = fadeOut, 1, 1.46, almostLinear
-    animation = fade, 1, 3.03, quick
-    animation = layers, 1, 3.81, easeOutQuint
-    animation = layersIn, 1, 4, easeOutQuint, fade
-    animation = layersOut, 1, 1.5, linear, fade
-    animation = fadeLayersIn, 1, 1.79, almostLinear
+    animation = global,        1, 10,   default
+    animation = border,        1, 5.39, easeOutQuint
+    animation = windows,       1, 4.79, easeOutQuint
+    animation = windowsIn,     1, 4.1,  easeOutQuint, popin 87%
+    animation = windowsOut,    1, 1.49, linear,       popin 87%
+    animation = fadeIn,        1, 1.73, almostLinear
+    animation = fadeOut,       1, 1.46, almostLinear
+    animation = fade,          1, 3.03, quick
+    animation = layers,        1, 3.81, easeOutQuint
+    animation = layersIn,      1, 4,    easeOutQuint, fade
+    animation = layersOut,     1, 1.5,  linear,       fade
+    animation = fadeLayersIn,  1, 1.79, almostLinear
     animation = fadeLayersOut, 1, 1.39, almostLinear
-    animation = workspaces, 1, 1.94, almostLinear, fade
-    animation = workspacesIn, 1, 1.21, almostLinear, fade
+    animation = workspaces,    1, 1.94, almostLinear, fade
+    animation = workspacesIn,  1, 1.21, almostLinear, fade
     animation = workspacesOut, 1, 1.94, almostLinear, fade
 }
 
 # Ref https://wiki.hyprland.org/Configuring/Workspace-Rules/
 # 'Smart gaps' / 'No gaps when only'
 # uncomment all if you wish to use that.
-# workspace = w[tv1], gapsout:0, gapsin:0
-# workspace = f[1], gapsout:0, gapsin:0
+# workspace    = w[tv1], gapsout:0, gapsin:0
+# workspace    = f[1],   gapsout:0, gapsin:0
 # windowrulev2 = bordersize 0, floating:0, onworkspace:w[tv1]
-# windowrulev2 = rounding 0, floating:0, onworkspace:w[tv1]
+# windowrulev2 = rounding   0, floating:0, onworkspace:w[tv1]
 # windowrulev2 = bordersize 0, floating:0, onworkspace:f[1]
-# windowrulev2 = rounding 0, floating:0, onworkspace:f[1]
+# windowrulev2 = rounding   0, floating:0, onworkspace:f[1]
 
 # See https://wiki.hyprland.org/Configuring/Dwindle-Layout/ for more
 dwindle {
-    pseudotile = true # Master switch for pseudotiling. Enabling is bound to modMain + P in the keybinds section below
+    pseudotile     = true # Master switch for pseudotiling. Enabling is bound to modMain + P in the keybinds section below
     preserve_split = true # You probably want this
 }
 
@@ -155,8 +153,8 @@ master {
 
 # https://wiki.hyprland.org/Configuring/Variables/#misc
 misc {
-    force_default_wallpaper = -1 # Set to 0 or 1 to disable the anime mascot wallpapers
-    disable_hyprland_logo = false # If true disables the random hyprland logo / anime girl background. :(
+    force_default_wallpaper = -1    # Set to 0 or 1 to disable the anime mascot wallpapers
+    disable_hyprland_logo   = false # If true disables the random hyprland logo / anime girl background. :(
 }
 
 
@@ -166,11 +164,11 @@ misc {
 
 # https://wiki.hyprland.org/Configuring/Variables/#input
 input {
-    kb_layout = us
+    kb_layout  = us
     kb_variant =
-    kb_model =
+    kb_model   =
     kb_options =
-    kb_rules =
+    kb_rules   =
 
     follow_mouse = 1
 
@@ -189,7 +187,7 @@ gestures {
 # Example per-device config
 # See https://wiki.hyprland.org/Configuring/Keywords/#per-device-input-configs for more
 device {
-    name = epic-mouse-v1
+    name        = epic-mouse-v1
     sensitivity = -0.5
 }
 
@@ -205,19 +203,18 @@ $modSecondary = CONTROL # Sets 'Windows' key as main modifier
 # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
 
 bind = SUPER, RETURN, exec, $terminal
-# bind = $modMain Shift,Return,exec,rofi-launcher
-bind = $modMain, D, exec, $menu
+bind = $modMain, D, exec,       $menu
 bind = $modMain, Q, killactive,
-bind = $modMain, E, exec, $fileManager
-bind = $modMain, W, exec, $webBrowser
+bind = $modMain, E, exec,       $fileManager
+bind = $modMain, W, exec,       $webBrowser
 # bind = $modMain, P, pseudo, # dwindle
 # bind = $modMain, J, togglesplit, # dwindle
-# bind = $modMain $modSecondary SHIFT, S, exec, screenshootin
+bind = $modMain $modSecondary SHIFT, S, exec, screenshootin
 
 bind = $modMain, M, exit
 
 # Fullscreen/Floating
-bind = $modMain, F, fullscreen
+bind = $modMain,       F, fullscreen
 bind = $modMain SHIFT, F, togglefloating
 
 # Move focus
@@ -260,12 +257,12 @@ bind = $modMain $modSecondary, L, workspace, e+1
 bind = $modMain $modSecondary, H, workspace, e-1
 
 # Example special workspace (scratchpad)
-bind = $modMain, S, togglespecialworkspace, magic
-bind = $modMain SHIFT, S, movetoworkspace, special:magic
+bind = $modMain,       S, togglespecialworkspace, magic
+bind = $modMain SHIFT, S, movetoworkspace,        special:magic
 
 # Scroll through existing workspaces with modMain + scroll
 bind = $modMain, mouse_down, workspace, e+1
-bind = $modMain, mouse_up, workspace, e-1
+bind = $modMain, mouse_up,   workspace, e-1
 
 # Move/resize windows with modMain + LMB/RMB and dragging
 bindm = $modMain, mouse:272, movewindow
@@ -276,18 +273,18 @@ bind = ALT, Tab, cyclenext
 bind = ALT, Tab, bringactivetotop
 
 # Laptop multimedia keys for volume and LCD brightness
-bindel = ,XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+
-bindel = ,XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
-bindel = ,XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
-bindel = ,XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
-bindel = ,XF86MonBrightnessUp, exec, brightnessctl s 10%+
+bindel = ,XF86AudioRaiseVolume,  exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+
+bindel = ,XF86AudioLowerVolume,  exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+bindel = ,XF86AudioMute,         exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+bindel = ,XF86AudioMicMute,      exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+bindel = ,XF86MonBrightnessUp,   exec, brightnessctl s 10%+
 bindel = ,XF86MonBrightnessDown, exec, brightnessctl s 10%-
 
 # Requires playerctl
-bindl = , XF86AudioNext, exec, playerctl next
+bindl = , XF86AudioNext,  exec, playerctl next
 bindl = , XF86AudioPause, exec, playerctl play-pause
-bindl = , XF86AudioPlay, exec, playerctl play-pause
-bindl = , XF86AudioPrev, exec, playerctl previous
+bindl = , XF86AudioPlay,  exec, playerctl play-pause
+bindl = , XF86AudioPrev,  exec, playerctl previous
 
 ##############################
 ### WINDOWS AND WORKSPACES ###
