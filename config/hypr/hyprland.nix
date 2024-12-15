@@ -204,7 +204,7 @@ $modSecondary = CONTROL # Sets 'Windows' key as main modifier
 
 bind = SUPER, RETURN, exec, $terminal
 bind = $modMain, D, exec,       $menu
-bind = $modMain, Q, killactive,
+bind = $modMain SHIFT, Q, killactive,
 bind = $modMain, E, exec,       $fileManager
 bind = $modMain, W, exec,       $webBrowser
 # bind = $modMain, P, pseudo, # dwindle

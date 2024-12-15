@@ -130,18 +130,9 @@
     rtkit.enable = true;
   };
 
-  # fonts.packages = with pkgs; [
-    # (
-    #     # ⓘ install the following nerd fonts onto the system
-    #     pkgs.nerdfonts.override {
-    #         fonts = [
-    #             "JetBrainsMono"
-    #         ];
-    #     }
-    # )
-    # use instead :
-    # nerd-fonts.jetbrains-mono
-  # ];
+  fonts.fonts = with pkgs; [
+    (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "JetBrainsMono" ]; })
+  ];
 
   # Install firefox.
   programs = {
