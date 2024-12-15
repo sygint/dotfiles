@@ -35,9 +35,7 @@ in
 
     btop = {
       enable = true;
-      settings = {
-        vim_keys = true;
-      };
+      settings.vim_keys = true;
     };
 
     kitty = {
