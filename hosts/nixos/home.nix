@@ -10,43 +10,43 @@ let
 in
 {
   # Home Manager Settings
-  home.username = "${username}";
+  home.username      = "${username}";
   home.homeDirectory = "/home/${username}";
-  home.stateVersion = "24.11";
+  home.stateVersion  = "24.11";
 
   imports = [
     inputs.hyprland.homeManagerModules.default
   ];
 
   home.file = {
-    ".gitconfig".source = ../../config/.gitconfig;
+    ".gitconfig".source      = ../../config/.gitconfig;
     "hypr/mocha.conf".source = ../../config/hypr/mocha.conf;
   };
 
   wayland.windowManager.hyprland = {
-    enable = true;
-    # plugins = [];
+    enable      = true;
+    # plugins   = [];
     extraConfig = (import ../../config/hypr/hyprland.nix);
   };
 
   # Install & Configure Git
   programs = {
     home-manager.enable = true;
-    rofi.enable = true;
+    rofi.enable         = true;
 
     btop = {
-      enable = true;
+      enable            = true;
       settings.vim_keys = true;
     };
 
     kitty = {
-      enable = true;
-      package = pkgs.kitty;
+      enable      = true;
+      package     = pkgs.kitty;
       extraConfig = (import ../../config/kitty/kitty.nix);
     };
 
     hyprlock = {
-      enable = true;
+      enable      = true;
       extraConfig = (import ../../config/hypr/hyprlock.nix { inherit username; });
     };
   };
@@ -54,7 +54,7 @@ in
   # Create XDG Dirs
   xdg = {
     userDirs = {
-      enable = true;
+      enable            = true;
       createDirectories = true;
     };
   };

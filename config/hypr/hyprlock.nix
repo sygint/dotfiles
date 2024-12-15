@@ -2,91 +2,91 @@
 ''
 source = $HOME/.config/hypr/mocha.conf
 
-$accent = $mauve
+$accent      = $mauve
 $accentAlpha = $mauveAlpha
-$font = JetBrainsMono Nerd Font
+$font        = JetBrainsMono Nerd Font
 
 # GENERAL
 general {
   disable_loading_bar = true
-  hide_cursor = true
+  hide_cursor         = true
 }
 
 # BACKGROUND
 background {
-  monitor =
-  path = $HOME/.config/background
+  monitor     =
+  path        = $HOME/.config/background
   blur_passes = 0
-  color = $base
+  color       = $base
 }
 
 # LAYOUT
 label {
-  monitor =
-  text = Layout: $LAYOUT
-  color = $text
-  font_size = 25
+  monitor     =
+  text        = Layout: $LAYOUT
+  color       = $text
+  font_size   = 25
   font_family = $font
-  position = 30, -30
-  halign = left
-  valign = top
+  position    = 30, -30
+  halign      = left
+  valign      = top
 }
 
 # TIME
 label {
-  monitor =
-  text = $TIME
-  color = $text
-  font_size = 90
+  monitor     =
+  text        = $TIME
+  color       = $text
+  font_size   = 90
   font_family = $font
-  position = -30, 0
-  halign = right
-  valign = top
+  position    = -30, 0
+  halign      = right
+  valign      = top
 }
 
 # DATE
 label {
-  monitor =
-  text = cmd[update:43200000] date +"%A, %d %B %Y"
-  color = $text
-  font_size = 25
+  monitor     =
+  text        = cmd[update:43200000] date +"%A, %d %B %Y"
+  color       = $text
+  font_size   = 25
   font_family = $font
-  position = -30, -150
-  halign = right
-  valign = top
+  position    = -30, -150
+  halign      = right
+  valign      = top
 }
 
 # USER AVATAR
 image {
-  monitor =
-  path = $HOME/.face
-  size = 100
+  monitor      =
+  path         = $HOME/.face
+  size         = 100
   border_color = $accent
-  position = 0, 75
-  halign = center
-  valign = center
+  position     = 0, 75
+  halign       = center
+  valign       = center
 }
 
 # INPUT FIELD
 input-field {
-  monitor =
-  size = 300, 60
+  monitor           =
+  size              = 300, 60
   outline_thickness = 4
-  dots_size = 0.2
-  dots_spacing = 0.2
-  dots_center = true
-  outer_color = $accent
-  inner_color = $surface0
-  font_color = $text
-  fade_on_empty = false
-  placeholder_text = Password...
-  hide_input = false
-  check_color = $accent
-  fail_color = $red
-  fail_text = <i>$FAIL <b>($ATTEMPTS)</b></i>
-  capslock_color = $yellow
-  position = 0, -47
-  halign = center
-  valign = center
+  dots_size         = 0.2
+  dots_spacing      = 0.2
+  dots_center       = true
+  outer_color       = $accent
+  inner_color       = $surface0
+  font_color        = $text
+  fade_on_empty     = false
+  placeholder_text  = Password...
+  hide_input        = false
+  check_color       = $accent
+  fail_color        = $red
+  fail_text         = <i>$FAIL <b>($ATTEMPTS)</b></i>
+  capslock_color    = $yellow
+  position          = 0, -47
+  halign            = center
+  valign            = center
 }
 ''
