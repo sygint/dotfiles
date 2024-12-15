@@ -169,6 +169,11 @@
       nix-output-monitor
       nvd
 
+      # Screenshot utilities
+      grim
+      slurp
+      swappy
+
       # CLI applications
       curl
       git
