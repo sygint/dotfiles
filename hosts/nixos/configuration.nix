@@ -181,6 +181,7 @@
 
       # System GUI applications
       hyprpanel
+      hyprlock
       nemo
       rofi-wayland
     ];

@@ -20,6 +20,7 @@ in
 
   home.file = {
     ".gitconfig".source = ../../config/.gitconfig;
+    "hypr/mocha.conf".source = ../../config/hypr/mocha.conf;
   };
 
   wayland.windowManager.hyprland = {
@@ -42,6 +43,11 @@ in
       enable = true;
       package = pkgs.kitty;
       extraConfig = (import ../../config/kitty/kitty.nix);
+    };
+
+    hyprlock = {
+      enable = true;
+      extraConfig = (import ../../config/hypr/hyprlock.nix { inherit username; });
     };
   };
 
