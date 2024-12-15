@@ -65,4 +65,9 @@ in
       createDirectories = true;
     };
   };
+
+  # Scripts
+  home.packages = [
+    (import ../../scripts/screenshootin.nix { inherit pkgs; })
+  ];
 }
