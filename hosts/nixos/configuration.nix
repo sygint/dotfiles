@@ -185,6 +185,7 @@
       hypridle
       nemo
       rofi-wayland
+      xdg-desktop-portal-hyprland
     ];
   };
 

@@ -82,6 +82,9 @@ in
         ];
       };
     };
+
+    # This doesn't seem to work for some reason
+    # xdg-desktop-portal-hyprland.enable = true;
   };
 
   # Create XDG Dirs
