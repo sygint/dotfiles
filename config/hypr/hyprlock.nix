@@ -1,10 +1,11 @@
 { username, ... }:
 ''
-source = $HOME/.config/hypr/mocha.conf
+# source = $HOME/.config/hypr/mocha.conf
 
-$accent      = $mauve
-$accentAlpha = $mauveAlpha
-$font        = JetBrainsMono Nerd Font
+# handled by stylix
+# $accent      = $mauve
+# $accentAlpha = $mauveAlpha
+# $font        = JetBrainsMono Nerd Font
 
 # GENERAL
 general {
@@ -13,12 +14,13 @@ general {
 }
 
 # BACKGROUND
-background {
-  monitor     =
-  path        = $HOME/.config/background
-  blur_passes = 0
-  color       = $base
-}
+# handled by stylix
+# background {
+#   monitor     =
+#   path        = $HOME/.config/background
+#   blur_passes = 0
+#   color       = $base
+# }
 
 # LAYOUT
 label {
@@ -68,25 +70,26 @@ image {
 }
 
 # INPUT FIELD
-input-field {
-  monitor           =
-  size              = 300, 60
-  outline_thickness = 4
-  dots_size         = 0.2
-  dots_spacing      = 0.2
-  dots_center       = true
-  outer_color       = $accent
-  inner_color       = $surface0
-  font_color        = $text
-  fade_on_empty     = false
-  placeholder_text  = Password...
-  hide_input        = false
-  check_color       = $accent
-  fail_color        = $red
-  fail_text         = <i>$FAIL <b>($ATTEMPTS)</b></i>
-  capslock_color    = $yellow
-  position          = 0, -47
-  halign            = center
-  valign            = center
-}
+# handled by stylix
+# input-field {
+#   monitor           =
+#   size              = 300, 60
+#   outline_thickness = 4
+#   dots_size         = 0.2
+#   dots_spacing      = 0.2
+#   dots_center       = true
+#   outer_color       = $accent
+#   inner_color       = $surface0
+#   font_color        = $text
+#   fade_on_empty     = false
+#   placeholder_text  = Password...
+#   hide_input        = false
+#   check_color       = $accent
+#   fail_color        = $red
+#   fail_text         = <i>$FAIL <b>($ATTEMPTS)</b></i>
+#   capslock_color    = $yellow
+#   position          = 0, -47
+#   halign            = center
+#   valign            = center
+# }
 ''
