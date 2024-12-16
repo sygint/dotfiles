@@ -21,6 +21,10 @@ in
   home.file = {
     ".gitconfig".source      = ../../config/.gitconfig;
     "hypr/mocha.conf".source = ../../config/hypr/mocha.conf;
+    wallpapers = {
+      source = ../../config/wallpapers;
+      recursive = true;
+    };
   };
 
   wayland.windowManager.hyprland = {
