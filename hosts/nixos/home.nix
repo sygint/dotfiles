@@ -65,18 +65,18 @@ in
         listener = [
           # Screenlock
           {
-            timeout    = 60;
+            timeout    = 10;
             on-timeout = "hyprlock";
           }
           # DPMS
           {
-            timeout    = 120;
+            timeout    = 30;
             on-timeout = "hyprctl dispatch dpms off";
             on-resume  = "hyprctl dispatch dpms on";
           }
           # Suspend
           {
-              timeout    = 180;
+              timeout    = 60;
               on-timeout = "systemctl suspend";
           }
         ];

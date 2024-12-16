@@ -1,0 +1,45 @@
+{
+  "bar.customModules.updates.pollingInterval": 21600000,
+  "theme.bar.menus.monochrome": false,
+  "theme.bar.transparent": true,
+  "bar.layouts": {
+    "0": {
+      "left": [],
+      "middle": [],
+      "right": []
+    },
+    "1": {
+      "left": [
+        "dashboard",
+        "workspaces",
+        "windowtitle"
+      ],
+      "middle": [
+        "media"
+      ],
+      "right": [
+        "volume",
+        "network",
+        "bluetooth",
+        "battery",
+        "systray",
+        "clock",
+        "notifications"
+      ]
+    },
+    "2": {
+      "left": [],
+      "middle": [],
+      "right": []
+    }
+  },
+  "theme.bar.floating": false,
+  "theme.bar.outer_spacing": "0.4em",
+  "theme.bar.buttons.y_margins": "0.4em",
+  "theme.bar.border_radius": "0em",
+  "scalingPriority": "gdk",
+  "theme.bar.buttons.enableBorders": false,
+  "theme.matugen": true,
+  "theme.matugen_settings.mode": "dark",
+  "theme.matugen_settings.scheme_type": "tonal-spot"
+}
