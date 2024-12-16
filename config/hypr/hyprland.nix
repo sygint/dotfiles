@@ -197,21 +197,21 @@ device {
 ###################
 
 # See https://wiki.hyprland.org/Configuring/Keywords/
-$modMain = SUPER # Sets 'Windows' key as main modifier
+$modMain      = SUPER   # Sets 'Windows' key as main modifier
 $modSecondary = CONTROL # Sets 'Windows' key as main modifier
 
 # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
 
-bind = SUPER, RETURN, exec, $terminal
-bind = $modMain, D, exec,       $menu
-bind = $modMain SHIFT, Q, killactive,
-bind = $modMain, E, exec,       $fileManager
-bind = $modMain, W, exec,       $webBrowser
-# bind = $modMain, P, pseudo, # dwindle
-# bind = $modMain, J, togglesplit, # dwindle
-bind = $modMain $modSecondary SHIFT, S, exec, screenshootin
+bind = $modMain,                     RETURN, exec,        $terminal
+bind = $modMain,                     D,      exec,        $menu
+bind = $modMain SHIFT,               Q,      killactive,
+bind = $modMain,                     E,      exec,        $fileManager
+bind = $modMain,                     W,      exec,        $webBrowser
+# bind = $modMain,                   P,      pseudo,      # dwindle
+# bind = $modMain,                   J,      togglesplit, # dwindle
+bind = $modMain $modSecondary SHIFT, S,      exec,        screenshootin
 
-bind = $modMain, M, exit
+bind = $modMain,                     M,      exit
 
 # Fullscreen/Floating
 bind = $modMain,       F, fullscreen
