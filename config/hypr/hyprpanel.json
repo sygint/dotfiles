@@ -4,10 +4,30 @@
   "theme.bar.transparent": true,
   "bar.layouts": {
     "0": {
+      "left": [
+        "dashboard",
+        "workspaces",
+        "windowtitle"
+      ],
+      "middle": [
+        "media"
+      ],
+      "right": [
+        "volume",
+        "network",
+        "bluetooth",
+        "battery",
+        "systray",
+        "clock",
+        "notifications"
+      ]
+    },
+    "2": {
       "left": [],
       "middle": [],
       "right": []
-    },
+    }
+  },
     "1": {
       "left": [
         "dashboard",
