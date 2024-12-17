@@ -196,6 +196,7 @@
 
       # CLI applications
       curl
+      fastfetch
       git
       killall
       wget
