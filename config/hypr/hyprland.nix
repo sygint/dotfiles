@@ -207,6 +207,7 @@ bind = $modMain,                     D,      exec,        $menu
 bind = $modMain SHIFT,               Q,      killactive,
 bind = $modMain,                     E,      exec,        $fileManager
 bind = $modMain,                     W,      exec,        $webBrowser
+bind = $modMain ALT,                 W,      exec,        waypaper
 # bind = $modMain,                   P,      pseudo,      # dwindle
 # bind = $modMain,                   J,      togglesplit, # dwindle
 bind = $modMain $modSecondary SHIFT, S,      exec,        screenshootin
