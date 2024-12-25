@@ -205,6 +205,7 @@ $modSecondary = CONTROL # Sets 'Windows' key as main modifier
 
 bind = $modMain,                     RETURN, exec,        $terminal
 bind = $modMain,                     D,      exec,        $menu
+bind = $modMain,                     T,      togglegroup
 bind = $modMain SHIFT,               Q,      killactive,
 bind = $modMain,                     E,      exec,        $fileManager
 bind = $modMain,                     W,      exec,        $webBrowser
@@ -224,6 +225,10 @@ bind = $modMain, H, movefocus, l
 bind = $modMain, J, movefocus, d
 bind = $modMain, K, movefocus, u
 bind = $modMain, L, movefocus, r
+
+# Move focus through group
+bind = $modMain $modSecondary, h, changegroupactive, b 
+bind = $modMain $modSecondary, l, changegroupactive, f 
 
 # Move window
 bind = $modMain SHIFT, H, movewindow, l
