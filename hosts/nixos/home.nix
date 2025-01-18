@@ -55,7 +55,7 @@ in
 
     hyprlock = {
       enable      = true;
-      extraConfig = (import ../../config/hypr/hyprlock.nix { inherit username; });
+      extraConfig = (import ../../config/hypr/hyprlock.conf.nix { inherit username; });
     };
   };
 
