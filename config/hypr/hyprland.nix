@@ -39,7 +39,7 @@ $menu        = rofi -show drun
 # exec-once = $terminal
 # exec-once = nm-applet &
 # exec-once = waybar & hyprpaper & firefox
-exec-once = hyprpanel
+# exec-once = hyprpanel
 
 
 #############################
