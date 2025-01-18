@@ -27,10 +27,14 @@ in
     };
   };
 
-  wayland.windowManager.hyprland = {
-    enable      = true;
-    # plugins   = [];
-    extraConfig = (import ../../config/hypr/hyprland.nix);
+  wayland.windowManager = {
+    hyprland = {
+      enable      = true;
+      # plugins   = [];
+      extraConfig = (import ../../config/hypr/hyprland.nix);
+    };
+
+    sway.enable = true;
   };
 
   # Install & Configure Git
