@@ -208,9 +208,11 @@
       brave
       firefox
       kitty
+      meld
+      vscodium
 
       # System GUI applications
-      hyprpanel
+      # hyprpanel # disabled until docs for v2
       hyprlock
       hypridle
       nemo
