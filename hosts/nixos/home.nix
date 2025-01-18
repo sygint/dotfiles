@@ -31,7 +31,7 @@ in
     hyprland = {
       enable      = true;
       # plugins   = [];
-      extraConfig = (import ../../config/hypr/hyprland.nix);
+      extraConfig = (import ../../config/hypr/hyprland.conf.nix);
     };
 
     sway.enable = true;
