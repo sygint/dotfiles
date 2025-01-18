@@ -18,7 +18,7 @@
   # Basic system settings
   networking = {
     hostName              = "nixos"; # Define your hostname.
-    # wireless.enable     = true;  # Enables wireless support via wpa_supplicant.
+    wireless.enable     = false;  # Set to true to enable wireless support via wpa_supplicant.
     networkmanager.enable = true;
 
     # Configure network proxy if necessary
