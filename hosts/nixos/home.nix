@@ -20,7 +20,7 @@ in
 
   home.file = {
     ".gitconfig".source      = ../../config/.gitconfig;
-    "hypr/mocha.conf".source = ../../config/hypr/mocha.conf;
+    "hypr/mocha.conf".source = ../../config/hypr/mocha.conf.nix;
     wallpapers = {
       source = ../../config/wallpapers;
       recursive = true;
