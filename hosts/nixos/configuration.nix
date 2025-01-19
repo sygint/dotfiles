@@ -214,7 +214,7 @@
       vscodium
 
       # System GUI applications
-      # hyprpanel # disabled until docs for v2
+      hyprpanel
       hyprlock
       hypridle
       nemo
