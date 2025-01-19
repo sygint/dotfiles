@@ -231,10 +231,10 @@ bind = $modMain $modSecondary, h, changegroupactive, b
 bind = $modMain $modSecondary, l, changegroupactive, f 
 
 # Move window
-bind = $modMain SHIFT, H, movewindow, l
-bind = $modMain SHIFT, J, movewindow, d
-bind = $modMain SHIFT, K, movewindow, u
-bind = $modMain SHIFT, L, movewindow, r
+bind = $modMain SHIFT, H, movewindoworgroup, l
+bind = $modMain SHIFT, J, movewindoworgroup, d
+bind = $modMain SHIFT, K, movewindoworgroup, u
+bind = $modMain SHIFT, L, movewindoworgroup, r
 
 # Switch workspaces
 bind = $modMain, 1, workspace, 1
