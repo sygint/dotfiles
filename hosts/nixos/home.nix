@@ -62,7 +62,39 @@ in
       enable = true;
       package = pkgs.brave;
       extensions = [
-        "nngceckbapebfimnlniiiahkandclblb" #bitwarden 
+        "nngceckbapebfimnlniiiahkandclblb" # Bitwarden
+        # "ldpochfccmkkmhdbclfhpagapcfdljkj" # Decentraleyes
+        "ikclbgejgcbdlhjmckecmdljlpbhmbmf" # HTTPS Everywhere
+        # "oboonakemofpalcgghocfoadofidjkkk" # KeePassXC-Browser
+        # "fploionmjgeclbkemipmkogoaohcdbig" # Page Load time
+        "pkehgijcmpdhfbdbbnkijodmdjhbjlgp" # Privacy Badger        
+        # "hjdoplcnndgiblooccencgcggcoihigg" # Terms of Service; Didn’t Read
+      ];
+    };
+
+    vscode = {
+      enable = true;
+      package = pkgs.vscodium;
+      userSettings = {
+        "editor.minimap.enabled" = false;
+      };
+      extensions = with pkgs.vscode-extensions; [
+        # themes
+        dracula-theme.theme-dracula
+
+        # syntax
+        jnoortheen.nix-ide
+        bbenoist.nix
+        # vscodevim.vim
+        yzhang.markdown-all-in-one
+
+      ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+        {
+          name = "gitstash";
+          publisher = "arturock";
+          version = "5.2.0";
+          sha256 = "IVWb4tXD+5YbqJv4Ajp0c3UvYdMzh83NlyiYpndclEY=";
+        }
       ];
     };
   };
