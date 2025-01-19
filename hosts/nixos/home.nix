@@ -57,6 +57,14 @@ in
       enable      = true;
       extraConfig = (import ../../config/hypr/hyprlock.conf.nix { inherit username; });
     };
+
+    chromium = {
+      enable = true;
+      package = pkgs.brave;
+      extensions = [
+        "nngceckbapebfimnlniiiahkandclblb" #bitwarden 
+      ];
+    };
   };
 
   services = {
