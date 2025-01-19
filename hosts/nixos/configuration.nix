@@ -209,6 +209,7 @@
       firefox
       kitty
       meld
+      signal-desktop
       vscodium
 
       # System GUI applications
