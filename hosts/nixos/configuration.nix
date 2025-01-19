@@ -52,9 +52,6 @@
       LC_TIME           = "en_US.UTF-8";
     };
   };
-  
-  # Disable PulseAudio (will use PipeWire)
-  hardware.pulseaudio.enable = false;
 
   # Enable the X11 windowing system.
   services = {
@@ -77,6 +74,9 @@
 
     # Enable CUPS to print documents.
     printing.enable = true;
+
+    # Disable PulseAudio (will use PipeWire)
+    pulseaudio.enable = false;
 
     # Configure audio
     pipewire = {
