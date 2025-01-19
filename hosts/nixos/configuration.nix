@@ -130,7 +130,9 @@
   };
 
   fonts.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "JetBrainsMono" ]; })
+    pkgs.nerd-fonts.fira-code
+    pkgs.nerd-fonts.droid-sans-mono
+    pkgs.nerd-fonts.jetbrains-mono
   ];
 
   stylix = {
