@@ -72,6 +72,7 @@ in
       package = pkgs.vscodium;
       userSettings = {
         "editor.minimap.enabled" = false;
+        "svelte.enable-ts-plugin" = true;
       };
       extensions = with pkgs.vscode-extensions; [
         # themes
@@ -89,6 +90,12 @@ in
           publisher = "arturock";
           version = "5.2.0";
           sha256 = "IVWb4tXD+5YbqJv4Ajp0c3UvYdMzh83NlyiYpndclEY=";
+        }
+        {
+          name = "svelte-vscode";
+          publisher = "svelte";
+          version = "109.5.2";
+          sha256 = "y1se0+LY1M+YKCm+gxBsyHLOQU6Xl095xP6z0xpf9mM=";
         }
       ];
     };
