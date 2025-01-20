@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, username, inputs, ... }:
 
 {
   imports = [ # Include the results of the hardware scan.
@@ -94,6 +94,15 @@
 
     # Configure SSH server (optional)
     openssh.enable = true;
+
+    syncthing = {
+      enable = true;
+      openDefaultPorts = true;
+      settings.gui = {
+        user = "${username}";
+        password = "syncmybattleship";
+      };
+    };
 
     # Enable the systemd service for automatic login (if you want autologin)
     # displayManager.autoLogin = {
@@ -210,6 +219,7 @@
       firefox
       kitty
       meld
+      obsidian
       signal-desktop
 
       # System GUI applications
