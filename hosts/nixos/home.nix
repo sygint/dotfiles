@@ -61,6 +61,7 @@ in
         "ikclbgejgcbdlhjmckecmdljlpbhmbmf" # HTTPS Everywhere
         # "oboonakemofpalcgghocfoadofidjkkk" # KeePassXC-Browser
         # "fploionmjgeclbkemipmkogoaohcdbig" # Page Load time
+        "hmgpakheknboplhmlicfkkgjipfabmhp" # Privacy | Private Debit Cards
         "pkehgijcmpdhfbdbbnkijodmdjhbjlgp" # Privacy Badger        
         # "hjdoplcnndgiblooccencgcggcoihigg" # Terms of Service; Didn’t Read
       ];
