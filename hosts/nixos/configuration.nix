@@ -199,6 +199,9 @@
       nix-output-monitor
       nvd
 
+      # services
+      shiori
+
       # Screenshot utilities
       grim
       slurp
