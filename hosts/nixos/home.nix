@@ -73,6 +73,8 @@ in
       userSettings = {
         "editor.minimap.enabled" = false;
         "svelte.enable-ts-plugin" = true;
+        "diffEditor.renderSideBySide" = false;
+        "diffEditor.ignoreTrimWhitespace" = false;
       };
       extensions = with pkgs.vscode-extensions; [
         # themes
