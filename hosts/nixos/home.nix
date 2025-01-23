@@ -92,10 +92,22 @@ in
           sha256 = "IVWb4tXD+5YbqJv4Ajp0c3UvYdMzh83NlyiYpndclEY=";
         }
         {
+          name = "vscode-kanbn-boards";
+          publisher = "samgiz";
+          version = "0.14.1";
+          sha256 = "+BIMS5icyEmj1JXKVZmcOfTFI4w/F1zpjbt9ziG7XEk=";
+        }
+        {
           name = "svelte-vscode";
           publisher = "svelte";
           version = "109.5.2";
           sha256 = "y1se0+LY1M+YKCm+gxBsyHLOQU6Xl095xP6z0xpf9mM=";
+        }
+        {
+          name = "vscode-tailwindcss";
+          publisher = "bradlc";
+          version = "0.14.1";
+          sha256 = "eOdltfRP4npYfQKDhGgP2gtc7jrqOv6igWP6DLfJGRw=";
         }
       ];
     };
