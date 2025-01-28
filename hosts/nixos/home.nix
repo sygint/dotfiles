@@ -111,6 +111,12 @@ in
           version = "0.14.1";
           sha256 = "eOdltfRP4npYfQKDhGgP2gtc7jrqOv6igWP6DLfJGRw=";
         }
+        {
+          name = "vscode-versionlens";
+          publisher = "pflannery";
+          version = "1.16.2";
+          sha256 = "avrq1e+L+2ZCIDBz1WOOHtU9a16VNkDOzrE1ccPnTKg=";
+        }
       ];
     };
   };
