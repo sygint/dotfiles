@@ -88,10 +88,10 @@ in
 
       ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
         {
-          name = "gitstash";
-          publisher = "arturock";
-          version = "5.2.0";
-          sha256 = "IVWb4tXD+5YbqJv4Ajp0c3UvYdMzh83NlyiYpndclEY=";
+          name = "gitless";
+          publisher = "maattdd";
+          version = "11.7.2";
+          sha256 = "rYeZNBz6HeZ059ksChGsXbuOao9H5m5lHGXJ4ELs6xc=";
         }
         {
           name = "vscode-kanbn-boards";
