@@ -230,6 +230,7 @@
       hyprlock
       hypridle
       nemo
+      wdisplays
       rofi-wayland
       swww
       waypaper

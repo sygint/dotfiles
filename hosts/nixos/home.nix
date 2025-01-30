@@ -75,6 +75,8 @@ in
         "svelte.enable-ts-plugin" = true;
         "diffEditor.renderSideBySide" = false;
         "diffEditor.ignoreTrimWhitespace" = false;
+        "editor.tabSize" =  2;
+        "editor.indentSize" = "tabSize";
       };
       extensions = with pkgs.vscode-extensions; [
         # themes
