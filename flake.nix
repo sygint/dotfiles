@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url   = "github:nixos/nixpkgs/nixos-unstable";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     hyprland.url  = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     hyprpanel.url = "github:Jas-SinghFSU/HyprPanel";
     stylix.url = "github:danth/stylix";
@@ -12,7 +13,7 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, ... } @ inputs:
+  outputs = { nixpkgs, nixos-hardware, home-manager, ... } @ inputs:
   let
     lib      = nixpkgs.lib;
     system   = "x86_64-linux";  # Make sure to specify the system architecture
@@ -32,6 +33,7 @@
           inputs.stylix.nixosModules.stylix
           
           ./hosts/${host}/configuration.nix
+          nixos-hardware.nixosModules.framework-13-7040-amd
 
           {nixpkgs.overlays = [inputs.hyprpanel.overlay];}
 
