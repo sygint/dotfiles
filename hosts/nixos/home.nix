@@ -1,4 +1,4 @@
-{ pkgs, username, host, inputs, ... }:
+{ config, pkgs, username, host, inputs, ... }:
 let
   inherit (import ./variables.nix) gitUsername gitEmail;
 in
@@ -70,14 +70,6 @@ in
     vscode = {
       enable = true;
       package = pkgs.vscodium;
-      userSettings = {
-        "editor.minimap.enabled" = false;
-        "svelte.enable-ts-plugin" = true;
-        "diffEditor.renderSideBySide" = false;
-        "diffEditor.ignoreTrimWhitespace" = false;
-        "editor.tabSize" =  2;
-        "editor.indentSize" = "tabSize";
-      };
       extensions = with pkgs.vscode-extensions; [
         # themes
         dracula-theme.theme-dracula
@@ -165,6 +157,10 @@ in
       enable            = true;
       createDirectories = true;
     };
+
+    configFile."Code/User/settings.json".source =
+      config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/.config/nixos/dotfiles/vscode/settings.json";
   };
 
   # Scripts
