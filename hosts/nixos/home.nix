@@ -63,13 +63,21 @@ in
         # "fploionmjgeclbkemipmkogoaohcdbig" # Page Load time
         "hmgpakheknboplhmlicfkkgjipfabmhp" # Privacy | Private Debit Cards
         "pkehgijcmpdhfbdbbnkijodmdjhbjlgp" # Privacy Badger        
+        "fmkadmapgofadopljbjfkapdkoienihi" # React Developer Tools
         # "hjdoplcnndgiblooccencgcggcoihigg" # Terms of Service; Didn’t Read
       ];
     };
 
     vscode = {
       enable = true;
-      package = pkgs.vscodium;
+      userSettings = {
+        "editor.minimap.enabled" = false;
+        "svelte.enable-ts-plugin" = true;
+        "diffEditor.renderSideBySide" = false;
+        "diffEditor.ignoreTrimWhitespace" = false;
+        "editor.tabSize" =  2;
+        "editor.indentSize" = "tabSize";
+      };
       extensions = with pkgs.vscode-extensions; [
         # themes
         dracula-theme.theme-dracula
