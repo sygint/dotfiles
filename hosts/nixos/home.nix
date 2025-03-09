@@ -166,9 +166,9 @@ in
       createDirectories = true;
     };
 
-    configFile."Code/User/settings.json".source =
-      config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/.config/nixos/dotfiles/vscode/settings.json";
+    # configFile."Code/User/settings.json".source =
+    #   config.lib.file.mkOutOfStoreSymlink
+    #   "${config.home.homeDirectory}/.config/nixos/dotfiles/vscode/settings.json";
   };
 
   # Scripts
