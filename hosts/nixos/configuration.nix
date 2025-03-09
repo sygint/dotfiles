@@ -227,6 +227,7 @@
       meld
       obsidian
       signal-desktop
+      inputs.zen-browser.packages."${system}".default
 
       # System GUI applications
       hyprpanel

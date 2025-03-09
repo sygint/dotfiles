@@ -7,13 +7,14 @@
     hyprland.url  = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     hyprpanel.url = "github:Jas-SinghFSU/HyprPanel";
     stylix.url = "github:danth/stylix";
+    zen-browser.url = "github:0xc000022070/zen-browser-flake";
     home-manager = {
       url                    = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { nixpkgs, nixos-hardware, home-manager, ... } @ inputs:
+  outputs = { nixpkgs, nixos-hardware, home-manager, zen-browser, ... } @ inputs:
   let
     lib      = nixpkgs.lib;
     system   = "x86_64-linux";  # Make sure to specify the system architecture
@@ -23,6 +24,7 @@
   {
     nixosConfigurations = {
       "${host}" = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
         specialArgs = {
           inherit system;
           inherit inputs;
