@@ -12,13 +12,19 @@ in
     inputs.hyprland.homeManagerModules.default
   ];
 
-  home.file = {
-    ".gitconfig".source      = ../../config/.gitconfig;
-    "hypr/mocha.conf".source = ../../config/hypr/mocha.conf.nix;
-    wallpapers = {
-      source = ../../config/wallpapers;
-      recursive = true;
+  home = {
+    file = {
+      ".gitconfig".source      = ../../config/.gitconfig;
+      "hypr/mocha.conf".source = ../../config/hypr/mocha.conf.nix;
+      wallpapers = {
+        source = ../../config/wallpapers;
+        recursive = true;
+      };
     };
+
+    packages = [
+      (import ../../scripts/screenshootin.nix { inherit pkgs; })
+    ];
   };
 
   wayland.windowManager = {
@@ -170,9 +176,4 @@ in
     #   config.lib.file.mkOutOfStoreSymlink
     #   "${config.home.homeDirectory}/.config/nixos/dotfiles/vscode/settings.json";
   };
-
-  # Scripts
-  home.packages = [
-    (import ../../scripts/screenshootin.nix { inherit pkgs; })
-  ];
 }
