@@ -55,7 +55,11 @@
       screenshots.enable = true;
     };
 
-    wayland.hyprland.enable = true;
+    wayland = {
+      enable = true;
+
+      hyprland.enable = true;
+    };
   };
 
   # Enable the X11 windowing system.
@@ -163,10 +167,6 @@
 
       # System GUI applications
       nemo
-      wdisplays
-      rofi-wayland
-      swww
-      waypaper
     ];
   };
 
