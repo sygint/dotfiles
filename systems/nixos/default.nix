@@ -21,6 +21,7 @@
   settings = {
     hardware = {
       bluetooth.enable  = true;
+      audio.enable      = true;
       networking = {
         enable   = true;
         hostName = "${hostName}";
@@ -43,23 +44,6 @@
 
     # Enable CUPS to print documents.
     printing.enable = true;
-
-    # Disable PulseAudio (will use PipeWire)
-    pulseaudio.enable = false;
-
-    # Configure audio
-    pipewire = {
-      enable                 = true; # Enable PipeWire for audio
-      alsa.enable            = true; # Enable ALSA support for PipeWire
-      # alsa.support32Bit    = true;
-      pulse.enable           = true; # Enable PulseAudio emulation for PipeWire
-      # If you want to use JACK applications, uncomment this
-      #jack.enable           = true;
-
-      # use the example session manager (no others are packaged yet so this is enabled by default,
-      # no need to redefine it in your config for now)
-      # media-session.enable = true;
-    };
 
     syncthing = {
       enable = true;
