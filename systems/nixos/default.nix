@@ -61,9 +61,6 @@
       # media-session.enable = true;
     };
 
-    # Configure SSH server (optional)
-    openssh.enable = true;
-
     syncthing = {
       enable = true;
       openDefaultPorts = true;

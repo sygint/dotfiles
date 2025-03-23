@@ -37,5 +37,8 @@ in {
         allowedTCPPorts = [ 22 80 443 ];  # Allow SSH and HTTP/HTTPS ports
       };
     };
+
+    # Configure SSH server (optional)
+    # services.openssh.enable = true;
   };
 }
