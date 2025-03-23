@@ -45,6 +45,11 @@
         name = "${username}";
       };
     };
+
+    programs.nix-helpers = {
+      enable = true;
+      username = "${username}";
+    };
   };
 
   # Enable the X11 windowing system.
@@ -132,11 +137,6 @@
     };
 
     systemPackages = with pkgs; [
-      # Nix utilities
-      nh
-      nix-output-monitor
-      nvd
-
       # services
       protonmail-bridge
       shiori
