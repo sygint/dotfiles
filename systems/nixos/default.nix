@@ -54,6 +54,8 @@
 
       screenshots.enable = true;
     };
+
+    wayland.hyprland.enable = true;
   };
 
   # Enable the X11 windowing system.
@@ -123,11 +125,6 @@
   # Install firefox.
   programs = {
     firefox.enable = true;
-
-    hyprland = {
-      enable  = true;
-      package = inputs.hyprland.packages."${pkgs.system}".hyprland;
-    };
   };
 
   # Allow unfree packages (e.g., proprietary software)
@@ -165,15 +162,11 @@
       inputs.zen-browser.packages."${system}".default
 
       # System GUI applications
-      hyprpanel
-      hyprlock
-      hypridle
       nemo
       wdisplays
       rofi-wayland
       swww
       waypaper
-      xdg-desktop-portal-hyprland
     ];
   };
 
