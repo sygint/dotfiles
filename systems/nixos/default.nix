@@ -37,6 +37,10 @@
         password = "${syncPassword}";
       };
     };
+
+    system.user = {
+      name = "${username}";
+    };
   };
 
   # Enable the X11 windowing system.
@@ -67,17 +71,6 @@
   #   "getty@tty1".enable  = false;
   #   "autovt@tty1".enable = false;
   # };
-
-  # User configuration (set up user account)
-  users.users.syg = {
-    isNormalUser  = true;
-    description   = "syg";
-    extraGroups   = [ "networkmanager" "wheel" ];
-    # shell       = pkgs.zsh;
-    packages      = with pkgs; [
-    #  thunderbird
-    ];
-  };
 
   # Set up sudo for the 'wheel' group
   security = {
