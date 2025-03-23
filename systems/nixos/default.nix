@@ -15,6 +15,9 @@
     efi.canTouchEfiVariables = true;
   };
 
+  # Set your time zone.
+  time.timeZone = "America/Los_Angeles";
+
   settings = {
     hardware = {
       bluetooth.enable  = true;
@@ -24,9 +27,6 @@
       };
     };
   };
-
-  # Set your time zone.
-  time.timeZone = "America/Los_Angeles";
 
   # Enable the X11 windowing system.
   services = {
