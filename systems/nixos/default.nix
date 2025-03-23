@@ -7,11 +7,16 @@
 {
   imports = [ # Include the results of the hardware scan.
     ./hardware.nix
+    ../../modules/nixos
   ];
 
   boot.loader = {
     systemd-boot.enable      = true;
     efi.canTouchEfiVariables = true;
+  };
+
+  settings = {
+    hardware.bluetooth.enable = true;
   };
 
   # Basic system settings
