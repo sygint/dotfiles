@@ -34,7 +34,7 @@
         modules = [
           inputs.stylix.nixosModules.stylix
           
-          ./hosts/${host}/configuration.nix
+          ./systems/nixos
           nixos-hardware.nixosModules.framework-13-7040-amd
 
           {nixpkgs.overlays = [inputs.hyprpanel.overlay];}
