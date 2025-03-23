@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, username, hostName, inputs, ... }:
+{ config, pkgs, username, hostName, syncPassword, inputs, ... }:
 
 {
   imports = [ # Include the results of the hardware scan.
@@ -28,7 +28,15 @@
       };
     };
 
-    # services.xserver.enable = true;
+    services = {
+      # xserver.enable = true;
+
+      syncthing = {
+        enable   = true;
+        username = "${username}";
+        password = "${syncPassword}";
+      };
+    };
   };
 
   # Enable the X11 windowing system.
@@ -44,15 +52,6 @@
 
     # Enable CUPS to print documents.
     printing.enable = true;
-
-    syncthing = {
-      enable = true;
-      openDefaultPorts = true;
-      settings.gui = {
-        user = "${username}";
-        password = "syncmybattleship";
-      };
-    };
 
     # Enable the systemd service for automatic login (if you want autologin)
     # displayManager.autoLogin = {

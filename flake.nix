@@ -20,6 +20,7 @@
     system   = "x86_64-linux";  # Make sure to specify the system architecture
     hostName = "nixos";
     username = "syg";
+    syncPassword = "syncmybattleship";
   in
   {
     nixosConfigurations = {
@@ -30,6 +31,7 @@
           inherit inputs;
           inherit username;
           inherit hostName;
+          inherit syncPassword;
         };
         modules = [
           inputs.stylix.nixosModules.stylix
@@ -45,6 +47,7 @@
               inherit inputs;
               inherit username;
               inherit hostName;
+              inherit syncPassword;
             };
             home-manager.useGlobalPkgs       = true;
             home-manager.useUserPackages     = true;
