@@ -46,9 +46,13 @@
       };
     };
 
-    programs.nix-helpers = {
-      enable = true;
-      username = "${username}";
+    programs = {
+      nix-helpers = {
+        enable = true;
+        username = "${username}";
+      };
+
+      screenshots.enable = true;
     };
   };
 
@@ -140,11 +144,6 @@
       # services
       protonmail-bridge
       shiori
-
-      # Screenshot utilities
-      grim
-      slurp
-      swappy
 
       # CLI applications
       curl
