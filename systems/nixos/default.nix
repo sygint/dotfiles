@@ -26,22 +26,16 @@
         hostName = "${hostName}";
       };
     };
+
+    # services.xserver.enable = true;
   };
 
   # Enable the X11 windowing system.
   services = {
     xserver = {
-      enable = true;
-
       # Enable the GNOME Desktop Environment.
       displayManager.gdm.enable   = true;
       desktopManager.gnome.enable = true;
-
-      # Configure keymap for X11 (optional)
-      xkb = {
-        layout  = "us"; # Set keymap layout
-        variant = "";  # Use the default variant
-      };
     };
 
     # Enable touchpad support (enabled default in most desktopManager).
