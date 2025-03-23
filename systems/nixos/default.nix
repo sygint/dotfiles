@@ -38,8 +38,12 @@
       };
     };
 
-    system.user = {
-      name = "${username}";
+    system = {
+      security.enable = true;
+
+      user = {
+        name = "${username}";
+      };
     };
   };
 
@@ -71,16 +75,6 @@
   #   "getty@tty1".enable  = false;
   #   "autovt@tty1".enable = false;
   # };
-
-  # Set up sudo for the 'wheel' group
-  security = {
-    sudo = {
-      enable             = true;
-      wheelNeedsPassword = true;
-    };
-
-    rtkit.enable = true;
-  };
 
   fonts.packages = with pkgs; [
     pkgs.nerd-fonts.fira-code
