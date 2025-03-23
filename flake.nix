@@ -18,18 +18,18 @@
   let
     lib      = nixpkgs.lib;
     system   = "x86_64-linux";  # Make sure to specify the system architecture
-    host     = "nixos";
+    hostName = "nixos";
     username = "syg";
   in
   {
     nixosConfigurations = {
-      "${host}" = nixpkgs.lib.nixosSystem {
+      "${hostName}" = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
           inherit system;
           inherit inputs;
           inherit username;
-          inherit host;
+          inherit hostName;
         };
         modules = [
           inputs.stylix.nixosModules.stylix
@@ -44,12 +44,12 @@
             home-manager.extraSpecialArgs = {
               inherit username;
               inherit inputs;
-              inherit host;
+              inherit hostName;
             };
             home-manager.useGlobalPkgs       = true;
             home-manager.useUserPackages     = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.users.${username}   = import ./hosts/${host}/home.nix;
+            home-manager.users.${username}   = import ./hosts/${hostName}/home.nix;
           }
         ];
       };

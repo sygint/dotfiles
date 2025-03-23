@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, username, inputs, ... }:
+{ config, pkgs, username, hostName, inputs, ... }:
 
 {
   imports = [ # Include the results of the hardware scan.
@@ -16,25 +16,12 @@
   };
 
   settings = {
-    hardware.bluetooth.enable = true;
-  };
-
-  # Basic system settings
-  networking = {
-    hostName              = "nixos"; # Define your hostname.
-    wireless.enable     = false;  # Set to true to enable wireless support via wpa_supplicant.
-    networkmanager.enable = true;
-
-    # Configure network proxy if necessary
-    # networking.proxy = {
-      # default = "http://user:password@proxy:port/";
-      # noProxy = "127.0.0.1,localhost,internal.domain";
-    # };
-
-    # Enable firewall (optional)
-    firewall = {
-      enable          = true;
-      allowedTCPPorts = [ 22 80 443 ];  # Allow SSH and HTTP/HTTPS ports
+    hardware = {
+      bluetooth.enable  = true;
+      networking = {
+        enable   = true;
+        hostName = "${hostName}";
+      };
     };
   };
 
