@@ -29,6 +29,10 @@ in
   };
 
   settings.programs = {
+    # CLI
+    btop.enable  = true;
+
+    # Desktop
     brave.enable = true;
     kitty.enable = true;
   };
@@ -47,11 +51,6 @@ in
   programs = {
     home-manager.enable = true;
     rofi.enable         = true;
-
-    btop = {
-      enable            = true;
-      settings.vim_keys = true;
-    };
 
     hyprlock = {
       enable      = true;
