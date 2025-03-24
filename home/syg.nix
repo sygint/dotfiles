@@ -14,16 +14,16 @@ in
 
   home = {
     file = {
-      ".gitconfig".source      = ../../config/.gitconfig;
-      "hypr/mocha.conf".source = ../../config/hypr/mocha.conf.nix;
+      ".gitconfig".source      = ../config/.gitconfig;
+      "hypr/mocha.conf".source = ../config/hypr/mocha.conf.nix;
       wallpapers = {
-        source = ../../config/wallpapers;
+        source = ../config/wallpapers;
         recursive = true;
       };
     };
 
     packages = [
-      (import ../../scripts/screenshootin.nix { inherit pkgs; })
+      (import ../scripts/screenshootin.nix { inherit pkgs; })
     ];
   };
 
@@ -31,7 +31,7 @@ in
     hyprland = {
       enable      = true;
       # plugins   = [];
-      extraConfig = (import ../../config/hypr/hyprland.conf.nix);
+      extraConfig = (import ../config/hypr/hyprland.conf.nix);
     };
 
     sway.enable = true;
@@ -50,12 +50,12 @@ in
     kitty = {
       enable      = true;
       package     = pkgs.kitty;
-      extraConfig = (import ../../config/kitty/kitty.nix);
+      extraConfig = (import ../config/kitty/kitty.nix);
     };
 
     hyprlock = {
       enable      = true;
-      extraConfig = (import ../../config/hypr/hyprlock.conf.nix { inherit username; });
+      extraConfig = (import ../config/hypr/hyprlock.conf.nix { inherit username; });
     };
 
     chromium = {
