@@ -15,7 +15,6 @@ in
 
   home = {
     file = {
-      ".gitconfig".source      = ../config/.gitconfig;
       "hypr/mocha.conf".source = ../config/hypr/mocha.conf.nix;
       wallpapers = {
         source = ../config/wallpapers;
@@ -31,6 +30,12 @@ in
   settings.programs = {
     # CLI
     btop.enable  = true;
+    git = {
+      enable = true;
+
+      userName  = "syg";
+      userEmail = "sygint@users.noreply.github.com";
+    };
 
     # Desktop
     brave.enable = true;
