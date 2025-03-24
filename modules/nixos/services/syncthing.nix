@@ -10,9 +10,7 @@
 in {
   options.settings.services.syncthing = {
     enable = mkEnableOption "Syncthing";
-  };
 
-  options.settings.services.syncthing = {
     username = lib.mkOption {
       type = lib.types.str;
       default = "admin";
