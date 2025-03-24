@@ -9,6 +9,7 @@ in
   home.stateVersion  = "24.11";
 
   imports = [
+    ../modules/home.nix
     inputs.hyprland.homeManagerModules.default
   ];
 
@@ -26,6 +27,8 @@ in
       (import ../scripts/screenshootin.nix { inherit pkgs; })
     ];
   };
+
+  settings.programs.brave.enable = true;
 
   wayland.windowManager = {
     hyprland = {
@@ -56,22 +59,6 @@ in
     hyprlock = {
       enable      = true;
       extraConfig = (import ../config/hypr/hyprlock.conf.nix { inherit username; });
-    };
-
-    chromium = {
-      enable = true;
-      package = pkgs.brave;
-      extensions = [
-        "nngceckbapebfimnlniiiahkandclblb" # Bitwarden
-        # "ldpochfccmkkmhdbclfhpagapcfdljkj" # Decentraleyes
-        "ikclbgejgcbdlhjmckecmdljlpbhmbmf" # HTTPS Everywhere
-        # "oboonakemofpalcgghocfoadofidjkkk" # KeePassXC-Browser
-        # "fploionmjgeclbkemipmkogoaohcdbig" # Page Load time
-        "hmgpakheknboplhmlicfkkgjipfabmhp" # Privacy | Private Debit Cards
-        "pkehgijcmpdhfbdbbnkijodmdjhbjlgp" # Privacy Badger        
-        "fmkadmapgofadopljbjfkapdkoienihi" # React Developer Tools
-        # "hjdoplcnndgiblooccencgcggcoihigg" # Terms of Service; Didn’t Read
-      ];
     };
 
     firefox = {
