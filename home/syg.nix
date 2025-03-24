@@ -28,7 +28,10 @@ in
     ];
   };
 
-  settings.programs.brave.enable = true;
+  settings.programs = {
+    brave.enable = true;
+    kitty.enable = true;
+  };
 
   wayland.windowManager = {
     hyprland = {
@@ -48,12 +51,6 @@ in
     btop = {
       enable            = true;
       settings.vim_keys = true;
-    };
-
-    kitty = {
-      enable      = true;
-      package     = pkgs.kitty;
-      extraConfig = (import ../config/kitty/kitty.nix);
     };
 
     hyprlock = {
