@@ -7,7 +7,7 @@
 {
   imports = [ # Include the results of the hardware scan.
     ./hardware.nix
-    ../../modules/nixos
+    ../../modules/nixos.nix
   ];
 
   boot.loader = {
