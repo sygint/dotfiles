@@ -10,9 +10,7 @@
 in {
   options.settings.services.protonmail-bridge = {
     enable = mkEnableOption "ProtonMail Bridge";
-  };
 
-  options.settings.services.protonmail-bridge = {
     username = lib.mkOption {
       type = lib.types.str;
       default = "admin";

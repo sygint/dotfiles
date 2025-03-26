@@ -10,9 +10,7 @@
 in {
   options.settings.hardware.networking = {
     enable = mkEnableOption "Networking";
-  };
 
-  options.settings.hardware.networking = {
     hostName = lib.mkOption {
       type = lib.types.str;
       description = "Host Name";
