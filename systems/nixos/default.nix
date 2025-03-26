@@ -38,6 +38,11 @@
         username = "${username}";
         password = "${syncPassword}";
       };
+
+      virtualbox = {
+        enable = true;
+        username = "${username}";
+      };
     };
 
     system = {
