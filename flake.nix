@@ -14,9 +14,10 @@
       url                    = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz";
   };
 
-  outputs = { nixpkgs, nixos-hardware, home-manager, zen-browser, nix-snapd, ... } @ inputs:
+  outputs = { nixpkgs, nixos-hardware, home-manager, zen-browser, fh, nix-snapd, ... } @ inputs:
   let
     lib      = nixpkgs.lib;
     system   = "x86_64-linux";  # Make sure to specify the system architecture
@@ -34,6 +35,7 @@
           inherit username;
           inherit hostName;
           inherit syncPassword;
+          inherit fh;
         };
         modules = [
           inputs.stylix.nixosModules.stylix
