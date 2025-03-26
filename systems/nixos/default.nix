@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, username, hostName, syncPassword, inputs, fh, ... }:
+{ config, pkgs, inputs, fh, hostName, username, syncPassword, ... }:
 
 {
   imports = [ # Include the results of the hardware scan.
@@ -88,7 +88,7 @@
     # Enable the systemd service for automatic login (if you want autologin)
     # displayManager.autoLogin = {
     #   enable = true;
-    #   user   = "syg";
+    #   user   = "${username}";
     # };
   };
 
@@ -145,7 +145,7 @@
   # $ nix search wget
   environment = {
     sessionVariables = {
-      FLAKE = "/home/syg/.config/nixos";
+      FLAKE = "/home/${username}/.config/nixos";
     };
 
     systemPackages = with pkgs; [

@@ -1,7 +1,5 @@
-{ config, pkgs, username, host, inputs, ... }:
-let
-  inherit (import ./variables.nix) gitUsername gitEmail;
-in
+{ config, pkgs, inputs, username, gitUsername, gitEmail, browser, terminal, keyboardLayout, menu, ... }:
+
 {
   # Home Manager Settings
   home.username      = "${username}";
@@ -33,8 +31,8 @@ in
     git = {
       enable = true;
 
-      userName  = "syg";
-      userEmail = "sygint@users.noreply.github.com";
+      userName  = "${gitUsername}";
+      userEmail = "${gitEmail}";
     };
 
     # Desktop

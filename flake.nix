@@ -19,11 +19,10 @@
 
   outputs = { nixpkgs, nixos-hardware, home-manager, zen-browser, fh, nix-snapd, ... } @ inputs:
   let
-    lib      = nixpkgs.lib;
-    system   = "x86_64-linux";  # Make sure to specify the system architecture
-    hostName = "nixos";
-    username = "syg";
-    syncPassword = "syncmybattleship";
+    lib          = nixpkgs.lib;
+    system       = "x86_64-linux";  # Make sure to specify the system architecture
+
+    inherit (import ./variables.nix) hostName username gitUsername gitEmail syncPassword browser terminal keyboardLayout menu;
   in
   {
     nixosConfigurations = {
@@ -32,8 +31,8 @@
         specialArgs = {
           inherit system;
           inherit inputs;
-          inherit username;
           inherit hostName;
+          inherit username;
           inherit syncPassword;
           inherit fh;
         };
@@ -50,8 +49,12 @@
             home-manager.extraSpecialArgs = {
               inherit inputs;
               inherit username;
-              inherit hostName;
-              inherit syncPassword;
+              inherit gitUsername;
+              inherit gitEmail;
+              inherit browser;
+              inherit terminal;
+              inherit keyboardLayout;
+              inherit menu;
             };
             home-manager.useGlobalPkgs       = true;
             home-manager.useUserPackages     = true;
