@@ -59,7 +59,7 @@ in {
 	      rba = "rebase --abort";
 
         # advanced
-        pushf   = "push --force-with-lease --if-includes";
+        pushf   = "push --force-with-lease --force-if-includes";
 	      ll      = "log --graph --pretty='%Cred%h%Creset - %C(bold blue)<%an>%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)' --abbrev-commit --date=relative";
         pp      = "!git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)";
         desc    = "\!git log --format=format:'- %s' --reverse origin/\"\${1:-master}\"..HEAD #";
