@@ -66,6 +66,8 @@
 
   # Enable the X11 windowing system.
   services = {
+    snap.enable = true;
+
     xserver = {
       # Enable the GNOME Desktop Environment.
       displayManager.gdm.enable   = true;

@@ -2,6 +2,8 @@
   description = "Nixos config flake";
 
   inputs = {
+    nix-snapd.url = "https://flakehub.com/f/io12/nix-snapd/0.1.47.tar.gz";
+    nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url   = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     hyprland.url  = "git+https://github.com/hyprwm/Hyprland?submodules=1";
@@ -14,7 +16,7 @@
     };
   };
 
-  outputs = { nixpkgs, nixos-hardware, home-manager, zen-browser, ... } @ inputs:
+  outputs = { nixpkgs, nixos-hardware, home-manager, zen-browser, nix-snapd, ... } @ inputs:
   let
     lib      = nixpkgs.lib;
     system   = "x86_64-linux";  # Make sure to specify the system architecture
@@ -35,7 +37,7 @@
         };
         modules = [
           inputs.stylix.nixosModules.stylix
-          
+          nix-snapd.nixosModules.default
           ./systems/nixos
           nixos-hardware.nixosModules.framework-13-7040-amd
 
