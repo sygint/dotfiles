@@ -12,12 +12,9 @@
   ];
 
   home = {
-    file = {
-      "hypr/mocha.conf".source = ../config/hypr/mocha.conf.nix;
-      wallpapers = {
-        source = ../config/wallpapers;
-        recursive = true;
-      };
+    file.wallpapers = {
+      source = ../config/wallpapers;
+      recursive = true;
     };
 
     packages = [
