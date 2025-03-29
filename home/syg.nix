@@ -25,32 +25,28 @@
     ];
   };
 
-  settings.programs = {
-    # CLI
-    btop.enable  = true;
-    git = {
-      enable = true;
+  settings = {
+    programs = {
+      # CLI
+      btop.enable  = true;
+      git = {
+        enable = true;
 
-      userName  = "${gitUsername}";
-      userEmail = "${gitEmail}";
+        userName  = "${gitUsername}";
+        userEmail = "${gitEmail}";
+      };
+
+      # Desktop
+      brave.enable = true;
+      firefox.enable = true;
+      kitty.enable = true;
+      vscode.enable = true;
     };
 
-    # Desktop
-    brave.enable = true;
-    firefox.enable = true;
-    kitty.enable = true;
-    vscode.enable = true;
+    windowManagers.hyprland.enable = true;
   };
 
-  wayland.windowManager = {
-    hyprland = {
-      enable      = true;
-      # plugins   = [];
-      extraConfig = (import ../config/hypr/hyprland.conf.nix);
-    };
-
-    sway.enable = true;
-  };
+  wayland.windowManager.sway.enable = true;
 
   # Install & Configure Git
   programs = {
