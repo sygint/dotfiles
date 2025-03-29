@@ -26,10 +26,10 @@ in {
     #   "./hypr/mocha.conf".source = ./mocha.conf.nix;
     # };
 
-    # programs.hyprlock = {
-    #   enable      = true;
-    #   extraConfig = (import ./hyprlock.conf.nix { inherit username; });
-    # };
+    programs.hyprlock = {
+      enable      = true;
+      extraConfig = (import ../../../../config/hypr/hyprlock.conf.nix { inherit username; });
+    };
 
     # services.hypridle = {
     #   enable   = true;

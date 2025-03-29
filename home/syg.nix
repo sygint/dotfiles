@@ -52,11 +52,6 @@
   programs = {
     home-manager.enable = true;
     rofi.enable         = true;
-
-    hyprlock = {
-      enable      = true;
-      extraConfig = (import ../config/hypr/hyprlock.conf.nix { inherit username; });
-    };
   };
 
   services = {
