@@ -28,7 +28,7 @@ in {
 
     programs.hyprlock = {
       enable      = true;
-      extraConfig = (import ../../../../config/hypr/hyprlock.conf.nix { inherit username; });
+      extraConfig = (import ./hyprlock.conf.nix { inherit username; });
     };
 
     services = {
