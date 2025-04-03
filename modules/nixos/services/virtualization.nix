@@ -7,6 +7,9 @@
 }: let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.services.virtualization;
+
+  # Dynamically determine if Home Manager is being used
+  isHomeManager = config ? home-manager;
 in {
   options.settings.services.virtualization = {
     enable = mkEnableOption "Enable Virtualization (VirtualBox or QEMU)";
@@ -69,6 +72,13 @@ in {
         win-spice
         adwaita-icon-theme
       ];
+
+      home-manager.users."${cfg.username}".dconf.settings = {
+        "org/virt-manager/virt-manager/connections" = {
+          autoconnect = ["qemu:///system"];
+          uris = ["qemu:///system"];
+        };
+      };
     }
   );
 }
