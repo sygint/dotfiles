@@ -62,4 +62,11 @@
     #   config.lib.file.mkOutOfStoreSymlink
     #   "${config.home.homeDirectory}/.config/nixos/dotfiles/vscode/settings.json";
   };
+
+  dconf.settings = {
+    "org/virt-manager/virt-manager/connections" = {
+      autoconnect = ["qemu:///system"];
+      uris = ["qemu:///system"];
+    };
+  };
 }

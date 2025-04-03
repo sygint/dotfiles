@@ -39,8 +39,9 @@
         password = "${syncPassword}";
       };
 
-      virtualbox = {
+      virtualization = {
         enable = true;
+        service = "qemu";
         username = "${username}";
       };
     };

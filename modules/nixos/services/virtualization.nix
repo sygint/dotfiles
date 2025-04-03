@@ -6,10 +6,16 @@
   ...
 }: let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.services.virtualbox;
+  cfg = config.settings.services.virtualization;
 in {
-  options.settings.services.virtualbox = {
-    enable = mkEnableOption "VirtualBox";
+  options.settings.services.virtualization = {
+    enable = mkEnableOption "Enable Virtualization (VirtualBox or QEMU)";
+
+    service = lib.mkOption {
+      type = lib.types.enum [ "virtualbox" "qemu" ];
+      default = "virtualbox";
+      description = "The virtualization service to use (either VirtualBox or QEMU).";
+    };
 
     username = lib.mkOption {
       type = lib.types.str;
@@ -17,21 +23,52 @@ in {
     };
   };
 
-  config = mkIf cfg.enable {
-    virtualisation.virtualbox = {
-      host = {
-        enable = true;
-        enableExtensionPack = true;
-        enableKvm = true;
-        addNetworkInterface = false;
-      };
+  config = mkIf cfg.enable (
+    mkIf (cfg.service == "virtualbox") {
+      # VirtualBox
+      virtualisation.virtualbox = {
+        host = {
+          enable = true;
+          enableExtensionPack = true;
+          enableKvm = true;
+          addNetworkInterface = false;
+        };
 
-      guest = {
-        enable = true;
-        dragAndDrop = true;
-        clipboard = true;
+        guest = {
+          enable = true;
+          dragAndDrop = true;
+          clipboard = true;
+        };
       };
-    };
-    users.extraGroups.vboxusers.members = [ cfg.username ];
-  };
+      users.extraGroups.vboxusers.members = [ cfg.username ];
+    } // mkIf (cfg.service == "qemu") {
+      # Qemu + Libvirt
+      programs.virt-manager.enable = true;
+      users.users."${cfg.username}".extraGroups = [ "libvirtd" ];
+
+      virtualisation = {
+        libvirtd = {
+          enable = true;
+          qemu = {
+            swtpm.enable = true;
+            ovmf.enable = true;
+            ovmf.packages = [ pkgs.OVMFFull.fd ];
+          };
+        };
+        spiceUSBRedirection.enable = true;
+      };
+      services.spice-vdagentd.enable = true;
+
+      environment.systemPackages = with pkgs; [
+        virt-manager
+        virt-viewer
+        spice 
+        spice-gtk
+        spice-protocol
+        win-virtio
+        win-spice
+        adwaita-icon-theme
+      ];
+    }
+  );
 }
