@@ -199,7 +199,7 @@ device {
 
 # See https://wiki.hyprland.org/Configuring/Keywords/
 $modMain      = SUPER   # Sets 'Windows' key as main modifier
-$modSecondary = CONTROL # Sets 'Windows' key as main modifier
+$modSecondary = CONTROL # Sets 'Control' key as secondary modifier
 
 # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
 
@@ -215,6 +215,7 @@ bind = $modMain ALT,                 W,      exec,        waypaper
 bind = $modMain $modSecondary SHIFT, S,      exec,        screenshootin
 
 bind = $modMain,                     M,      exit
+bind = $modMain $modSecondary,       L,      exec,        hyprlock
 
 # Fullscreen/Floating
 bind = $modMain,       F, fullscreen
