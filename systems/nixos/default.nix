@@ -173,6 +173,7 @@
       meld
       obsidian
       signal-desktop
+      slack
       inputs.zen-browser.packages."${system}".default
 
       # System GUI applications
