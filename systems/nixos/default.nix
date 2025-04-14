@@ -170,6 +170,7 @@
 
       # Desktop applications
       brave
+      element-desktop
       firefox
       kitty
       meld
