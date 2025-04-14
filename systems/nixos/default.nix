@@ -10,9 +10,12 @@
     ../../modules/nixos.nix
   ];
 
-  boot.loader = {
-    systemd-boot.enable      = true;
-    efi.canTouchEfiVariables = true;
+  boot = {
+    loader = {
+      systemd-boot.enable      = true;
+      efi.canTouchEfiVariables = true;
+    };
+    supportedFilesystems = [ "ntfs" ];
   };
 
   # Set your time zone.
@@ -172,6 +175,8 @@
       brave
       element-desktop
       firefox
+      gparted
+      keepassxc
       kitty
       meld
       obsidian
