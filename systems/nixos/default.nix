@@ -31,6 +31,8 @@
     services = {
       # xserver.enable = true;
 
+      mullvad.enable = true;
+
       protonmail-bridge.enable = true;
 
       syncthing = {
