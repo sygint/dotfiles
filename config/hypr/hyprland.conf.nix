@@ -215,7 +215,7 @@ bind = $modMain ALT,                 W,      exec,        waypaper
 bind = $modMain $modSecondary SHIFT, S,      exec,        screenshootin
 
 bind = $modMain,                     M,      exit
-bind = $modMain $modSecondary,       L,      exec,        hyprlock
+bind = $modMain $modSecondary,       Q,      exec,        hyprlock
 
 # Fullscreen/Floating
 bind = $modMain,       F, fullscreen
