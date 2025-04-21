@@ -23,7 +23,7 @@
     system       = "x86_64-linux";  # Make sure to specify the system architecture
 
     userVars = import ./variables.nix;
-    inherit (userVars) hostName username gitUsername gitEmail syncPassword browser terminal keyboardLayout menu;
+    inherit (userVars) hostName username;
   in
   {
     nixosConfigurations = {
@@ -33,7 +33,6 @@
           inherit
             system
             inputs
-            syncPassword
             fh
             userVars
           ;
@@ -51,12 +50,6 @@
             home-manager.extraSpecialArgs = {
               inherit
                 inputs
-                gitUsername
-                gitEmail
-                browser
-                terminal
-                keyboardLayout
-                menu
                 userVars
                 ;
             };

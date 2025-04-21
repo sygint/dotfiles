@@ -4,6 +4,7 @@
   options,
   pkgs,
   inputs,
+  userVars,
   ...
 }: let
   inherit (lib) mkEnableOption mkIf;
@@ -16,7 +17,7 @@ in {
       enable  = true;
       package = inputs.hyprland.packages."${pkgs.system}".hyprland;
       # plugins   = [];
-      extraConfig = (import ./hyprland.conf.nix);
+      extraConfig = (import ./hyprland.conf.nix { inherit userVars; });
     };
 
     # home.file = {

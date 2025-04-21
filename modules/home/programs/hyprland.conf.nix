@@ -1,3 +1,7 @@
+{ userVars }:
+    let
+      inherit (userVars) terminal browser menu keyboardLayout;
+    in
 "
 # Please note not all available settings / options are set here.
 # For a full list, see the wiki
@@ -23,10 +27,10 @@ monitor = ,preferred, auto, 1
 # See https://wiki.hyprland.org/Configuring/Keywords/
 
 # Set programs that you use
-$terminal    = kitty
+$terminal    = ${terminal}
 $fileManager = nemo
-$webBrowser  = brave
-$menu        = rofi -show drun
+$webBrowser  = ${browser}
+$menu        = ${menu}
 
 
 #################
@@ -165,7 +169,7 @@ misc {
 
 # https://wiki.hyprland.org/Configuring/Variables/#input
 input {
-    kb_layout  = us
+    kb_layout  = ${keyboardLayout}
     kb_variant =
     kb_model   =
     kb_options =

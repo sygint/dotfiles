@@ -1,6 +1,6 @@
-{ config, pkgs, inputs, gitUsername, gitEmail, browser, terminal, keyboardLayout, menu, userVars, ... }:
+{ config, pkgs, inputs, userVars, ... }:
   let
-    inherit (userVars) username;
+    inherit (userVars) username gitUsername gitEmail;
   in
 {
   imports = [
