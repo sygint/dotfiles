@@ -49,6 +49,11 @@
         service = "qemu";
         username = "${username}";
       };
+
+      containerization = {
+        enable = true;
+        service = "podman";
+      };
     };
 
     system = {
