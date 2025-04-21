@@ -110,7 +110,7 @@
   stylix = {
     enable = true;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
-    image = ../../config/wallpapers/wallpaperflare.com_wallpaper-6.jpg;
+    image = ../../wallpapers/wallpaperflare.com_wallpaper-6.jpg;
     polarity = "dark";
 
     fonts = {

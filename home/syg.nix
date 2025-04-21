@@ -13,7 +13,7 @@
     stateVersion  = "24.11";
 
     file.wallpapers = {
-      source = ../config/wallpapers;
+      source = ../wallpapers;
       recursive = true;
     };
 
