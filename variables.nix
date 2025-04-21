@@ -7,7 +7,8 @@
   gitEmail    = "sygint@users.noreply.github.com";
 
   # Program options
-  browser        = "brave";
+  fileBrowser    = "nemo";
+  webBrowser     = "brave";
   terminal       = "kitty";
   keyboardLayout = "us";
   menu           = "rofi -show drun";

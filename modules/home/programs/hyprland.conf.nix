@@ -1,6 +1,6 @@
 { userVars }:
     let
-      inherit (userVars) terminal browser menu keyboardLayout;
+      inherit (userVars) terminal fileBrowser webBrowser menu keyboardLayout;
     in
 "
 # Please note not all available settings / options are set here.
@@ -28,8 +28,8 @@ monitor = ,preferred, auto, 1
 
 # Set programs that you use
 $terminal    = ${terminal}
-$fileManager = nemo
-$webBrowser  = ${browser}
+$fileManager = ${fileBrowser}
+$webBrowser  = ${webBrowser}
 $menu        = ${menu}
 
 
