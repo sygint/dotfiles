@@ -29,12 +29,14 @@
       "${hostName}" = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
-          inherit system;
-          inherit inputs;
-          inherit hostName;
-          inherit username;
-          inherit syncPassword;
-          inherit fh;
+          inherit
+            system
+            inputs
+            hostName
+            username
+            syncPassword
+            fh
+          ;
         };
         modules = [
           inputs.stylix.nixosModules.stylix
@@ -47,14 +49,16 @@
           home-manager.nixosModules.home-manager
           {
             home-manager.extraSpecialArgs = {
-              inherit inputs;
-              inherit username;
-              inherit gitUsername;
-              inherit gitEmail;
-              inherit browser;
-              inherit terminal;
-              inherit keyboardLayout;
-              inherit menu;
+              inherit
+                inputs
+                username
+                gitUsername
+                gitEmail
+                browser
+                terminal
+                keyboardLayout
+                menu
+                ;
             };
             home-manager.useGlobalPkgs       = true;
             home-manager.useUserPackages     = true;
