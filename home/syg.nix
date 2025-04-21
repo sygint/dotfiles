@@ -45,6 +45,9 @@
     };
 
     windowManagers.hyprland.enable = true;
+
+    # hypr suite
+    services.hypridle.enable = true;
   };
 
   wayland.windowManager.sway.enable = true;

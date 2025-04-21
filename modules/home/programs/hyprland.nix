@@ -16,7 +16,7 @@ in {
       enable  = true;
       package = inputs.hyprland.packages."${pkgs.system}".hyprland;
       # plugins   = [];
-      extraConfig = (import ../../../../config/hypr/hyprland.conf.nix);
+      extraConfig = (import ./hyprland.conf.nix);
     };
 
     # home.file = {
