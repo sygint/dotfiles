@@ -7,9 +7,6 @@
 }: let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.services.virtualization;
-
-  # Dynamically determine if Home Manager is being used
-  isHomeManager = config ? home-manager;
 in {
   options.settings.services.virtualization = {
     enable = mkEnableOption "Enable Virtualization (VirtualBox or QEMU)";
