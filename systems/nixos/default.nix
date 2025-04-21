@@ -160,9 +160,6 @@
     };
 
     systemPackages = with pkgs; [
-      # services
-      shiori
-
       # flathub support for nix
       fh.packages.x86_64-linux.default
 
@@ -171,6 +168,7 @@
       fastfetch
       git
       killall
+      lsof
       wget
       tree
       unzip
@@ -184,13 +182,13 @@
       keepassxc
       kitty
       meld
+      nemo
       obsidian
+      shiori
       signal-desktop
       slack
       inputs.zen-browser.packages."${system}".default
 
-      # System GUI applications
-      nemo
     ];
   };
 
