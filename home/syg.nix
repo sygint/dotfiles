@@ -24,6 +24,10 @@
 
   settings = {
     programs = {
+      zsh = {
+        enable = true;
+      };
+
       # CLI
       btop.enable  = true;
       git = {

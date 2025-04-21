@@ -21,10 +21,9 @@ in {
       isNormalUser  = true;
       description   = "${cfg.name}";
       extraGroups   = [ "networkmanager" "wheel" ];
-      # shell       = pkgs.zsh;
-      packages      = with pkgs; [
-      #  thunderbird
-      ];
+      shell       = pkgs.zsh;
     };
+
+    environment.shells = with pkgs; [ zsh ];
   };
 }
