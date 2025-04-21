@@ -1,5 +1,7 @@
-{ config, pkgs, inputs, username, gitUsername, gitEmail, browser, terminal, keyboardLayout, menu, ... }:
-
+{ config, pkgs, inputs, gitUsername, gitEmail, browser, terminal, keyboardLayout, menu, userVars, ... }:
+  let
+    inherit (userVars) username;
+  in
 {
   imports = [
     ../modules/home.nix

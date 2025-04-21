@@ -33,7 +33,6 @@
           inherit
             system
             inputs
-            username
             syncPassword
             fh
             userVars
@@ -52,13 +51,13 @@
             home-manager.extraSpecialArgs = {
               inherit
                 inputs
-                username
                 gitUsername
                 gitEmail
                 browser
                 terminal
                 keyboardLayout
                 menu
+                userVars
                 ;
             };
             home-manager.useGlobalPkgs       = true;

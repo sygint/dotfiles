@@ -3,11 +3,12 @@
   lib,
   options,
   pkgs,
-  username,
+  userVars,
   ...
 }: let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.programs.nix-helpers;
+  inherit (userVars) username;
 in {
   options.settings.programs.nix-helpers.enable = mkEnableOption "Nix helpers";
 
