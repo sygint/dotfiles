@@ -58,18 +58,10 @@
 
     system = {
       security.enable = true;
-
-      user = {
-        name = "${username}";
-      };
     };
 
     programs = {
-      nix-helpers = {
-        enable = true;
-        username = "${username}";
-      };
-
+      nix-helpers.enable = true;
       screenshots.enable = true;
     };
 

@@ -1,4 +1,4 @@
-{ username, ... }:
+{ ... }:
 ''
 # source = $HOME/.config/hypr/mocha.conf
 

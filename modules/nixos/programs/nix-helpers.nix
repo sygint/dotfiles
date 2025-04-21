@@ -11,11 +11,6 @@
 in {
   options.settings.programs.nix-helpers = {
     enable = mkEnableOption "Nix helpers";
-
-    username = lib.mkOption {
-      type        = lib.types.str;
-      description = "The username to use for Nix helpers.";
-    };
   };
 
   config = mkIf cfg.enable {
@@ -23,7 +18,7 @@ in {
       enable = true;
       clean.enable = true;
       clean.extraArgs = "--keep-since 7d";
-      flake = "/home/${cfg.username}/.config/nixos";
+      flake = "/home/${username}/.config/nixos";
     };
 
     environment.systemPackages = with pkgs; [

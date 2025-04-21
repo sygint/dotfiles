@@ -4,7 +4,6 @@
   options,
   pkgs,
   inputs,
-  username,
   ...
 }: let
   inherit (lib) mkEnableOption mkIf;
@@ -28,7 +27,7 @@ in {
 
     programs.hyprlock = {
       enable      = true;
-      extraConfig = (import ./hyprlock.conf.nix { inherit username; });
+      extraConfig = (import ./hyprlock.conf.nix {});
     };
 
     services = {
