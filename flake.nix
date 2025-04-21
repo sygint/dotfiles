@@ -4,7 +4,7 @@
   inputs = {
     nix-snapd.url = "https://flakehub.com/f/io12/nix-snapd/0.1.47.tar.gz";
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
-    nixpkgs.url   = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url   = "github:nixos/nixpkgs?shallow=1&ref=nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     hyprland.url  = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     hyprpanel.url = "github:Jas-SinghFSU/HyprPanel";
