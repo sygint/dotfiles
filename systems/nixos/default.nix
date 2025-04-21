@@ -2,8 +2,10 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, fh, hostName, username, syncPassword, ... }:
-
+{ config, pkgs, inputs, fh, username, syncPassword, userVars, ... }:
+  let
+    inherit (userVars) hostName;
+  in
 {
   imports = [ # Include the results of the hardware scan.
     ./hardware.nix

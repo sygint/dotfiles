@@ -22,7 +22,8 @@
     lib          = nixpkgs.lib;
     system       = "x86_64-linux";  # Make sure to specify the system architecture
 
-    inherit (import ./variables.nix) hostName username gitUsername gitEmail syncPassword browser terminal keyboardLayout menu;
+    userVars = import ./variables.nix;
+    inherit (userVars) hostName username gitUsername gitEmail syncPassword browser terminal keyboardLayout menu;
   in
   {
     nixosConfigurations = {
@@ -32,10 +33,10 @@
           inherit
             system
             inputs
-            hostName
             username
             syncPassword
             fh
+            userVars
           ;
         };
         modules = [
