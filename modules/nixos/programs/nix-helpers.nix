@@ -9,9 +9,7 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.programs.nix-helpers;
 in {
-  options.settings.programs.nix-helpers = {
-    enable = mkEnableOption "Nix helpers";
-  };
+  options.settings.programs.nix-helpers.enable = mkEnableOption "Nix helpers";
 
   config = mkIf cfg.enable {
     programs.nh = {

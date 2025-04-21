@@ -8,9 +8,7 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.programs.kitty;
 in {
-  options.settings.programs.kitty = {
-    enable = mkEnableOption "Kitty terminal";
-  };
+  options.settings.programs.kitty.enable = mkEnableOption "Kitty terminal";
 
   config = mkIf cfg.enable {
     programs.kitty = {

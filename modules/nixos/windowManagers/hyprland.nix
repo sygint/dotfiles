@@ -9,9 +9,7 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.wayland.hyprland;
 in {
-  options.settings.wayland.hyprland = {
-    enable = mkEnableOption "Hyprland";
-  };
+  options.settings.wayland.hyprland.enable = mkEnableOption "Hyprland";
 
   config = mkIf cfg.enable {
     programs = {

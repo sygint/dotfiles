@@ -8,9 +8,7 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.programs.firefox;
 in {
-  options.settings.programs.firefox = {
-    enable = mkEnableOption "Firefox web browser";
-  };
+  options.settings.programs.firefox.enable = mkEnableOption "Firefox web browser";
 
   config = mkIf cfg.enable {
     programs.firefox = {

@@ -8,9 +8,7 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.hardware.audio;
 in {
-  options.settings.hardware.audio = {
-    enable = mkEnableOption "Audio";
-  };
+  options.settings.hardware.audio.enable = mkEnableOption "Audio";
 
   config = mkIf cfg.enable {
     services = {

@@ -9,9 +9,7 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.windowManagers.hyprland;
 in {
-  options.settings.windowManagers.hyprland = {
-    enable = mkEnableOption "Hyprland";
-  };
+  options.settings.windowManagers.hyprland.enable = mkEnableOption "Hyprland";
 
   config = mkIf cfg.enable {
     wayland.windowManager.hyprland = {

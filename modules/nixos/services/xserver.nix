@@ -8,9 +8,7 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.services.xserver;
 in {
-  options.settings.services.xserver = {
-    enable = mkEnableOption "Xserver";
-  };
+  options.settings.services.xserver.enable = mkEnableOption "Xserver";
 
   config = mkIf cfg.enable {
     services.xserver = {

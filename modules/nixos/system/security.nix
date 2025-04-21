@@ -8,9 +8,7 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.system.security;
 in {
-  options.settings.system.security = {
-    enable = mkEnableOption "Security";
-  };
+  options.settings.system.security.enable = mkEnableOption "Security";
 
   config = mkIf cfg.enable {
     security = {

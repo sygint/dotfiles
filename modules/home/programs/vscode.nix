@@ -8,9 +8,7 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.programs.vscode;
 in {
-  options.settings.programs.vscode = {
-    enable = mkEnableOption "Visual Studio Code code editor";
-  };
+  options.settings.programs.vscode.enable = mkEnableOption "Visual Studio Code code editor";
 
   config = mkIf cfg.enable {
     programs.vscode = {

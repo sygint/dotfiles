@@ -9,9 +9,7 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.wayland;
 in {
-  options.settings.wayland = {
-    enable = mkEnableOption "Wayland";
-  };
+  options.settings.wayland.enable = mkEnableOption "Wayland";
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [

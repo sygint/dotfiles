@@ -8,9 +8,7 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.hardware.bluetooth;
 in {
-  options.settings.hardware.bluetooth = {
-    enable = mkEnableOption "Bluetooth";
-  };
+  options.settings.hardware.bluetooth.enable = mkEnableOption "Bluetooth";
 
   config = mkIf cfg.enable {
     hardware.bluetooth = {
