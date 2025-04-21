@@ -1,17 +1,17 @@
 { config, pkgs, inputs, username, gitUsername, gitEmail, browser, terminal, keyboardLayout, menu, ... }:
 
 {
-  # Home Manager Settings
-  home.username      = "${username}";
-  home.homeDirectory = "/home/${username}";
-  home.stateVersion  = "24.11";
-
   imports = [
     ../modules/home.nix
     inputs.hyprland.homeManagerModules.default
   ];
 
+  # Home Manager Settings
   home = {
+    username      = "${username}";
+    homeDirectory = "/home/${username}";
+    stateVersion  = "24.11";
+
     file.wallpapers = {
       source = ../config/wallpapers;
       recursive = true;
