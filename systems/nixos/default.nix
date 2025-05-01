@@ -158,11 +158,13 @@
       fh.packages.x86_64-linux.default
 
       # CLI applications
+      act # gh actions cli
       curl
       fastfetch
       git
       killall
       lsof
+      stow
       wget
       tree
       unzip
