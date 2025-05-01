@@ -30,19 +30,9 @@
         enable = true;
       };
 
-      # CLI
-      btop.enable  = true;
-      git = {
-        enable = true;
-
-        userName  = "${gitUsername}";
-        userEmail = "${gitEmail}";
-      };
-
       # Desktop
       brave.enable = true;
       firefox.enable = true;
-      kitty.enable = true;
       vscode.enable = true;
     };
 
