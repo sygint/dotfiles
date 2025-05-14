@@ -158,10 +158,8 @@
       fh.packages.x86_64-linux.default
 
       # CLI applications
-      act # gh actions cli
       curl
       fastfetch
-      git
       killall
       lsof
       stow
@@ -185,6 +183,10 @@
       slack
       inputs.zen-browser.packages."${system}".default
 
+      # Software Development
+      act # gh actions cli
+      direnv
+      git
     ];
   };
 
