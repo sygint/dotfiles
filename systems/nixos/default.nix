@@ -160,6 +160,7 @@
       # CLI applications
       curl
       fastfetch
+      gnupg
       killall
       lsof
       stow
