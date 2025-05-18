@@ -173,6 +173,7 @@
       brave
       element-desktop
       firefox
+      gimp
       gparted
       keepassxc
       kitty
