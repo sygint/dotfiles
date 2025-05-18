@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf;
+  inherit (lib) mkEnableOption mkIf mkMerge;
   cfg = config.settings.services.virtualization;
 in {
   options.settings.services.virtualization = {
@@ -23,8 +23,8 @@ in {
     };
   };
 
-  config = mkIf cfg.enable (
-    mkIf (cfg.service == "virtualbox") {
+  config = mkIf cfg.enable (mkMerge [
+    (mkIf (cfg.service == "virtualbox") {
       # VirtualBox
       virtualisation.virtualbox = {
         host = {
@@ -41,7 +41,8 @@ in {
         };
       };
       users.extraGroups.vboxusers.members = [ cfg.username ];
-    } // mkIf (cfg.service == "qemu") {
+    })
+    (mkIf (cfg.service == "qemu") {
       # Qemu + Libvirt
       programs.virt-manager.enable = true;
       users.users."${cfg.username}".extraGroups = [ "libvirtd" ];
@@ -76,6 +77,6 @@ in {
           uris = ["qemu:///system"];
         };
       };
-    }
-  );
+    })
+  ]);
 }

@@ -48,7 +48,7 @@
 
       virtualization = {
         enable = true;
-        service = "qemu";
+        service = "virtualbox";
         username = "${username}";
       };
 
