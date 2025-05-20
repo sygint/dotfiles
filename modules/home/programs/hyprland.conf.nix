@@ -16,9 +16,18 @@
 ################
 
 # See https://wiki.hyprland.org/Configuring/Monitors/
-monitor = eDP-1, 2256x1504@60, 0x0,   3
-monitor = DP-2,  preferred,    4568x0, 2, transform, 1
-monitor = DP-9,  preferred,    1128x0, 1
+# Horizontal
+# monitor = eDP-1, 2256x1504@60, 0x0,    1
+# monitor = DP-2,  preferred,    5696x0, 1, transform, 1
+# monitor = DP-9,  preferred,    2256x0, 1
+
+# Stacked
+monitor = eDP-1, 2256x1504@60, 0x0,    1
+monitor = DP-2,  preferred,    3440x1267, 1, transform, 1
+monitor = DP-9,  preferred,    0x1504, 1
+
+# for plugging in random monitors
+monitor = , preferred, auto, 1
 
 
 ###################
