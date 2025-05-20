@@ -275,8 +275,9 @@ bind = $modMain SHIFT, 8, movetoworkspace, 8
 bind = $modMain SHIFT, 9, movetoworkspace, 9
 bind = $modMain SHIFT, 0, movetoworkspace, 10
 
-bind = $modMain $modSecondary, L, workspace, e+1
-bind = $modMain $modSecondary, H, workspace, e-1
+# Previous/Next Workspace
+bind = $modMain ALT, h, workspace, e-1
+bind = $modMain ALT, l, workspace, e+1
 
 # Example special workspace (scratchpad)
 bind = $modMain,       S, togglespecialworkspace, magic
