@@ -34,6 +34,7 @@ in {
         bindkey "''${key[Down]}" down-line-or-search
 
         eval "$(direnv hook zsh)"
+        export DIRENV_LOG_FORMAT=""
       '';
     };
   };
