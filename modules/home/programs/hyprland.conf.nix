@@ -245,6 +245,10 @@ bind = $modMain, L, movefocus, r
 bind = $modMain $modSecondary, h, changegroupactive, b
 bind = $modMain $modSecondary, l, changegroupactive, f
 
+# Move window in group
+bind = $modMain $modSecondary SHIFT, H, movegroupwindow, b
+bind = $modMain $modSecondary SHIFT, L, movegroupwindow, f
+
 # Move window
 bind = $modMain SHIFT, H, movewindoworgroup, l
 bind = $modMain SHIFT, J, movewindoworgroup, d
