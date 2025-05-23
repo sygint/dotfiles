@@ -154,6 +154,9 @@
     };
 
     systemPackages = with pkgs; [
+      # synology
+      synology-drive-client
+
       # flathub support for nix
       fh.packages.x86_64-linux.default
 
