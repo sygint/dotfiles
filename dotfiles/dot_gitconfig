@@ -1,59 +1,128 @@
 [user]
-	email = "sygint@users.noreply.github.com"
-	name = "Sygint"
+  email = "sygint@users.noreply.github.com"
+  name = "Sygint"
 
 [alias]
-	aa = "add -A"
-	ap = "add -p"
-	b = "branch"
-	ca = "commit --amend"
-	can = "commit --amend --no-edit"
-	cm = "commit -m"
-	co = "checkout"
-	cob = "checkout -b"
-	desc = "!sh -c 'git log --format=format:\"- %s\" --reverse origin/${1:-master}..HEAD' --"
-	l = "log --graph --pretty='%Cred%h%Creset - %C(bold blue)<%an>%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)' --abbrev-commit --date=relative"
-	pp = "!git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)"
-	pushf = "push --force-with-lease --force-if-includes"
-	rba = "rebase --abort"
-	rbc = "rebase --continue"
-	rbi = "rebase -i"
-	rf = "reflog"
-	s = "status"
-	sl = "stash list"
-	sp = "stash pop"
-	ss = "stash save"
-	unstage = "reset HEAD --"
+  s = status -sb
+
+  ap = add -p
+  aa = add -A
+
+  b = branch
+  bd = branch -d
+  
+  ss = stash save
+  sp = stash pop
+  sl = stash list
+
+  co = checkout
+  cob = checkout -b
+
+  cm = commit -m
+  ca = commit --amend
+  can = commit --amend --no-edit
+
+  rb = rebase
+  rbi = rebase -i
+  rba = rebase --abort
+  rbc = rebase --continue
+
+  cp = cherry-pick
+  cpa = cherry-pick --abort
+  cpc = cherry-pick --continue
+  cps = cherry-pick --skip
+
+  unstage = "reset HEAD --"
+  p = pull
+  pushf = push --force-with-lease --force-if-includes
+
+  # git switch with autostashing
+  sw = "!f() { \
+    if [[ -z \"$1\" ]]; then \
+      echo \"[sw] No branch specified\"; \
+      return; \
+    fi; \
+    no_local_changes_to_save=$(echo "No local changes to save"); \
+    is_stashed=false; \
+    if [[ "$(git branch --show-current)" == "$1" ]]; then \
+      echo "[sw] Already on branch [$1]"; \
+      return; \
+    fi; \
+    echo "[sw] Switching to branch [$1]..."; \
+    stash_output="$(git stash -u)"; \
+    if [[ "$stash_output" == "$no_local_changes_to_save" ]]; then \
+      echo "[sw] No local changes to save"; \
+    else \
+      is_stashed=true; \
+      echo "[sw] Local changes stashed"; \
+    fi; \
+    git switch "$1" -q; \
+    echo "[sw] Switched to branch [$1]"; \
+    if $is_stashed; then \
+      git stash pop -q; \
+      echo "[sw] Stash popped successfully"; \
+    else \
+      echo "[sw] No stash to apply"; \
+    fi; \
+  }; f"
+
+  # git checkout with autostashing
+  rbdev = !CURRENT_BRANCH=$(git branch --show-current) git rebase origin/dev --autostash
+  pdev = !CURRENT_BRANCH=$(git branch --show-current) git pull origin dev --autostash
+  desc = "!sh -c 'git log --format=format:\"- %s\" --reverse origin/${1:-master}..HEAD' --"
+
+  rf = reflog
+  l = log --graph --pretty='%Cred%h%Creset - %C(bold blue)<%an>%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)' --abbrev-commit --date=relative
+  pp = !git push --set-upstream origin $(git branch --show-current)
+  clean-branches = !git fetch -p && git remote prune origin && git branch --merged origin/dev | grep -v "dev" | xargs git branch -d
+  list-gone-branches = !git remote prune origin && git branch -vv |  grep ': gone]' | awk '{print $1}'
 
 [core]
-	editor = "code"
+  editor = code --wait
+  # pager = delta
 
 [fetch]
-	prune = true
-
-[log]
-	abbrevcommit = true
-	decorate = "short"
-
-[pull]
-	ff = "only"
-	rebase = true
+  prune = true
 
 [push]
-	autosetupremote = true
-	default = "current"
+  autoSetupRemote = true
+  default = "current"
+
+[branch]
+  autoSetupMerge = simple
+
+[init]
+  defaultBranch = main
+
+[interactive]
+  # diffFilter = delta --color-only
+
+[delta]
+  nagivate = true # use n and N to move between diff sections
+  side-by-side = true
+  # delta detected terminal colors automatically; set one of these to disable auto-detection
+  # dark = true
+  # light = true
+
+[merge]
+  conflictstyle = diff3
+
+[diff]
+  colorMoved = default
+
+[sequence]
+  # editor = interactive-rebase-tool
 
 [rebase]
-	autosquash = true
-	autoupdate = true
-	enabled = true
-	updaterefs = true
+  autoStash = true
+  autoupdate = true
+  enabled = true
+  updaterefs = true
 
-# [help]
-	# autocorrect = -1
+[pull]
+  ff = "only"
+  rebase = true
 
-# [am]
-	# threeway = true
-
-# [apply]
-	# whitespace = change
+[log]
+  abbrevcommit = true
+  decorate = "short"
