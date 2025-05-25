@@ -55,7 +55,7 @@ $menu        = ${menu}
 # exec-once = waybar & hyprpaper & firefox
 exec-once = hyprpanel
 # TODO: Replace this with shell, this sucks
-exec-once = nix-shell -p nodejs --run "node ./monitors.mjs"
+exec-once = nix-shell -p nodejs --run 'node ~/.config/nixos/scripts/monitors.mjs'
 
 
 #############################
@@ -229,6 +229,7 @@ bind = $modMain ALT,                 W,      exec,        waypaper
 # bind = $modMain,                     P,      pseudo,      # dwindle
 # bind = $modMain,                     J,      togglesplit, # dwindle
 bind = $modMain $modSecondary SHIFT, S,      exec,        screenshootin
+bind = $modMain $modSecondary SHIFT, M,      exec, nix-shell -p nodejs --run 'node ~/.config/nixos/scripts/monitors.mjs' 
 
 bind = $modMain,                     M,      exit
 bind = $modMain $modSecondary,       Q,      exec,        hyprlock
