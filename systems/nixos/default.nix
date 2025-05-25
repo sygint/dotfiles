@@ -160,6 +160,9 @@
       # flathub support for nix
       fh.packages.x86_64-linux.default
 
+      # zsh plugin manager and plugins
+      antidote
+
       # CLI applications
       chezmoi
       curl
