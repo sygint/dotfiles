@@ -1,3 +1,0 @@
---target='~'
---dir='~/.config/nixos/dotfiles'
---ignore=.stowrc

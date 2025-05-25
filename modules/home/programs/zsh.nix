@@ -35,6 +35,8 @@ in {
 
         eval "$(direnv hook zsh)"
         export DIRENV_LOG_FORMAT=""
+
+        export CHEZMOI_CONFIGFILE="$HOME/.config/nixos/dotfiles/chezmoi.toml"
       '';
     };
   };

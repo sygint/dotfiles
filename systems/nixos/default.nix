@@ -161,12 +161,12 @@
       fh.packages.x86_64-linux.default
 
       # CLI applications
+      chezmoi
       curl
       fastfetch
       gnupg
       killall
       lsof
-      stow
       wget
       tree
       unzip
