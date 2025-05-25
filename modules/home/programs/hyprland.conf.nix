@@ -54,6 +54,8 @@ $menu        = ${menu}
 # exec-once = nm-applet &
 # exec-once = waybar & hyprpaper & firefox
 exec-once = hyprpanel
+# TODO: Replace this with shell, this sucks
+exec-once = nix-shell -p nodejs --run "node ./monitors.mjs"
 
 
 #############################
