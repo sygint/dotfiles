@@ -6,12 +6,12 @@
   ...
 }: let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.programs.firefox;
+  cfg = config.settings.programs.librewolf;
 in {
-  options.settings.programs.firefox.enable = mkEnableOption "Firefox web browser";
+  options.settings.programs.librewolf.enable = mkEnableOption "Librewolf web browser";
 
   config = mkIf cfg.enable {
-    programs.firefox = {
+    programs.librewolf = {
       enable = true;
 
       /* ---- EXTENSIONS ---- */

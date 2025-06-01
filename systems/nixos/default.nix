@@ -140,7 +140,6 @@
 
   programs = {
     zsh.enable = true;
-    firefox.enable = true;
   };
 
   # Allow unfree packages (e.g., proprietary software)
@@ -178,11 +177,11 @@
       # Desktop applications
       brave
       element-desktop
-      firefox
       gimp
       gparted
       keepassxc
       kitty
+      librewolf
       meld
       nemo
       obsidian

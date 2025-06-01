@@ -32,7 +32,7 @@
 
       # Desktop
       brave.enable = true;
-      firefox.enable = true;
+      librewolf.enable = true;
       vscode.enable = true;
     };
 
