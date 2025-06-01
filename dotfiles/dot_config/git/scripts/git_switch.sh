@@ -7,10 +7,16 @@ function git_sw() {
     return
   fi
 
-  no_local_changes_to_save=$(echo "No local changes to save")
+  no_changes_msg=$(echo "No local changes to save")
   is_stashed=false
+  current_branch=$(git branch --show-current)
 
-  if [[ "$(git branch --show-current)" == "$1" ]]; then
+  if [[ ! "$1" =~ ^[a-zA-Z0-9._/-]+$ ]]; then
+    echo "[sw] Invalid branch name [$1]"
+    return
+  fi
+
+  if [[ "$current_branch" == "$1" ]]; then
     echo "[sw] Already on branch [$1]"
     return
   fi
@@ -24,21 +30,28 @@ function git_sw() {
     return
   fi
 
-  echo "[sw] Switching to branch [$1]..."
   stash_output="$(git stash -u)"
-  if [[ "$stash_output" == "$no_local_changes_to_save" ]]; then
+  stash_exit_code=$?
+  if [[ "$stash_exit_code" -ne 0 ]]; then
+    echo "[sw] Failed to stash changes"
+    return
+  fi
+
+  if [[ "$stash_output" == "$no_changes_msg" ]]; then
     echo "[sw] No local changes to save"
   else
     is_stashed=true
     echo "[sw] Local changes stashed"
   fi
 
-  git switch "$1" -q
-  echo "[sw] Switched to branch [$1]"
+  git switch -q "$1" # Using quiet mode (-q) to suppress unnecessary output for cleaner logs
 
-  if $is_stashed; then
-    git stash pop -q
-    echo "[sw] Stash popped successfully"
+  if [[ "$is_stashed" == true ]]; then
+    if git stash pop -q; then
+      echo "[sw] Stash popped successfully"
+    else
+      echo "[sw] Failed to pop stash. You may need to resolve conflicts manually."
+    fi
   else
     echo "[sw] No stash to apply"
   fi
