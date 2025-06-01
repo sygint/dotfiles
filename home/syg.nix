@@ -26,10 +26,6 @@
 
   settings = {
     programs = {
-      zsh = {
-        enable = true;
-      };
-
       # Desktop
       brave.enable = true;
       librewolf.enable = true;
@@ -49,17 +45,5 @@
     starship.enable = true;
     home-manager.enable = true;
     rofi.enable         = true;
-  };
-
-  # Create XDG Dirs
-  xdg = {
-    userDirs = {
-      enable            = true;
-      createDirectories = true;
-    };
-
-    # configFile."Code/User/settings.json".source =
-    #   config.lib.file.mkOutOfStoreSymlink
-    #   "${config.home.homeDirectory}/.config/nixos/dotfiles/vscode/settings.json";
   };
 }

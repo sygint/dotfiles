@@ -152,6 +152,14 @@
       FLAKE = "/home/${username}/.config/nixos";
     };
 
+    sessionVariables = rec {
+      XDG_CACHE_HOME  = "$HOME/.cache";
+      XDG_CONFIG_HOME = "$HOME/.config";
+      XDG_DATA_HOME   = "$HOME/.local/share";
+      XDG_STATE_HOME  = "$HOME/.local/state";
+      ZDOTDIR = "$XDG_CONFIG_HOME/zsh";
+    };
+
     systemPackages = with pkgs; [
       # synology
       synology-drive-client
@@ -159,7 +167,8 @@
       # flathub support for nix
       fh.packages.x86_64-linux.default
 
-      # zsh plugin manager and plugins
+      # zsh
+      zsh
       antidote
 
       # CLI applications

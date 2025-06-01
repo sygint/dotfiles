@@ -1,0 +1,36 @@
+# --- STARSHIP prompt
+  eval "$(starship init zsh)"
+
+# --- Aliases
+  alias ll='ls -l'
+  alias update='sudo nixos-rebuild switch'
+  alias update='nh os switch'
+
+# --- History
+  HISTSIZE="10000"
+  SAVEHIST="10000"
+  HISTORY_IGNORE='(rm *|pkill *|cp *)'
+  HISTFILE="$HOME/.zsh_history"
+  mkdir -p "$(dirname "$HISTFILE")"
+
+  setopt HIST_FCNTL_LOCK
+  unsetopt APPEND_HISTORY
+  setopt HIST_IGNORE_DUPS
+  setopt HIST_IGNORE_ALL_DUPS
+  unsetopt HIST_SAVE_NO_DUPS
+  unsetopt HIST_FIND_NO_DUPS
+  setopt HIST_IGNORE_SPACE
+  unsetopt HIST_EXPIRE_DUPS_FIRST
+  setopt SHARE_HISTORY
+  unsetopt EXTENDED_HISTORY
+
+# --- Enable syntax highlighting
+  bindkey "${key[Up]}" up-line-or-search
+  bindkey "${key[Down]}" down-line-or-search
+
+# --- direnv
+  eval "$(direnv hook zsh)"
+  export DIRENV_LOG_FORMAT=""
+
+# --- chezmoi
+  export CHEZMOI_CONFIGFILE="$HOME/.config/nixos/dotfiles/chezmoi.toml"
