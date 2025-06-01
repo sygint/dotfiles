@@ -175,6 +175,7 @@
       # CLI applications
       chezmoi
       curl
+      eza
       fastfetch
       gnupg
       killall

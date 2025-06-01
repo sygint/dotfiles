@@ -5,8 +5,10 @@
     # source ~/.zsh/scripts/zsh-autocomplete/zsh-autocomplete.plugin.zsh
     source "$ZDOTDIR"/scripts/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-# --- Aliases
-  alias ll='ls -l'
+# ---- EZA - better ls
+  alias ls='eza --color=always --long --git --no-filesize --icons=always --no-user --no-time --no-permissions'
+  alias ll='eza --color=always --long --git'
+  alias tree='eza --tree'
 
 # --- History
   HISTSIZE="10000"
