@@ -1,3 +1,6 @@
+# source home-manager session variables
+source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
+
 # --- STARSHIP prompt
   eval "$(starship init zsh)"
 
