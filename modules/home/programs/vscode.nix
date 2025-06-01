@@ -14,14 +14,6 @@ in {
     programs.vscode = {
       enable = true;
       profiles.default = {
-        userSettings = {
-          "editor.minimap.enabled" = false;
-          "svelte.enable-ts-plugin" = true;
-          "diffEditor.renderSideBySide" = false;
-          "diffEditor.ignoreTrimWhitespace" = false;
-          "editor.tabSize" =  2;
-          "editor.indentSize" = "tabSize";
-        };
         extensions = with pkgs.vscode-extensions; [
           # themes
           dracula-theme.theme-dracula
