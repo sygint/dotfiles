@@ -158,6 +158,7 @@
       XDG_DATA_HOME   = "$HOME/.local/share";
       XDG_STATE_HOME  = "$HOME/.local/state";
       ZDOTDIR = "$XDG_CONFIG_HOME/zsh";
+      NIXOS_CONFIG_DIR = "$XDG_CONFIG_HOME/nixos";
     };
 
     systemPackages = with pkgs; [

@@ -1,6 +1,10 @@
 # --- STARSHIP prompt
   eval "$(starship init zsh)"
 
+# --- ZSH PLUGINS
+    # source ~/.zsh/scripts/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+    source "$ZDOTDIR"/scripts/zsh-autosuggestions/zsh-autosuggestions.zsh
+
 # --- Aliases
   alias ll='ls -l'
 
