@@ -3,8 +3,6 @@
 
 # --- Aliases
   alias ll='ls -l'
-  alias update='sudo nixos-rebuild switch'
-  alias update='nh os switch'
 
 # --- History
   HISTSIZE="10000"
@@ -31,6 +29,9 @@
 # --- direnv
   eval "$(direnv hook zsh)"
   export DIRENV_LOG_FORMAT=""
+
+# --- nixos
+  alias update='nh os switch'
 
 # --- chezmoi
   export CHEZMOI_CONFIGFILE="$HOME/.config/nixos/dotfiles/chezmoi.toml"
