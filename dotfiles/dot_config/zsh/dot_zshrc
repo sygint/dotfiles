@@ -16,6 +16,14 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   alias ll='eza --color=always --long --git'
   alias tree='eza --tree'
 
+# ---- THE FUCK - typo corrector
+  eval $(thefuck --alias)
+  eval $(thefuck --alias fk)
+
+# ---- ZOXIDE - better cd
+  eval "$(zoxide init zsh)"
+  alias cd="z"
+
 # --- History
   HISTSIZE="10000"
   SAVEHIST="10000"

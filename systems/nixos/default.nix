@@ -159,6 +159,7 @@
       zsh
 
       # CLI applications
+      bat
       chezmoi
       curl
       eza
@@ -168,11 +169,13 @@
       lsof
       wget
       tealdeer
+      thefuck
       tree
       unzip
       vim
       yazi
       zellij
+      zoxide
 
       # Desktop applications
       brave
