@@ -1,3 +1,6 @@
 [submodule "dotfiles/dot_zsh/scripts/zsh-autosuggestions"]
 	path = dotfiles/dot_config/zsh/scripts/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
+[submodule "scripts/antidote"]
+	path = scripts/antidote
+	url = https://github.com/mattmc3/antidote.git

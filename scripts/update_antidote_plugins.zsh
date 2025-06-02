@@ -1,0 +1,1 @@
+zsh $NIXOS_CONFIG_DIR/scripts/antidote/antidote bundle < $NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.txt > $NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.zsh

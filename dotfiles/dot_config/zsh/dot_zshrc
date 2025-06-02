@@ -4,9 +4,12 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
 # --- STARSHIP prompt
   eval "$(starship init zsh)"
 
+# --- ZSH
+  alias update_plugins="$NIXOS_CONFIG_DIR/scripts/update_antidote_plugins.zsh"
+
 # --- ZSH PLUGINS
-    # source ~/.zsh/scripts/zsh-autocomplete/zsh-autocomplete.plugin.zsh
-    source "$ZDOTDIR"/scripts/zsh-autosuggestions/zsh-autosuggestions.zsh
+  source "$XDG_CONFIG_HOME"/scripts/antidote/antidote.zsh
+  antidote load "$XDG_CONFIG_HOME"/zsh/plugins.txt
 
 # ---- EZA - better ls
   alias ls='eza --color=always --long --git --no-filesize --icons=always --no-user --no-time --no-permissions'
