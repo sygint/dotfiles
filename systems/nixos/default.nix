@@ -152,18 +152,11 @@
       FLAKE = "/home/${username}/.config/nixos";
     };
 
-
     systemPackages = with pkgs; [
-      # synology
-      synology-drive-client
-
-      # flathub support for nix
-      fh.packages.x86_64-linux.default
-
-      # zsh
-      zsh
+      # shell
       antidote
       starship
+      zsh
 
       # CLI applications
       chezmoi
@@ -198,6 +191,11 @@
       act # gh actions cli
       direnv
       git
+
+      # other
+      home-manager
+      synology-drive-client
+      fh.packages.x86_64-linux.default
     ];
   };
 
