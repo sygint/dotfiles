@@ -167,13 +167,17 @@
       killall
       lsof
       wget
+      tealdeer
       tree
       unzip
       vim
+      yazi
+      zellij
 
       # Desktop applications
       brave
       element-desktop
+      ghostty
       gimp
       gparted
       keepassxc
@@ -191,6 +195,7 @@
       act # gh actions cli
       direnv
       git
+      lazygit
 
       # other
       home-manager
