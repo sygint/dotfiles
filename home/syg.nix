@@ -42,7 +42,6 @@
 
   # Install & Configure Git
   programs = {
-    starship.enable = true;
     home-manager.enable = true;
     rofi.enable         = true;
   };

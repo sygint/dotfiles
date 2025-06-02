@@ -163,6 +163,7 @@
       # zsh
       zsh
       antidote
+      starship
 
       # CLI applications
       chezmoi
