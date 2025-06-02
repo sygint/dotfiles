@@ -164,6 +164,8 @@
       curl
       eza
       fastfetch
+      fd
+      fzf
       gnupg
       killall
       lsof

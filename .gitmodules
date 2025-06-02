@@ -4,3 +4,6 @@
 [submodule "scripts/antidote"]
 	path = scripts/antidote
 	url = https://github.com/mattmc3/antidote.git
+[submodule "scripts/fzf-git"]
+	path = scripts/fzf-git
+	url = https://github.com/junegunn/fzf-git.sh
