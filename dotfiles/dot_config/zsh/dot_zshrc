@@ -89,7 +89,7 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   HISTSIZE="10000"
   SAVEHIST="10000"
   HISTORY_IGNORE='(rm *|pkill *|cp *)'
-  HISTFILE="$HOME/.zsh_history"
+  HISTFILE="$HOME/.cache/zsh/history"
   mkdir -p "$(dirname "$HISTFILE")"
 
   setopt HIST_FCNTL_LOCK
