@@ -168,6 +168,7 @@
       fzf
       gnupg
       killall
+      libnotify # for notify-send
       lsof
       wget
       tealdeer
