@@ -14,8 +14,9 @@ in {
   config = mkIf cfg.enable {
     programs = {
       hyprland = {
-        enable  = true;
-        package = inputs.hyprland.packages."${pkgs.system}".hyprland;
+        enable   = true;
+        withUWSM = true;
+        package  = inputs.hyprland.packages."${pkgs.system}".hyprland;
       };
     };
 

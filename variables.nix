@@ -9,7 +9,7 @@
   # Program options
   fileBrowser    = "nemo";
   webBrowser     = "brave";
-  terminal       = "kitty";
+  terminal       = "ghostty";
   keyboardLayout = "us";
   menu           = "rofi -show drun";
 
