@@ -21,8 +21,14 @@ in {
           # syntax
           jnoortheen.nix-ide
           bbenoist.nix
+          svelte.svelte-vscode
+          bradlc.vscode-tailwindcss
           # vscodevim.vim
           yzhang.markdown-all-in-one
+
+          # git
+          github.vscode-github-actions
+          mhutchie.git-graph
 
         ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
           {
@@ -32,22 +38,16 @@ in {
             sha256 = "rYeZNBz6HeZ059ksChGsXbuOao9H5m5lHGXJ4ELs6xc=";
           }
           {
+            name = "github-local-actions";
+            publisher = "sanjulaganepola";
+            version = "1.2.5";
+            sha256 = "gc3iOB/ibu4YBRdeyE6nmG72RbAsV0WIhiD8x2HNCfY=";
+          }
+          {
             name = "vscode-kanbn-boards";
             publisher = "samgiz";
             version = "0.14.1";
             sha256 = "+BIMS5icyEmj1JXKVZmcOfTFI4w/F1zpjbt9ziG7XEk=";
-          }
-          {
-            name = "svelte-vscode";
-            publisher = "svelte";
-            version = "109.5.2";
-            sha256 = "y1se0+LY1M+YKCm+gxBsyHLOQU6Xl095xP6z0xpf9mM=";
-          }
-          {
-            name = "vscode-tailwindcss";
-            publisher = "bradlc";
-            version = "0.14.1";
-            sha256 = "eOdltfRP4npYfQKDhGgP2gtc7jrqOv6igWP6DLfJGRw=";
           }
           {
             name = "vscode-versionlens";
