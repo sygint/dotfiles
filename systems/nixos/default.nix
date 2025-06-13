@@ -172,7 +172,6 @@
       lsof
       wget
       tealdeer
-      thefuck
       tree
       unzip
       vim

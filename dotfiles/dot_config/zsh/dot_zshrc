@@ -77,10 +77,6 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   alias bat_themes='bat --list-themes | fzf --preview "bat --theme={} --color=always ~/.config/zsh/.zshrc"'
   export BAT_THEME="Catppuccin Mocha"
 
-# ---- THE FUCK - typo corrector
-  eval $(thefuck --alias)
-  eval $(thefuck --alias fk)
-
 # ---- ZOXIDE - better cd
   eval "$(zoxide init zsh)"
   alias cd="z"

@@ -47,11 +47,6 @@
       "right": []
     },
     "1": {
-      "left": [],
-      "middle": [],
-      "right": []
-    },
-    "2": {
       "left": [
         "dashboard",
         "workspaces",
@@ -69,6 +64,11 @@
         "clock",
         "notifications"
       ]
+    },
+    "2": {
+      "left": [],
+      "middle": [],
+      "right": []
     }
   },
   "theme.bar.menus.menu.power.scaling": 100,
