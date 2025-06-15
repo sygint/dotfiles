@@ -111,4 +111,5 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   alias update='nh os switch'
 
 # --- chezmoi
+  alias update_dotfiles='~/.config/nixos/scripts/update-chezmoi.sh'
   export CHEZMOI_CONFIGFILE="$HOME/.config/nixos/dotfiles/chezmoi.toml"

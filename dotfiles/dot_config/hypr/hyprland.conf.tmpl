@@ -1,8 +1,3 @@
-{ userVars }:
-    let
-      inherit (userVars) terminal fileBrowser webBrowser menu keyboardLayout;
-    in
-"
 # Please note not all available settings / options are set here.
 # For a full list, see the wiki
 
@@ -37,10 +32,10 @@ monitor = , preferred, auto, 1
 # See https://wiki.hyprland.org/Configuring/Keywords/
 
 # Set programs that you use
-$terminal    = ${terminal}
-$fileManager = ${fileBrowser}
-$webBrowser  = ${webBrowser}
-$menu        = ${menu}
+$terminal    = {{ .terminal }}
+$fileManager = {{ .fileBrowser }}
+$webBrowser  = {{ .webBrowser }}
+$menu        = {{ .menu }}
 
 
 #################
@@ -54,6 +49,7 @@ $menu        = ${menu}
 # exec-once = nm-applet &
 # exec-once = waybar & hyprpaper & firefox
 exec-once = hyprpanel
+exec-once = hypridle
 # TODO: Replace this with shell, this sucks
 exec-once = nix-shell -p nodejs --run 'node ~/.config/nixos/scripts/monitors.mjs'
 
@@ -181,7 +177,7 @@ misc {
 
 # https://wiki.hyprland.org/Configuring/Variables/#input
 input {
-    kb_layout  = ${keyboardLayout}
+    kb_layout  = {{ .keyboardLayout }}
     kb_variant =
     kb_model   =
     kb_options =
@@ -334,4 +330,3 @@ windowrulev2 = suppressevent maximize, class:.*
 
 # Fix some dragging issues with XWayland
 windowrulev2 = prop:nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0
-"
