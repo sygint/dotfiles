@@ -78,11 +78,9 @@
   services = {
     # snap.enable = true;
 
-    xserver = {
-      # Enable the GNOME Desktop Environment.
-      displayManager.gdm.enable   = true;
-      desktopManager.gnome.enable = true;
-    };
+    # Fixed deprecated options
+    displayManager.gdm.enable = true;
+    desktopManager.gnome.enable = true;
 
     # Enable touchpad support (enabled default in most desktopManager).
     # libinput.enable = true;
@@ -115,6 +113,9 @@
     image = ../../wallpapers/wallpaperflare.com_wallpaper-6.jpg;
     polarity = "dark";
 
+    # Fix Qt platform warning
+    targets.qt.platform = pkgs.lib.mkForce "qtct";
+
     fonts = {
       serif = {
         package = pkgs.dejavu_fonts;
@@ -136,6 +137,13 @@
         name = "Noto Color Emoji";
       };
     };
+  };
+
+  # Fix deprecated Qt platform theme warning
+  qt = {
+    enable = true;
+    platformTheme = "qt5ct";  # Use qt5ct to match stylix configuration
+    # Let stylix handle the style
   };
 
   programs = {
@@ -206,6 +214,12 @@
       home-manager
       synology-drive-client
       fh.packages.x86_64-linux.default
+      
+      # Qt theming support
+      libsForQt5.qt5ct
+      qt6ct
+      adwaita-qt
+      adwaita-qt6
     ];
   };
 
