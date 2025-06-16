@@ -47,6 +47,11 @@
       "right": []
     },
     "1": {
+      "left": [],
+      "middle": [],
+      "right": []
+    },
+    "2": {
       "left": [
         "dashboard",
         "workspaces",
@@ -64,11 +69,6 @@
         "clock",
         "notifications"
       ]
-    },
-    "2": {
-      "left": [],
-      "middle": [],
-      "right": []
     }
   },
   "theme.bar.menus.menu.power.scaling": 100,
@@ -89,5 +89,8 @@
   "theme.bar.location": "top",
   "theme.bar.buttons.innerRadiusMultiplier": "0.4",
   "theme.bar.layer": "top",
-  "theme.bar.buttons.radius": "0.3em"
+  "theme.bar.buttons.radius": "0.3em",
+  "bar.customModules.storage.paths": [
+    "/"
+  ]
 }

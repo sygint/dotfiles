@@ -19,7 +19,7 @@
   "scm.inputFontSize": 14.857142857142858,
   "screencastMode.fontSize": 64.0,
   "svelte.enable-ts-plugin": true,
-  "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
+  "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font Mono",
   "terminal.integrated.fontSize": 16.0,
   "workbench.colorTheme": "Stylix",
   "chat.agent.maxRequests": 50
