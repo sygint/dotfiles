@@ -148,6 +148,8 @@
 
   programs = {
     zsh.enable = true;
+    nix-index.enable = true;
+    command-not-found.enable = false;
   };
 
   # Allow unfree packages (e.g., proprietary software)
@@ -178,6 +180,7 @@
       killall
       libnotify # for notify-send
       lsof
+      nix-index
       wget
       tealdeer
       tree

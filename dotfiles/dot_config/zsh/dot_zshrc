@@ -5,11 +5,18 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   eval "$(starship init zsh)"
 
 # --- ZSH
-  alias update_plugins="$NIXOS_CONFIG_DIR/scripts/update_antidote_plugins.zsh"
+  alias update_plugins="$NIXOS_CONFIG_DIR/scripts/update_antidote_plugins.sh"
 
 # --- ZSH PLUGINS
-  source "$XDG_CONFIG_HOME"/scripts/antidote/antidote.zsh
-  antidote load "$XDG_CONFIG_HOME"/zsh/plugins.txt
+  # Smart antidote loading: use antidote if available, fallback to pre-generated plugins
+  if command -v antidote >/dev/null 2>&1 && [[ -f "$NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.txt" ]]; then
+    # Use antidote for full functionality (allows interactive commands)
+    source <(antidote init)
+    antidote load "$NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.txt"
+  else
+    # Fallback to pre-generated plugins for reliability
+    [[ -f "$NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.zsh" ]] && source "$NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.zsh"
+  fi
 
 # ---- EZA - better ls
   alias ls='eza --color=always --long --git --no-filesize --icons=always --no-user --no-time --no-permissions'
@@ -70,9 +77,6 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
       esac
   }
 
-  # use fzf to search git history
-  source $NIXOS_CONFIG_DIR/scripts/fzf-git/fzf-git.sh
-
 # ---- BAT - better cat
   alias bat_themes='bat --list-themes | fzf --preview "bat --theme={} --color=always ~/.config/zsh/.zshrc"'
   export BAT_THEME="Catppuccin Mocha"
@@ -108,8 +112,8 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   export DIRENV_LOG_FORMAT=""
 
 # --- nixos
-  alias update='nh os switch && ~/.config/nixos/scripts/update-chezmoi.sh'
+  alias update="nh os switch && $NIXOS_CONFIG_DIR/scripts/update_dotfiles.sh"
 
 # --- chezmoi
-  alias update_dotfiles='~/.config/nixos/scripts/update-chezmoi.sh'
-  export CHEZMOI_CONFIGFILE="$HOME/.config/nixos/dotfiles/chezmoi.toml"
+  alias update_dotfiles="$NIXOS_CONFIG_DIR/scripts/update_dotfiles.sh"
+  export CHEZMOI_CONFIGFILE="$NIXOS_CONFIG_DIR/dotfiles/chezmoi.toml"
