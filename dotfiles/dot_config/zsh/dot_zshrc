@@ -108,7 +108,7 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   export DIRENV_LOG_FORMAT=""
 
 # --- nixos
-  alias update='nh os switch'
+  alias update='nh os switch && ~/.config/nixos/scripts/update-chezmoi.sh'
 
 # --- chezmoi
   alias update_dotfiles='~/.config/nixos/scripts/update-chezmoi.sh'
