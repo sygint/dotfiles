@@ -112,8 +112,8 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   export DIRENV_LOG_FORMAT=""
 
 # --- nixos
-  alias update="nh os switch && $NIXOS_CONFIG_DIR/scripts/update_dotfiles.sh"
+  alias update="nh os switch && chezmoi apply"
 
 # --- chezmoi
-  alias update_dotfiles="$NIXOS_CONFIG_DIR/scripts/update_dotfiles.sh"
+  alias update_dotfiles="chezmoi apply"
   export CHEZMOI_CONFIGFILE="$NIXOS_CONFIG_DIR/dotfiles/chezmoi.toml"
