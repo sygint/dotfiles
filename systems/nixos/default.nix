@@ -159,7 +159,7 @@
   # $ nix search wget
   environment = {
     sessionVariables = {
-      FLAKE = "/home/${username}/.config/nixos";
+      NH_FLAKE = "/home/${username}/.config/nixos";
     };
 
     systemPackages = with pkgs; [

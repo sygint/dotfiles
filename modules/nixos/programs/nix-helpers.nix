@@ -21,6 +21,7 @@ in {
     };
 
     environment.systemPackages = with pkgs; [
+      jq
       nix-inspect
       nix-output-monitor
       nvd

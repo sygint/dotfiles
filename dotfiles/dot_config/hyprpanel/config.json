@@ -18,7 +18,7 @@
   "theme.bar.buttons.volume.enableBorder": false,
   "theme.bar.buttons.network.enableBorder": false,
   "theme.matugen": false,
-  "wallpaper.image": "/home/syg/.config/nixos/wallpapers/wallpaperflare.com_wallpaper-6.jpg",
+  "wallpaper.image": "$NIXOS_CONFIG_DIR/wallpapers/wallpaperflare.com_wallpaper-6.jpg",
   "wallpaper.enable": true,
   "theme.matugen_settings.mode": "dark",
   "theme.matugen_settings.scheme_type": "tonal-spot",
