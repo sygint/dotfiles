@@ -24,6 +24,7 @@ in {
       hyprpanel
       hyprlock
       hypridle
+      # light
       xdg-desktop-portal-hyprland
     ];
   };

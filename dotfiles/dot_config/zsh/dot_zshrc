@@ -103,9 +103,15 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   setopt SHARE_HISTORY
   unsetopt EXTENDED_HISTORY
 
-# --- Enable syntax highlighting
-  bindkey "${key[Up]}" up-line-or-search
-  bindkey "${key[Down]}" down-line-or-search
+# --- Enable syntax highlighting and key bindings
+  # Make sure key array is loaded
+  autoload -U up-line-or-beginning-search down-line-or-beginning-search
+  zle -N up-line-or-beginning-search
+  zle -N down-line-or-beginning-search
+  
+  # Bind arrow keys for history search
+  bindkey "^[[A" up-line-or-beginning-search   # Up arrow
+  bindkey "^[[B" down-line-or-beginning-search # Down arrow
 
 # --- direnv
   eval "$(direnv hook zsh)"
