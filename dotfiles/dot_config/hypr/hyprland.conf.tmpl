@@ -224,7 +224,7 @@ bind = $modMain,                     W,      exec,        $webBrowser
 bind = $modMain ALT,                 W,      exec,        waypaper
 # bind = $modMain,                     P,      pseudo,      # dwindle
 # bind = $modMain,                     J,      togglesplit, # dwindle
-bind = $modMain $modSecondary SHIFT, S,      exec,        screenshootin
+bind = $modMain $modSecondary SHIFT, S,      exec,        $NIXOS_CONFIG_DIR/scripts/screenshootin.sh
 bind = $modMain $modSecondary SHIFT, M,      exec, nix-shell -p nodejs --run 'node ~/.config/nixos/scripts/monitors.mjs' 
 
 bind = $modMain,                     M,      exit

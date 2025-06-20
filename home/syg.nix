@@ -5,7 +5,6 @@
 {
   imports = [
     ../modules/home.nix
-    inputs.hyprland.homeManagerModules.default
   ];
 
   # Home Manager Settings
@@ -18,10 +17,6 @@
       source = ../wallpapers;
       recursive = true;
     };
-
-    packages = [
-      (import ../scripts/screenshootin.nix { inherit pkgs; })
-    ];
   };
 
   settings = {
@@ -31,9 +26,6 @@
       librewolf.enable = true;
       vscode.enable = true;
     };
-
-    windowManagers.hyprland.enable = true;
-
   };
 
   wayland.windowManager.sway.enable = true;
