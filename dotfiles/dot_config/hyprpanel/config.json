@@ -42,14 +42,42 @@
   "theme.bar.scaling": 100,
   "bar.layouts": {
     "0": {
-      "left": [],
-      "middle": [],
-      "right": []
+      "left": [
+        "dashboard",
+        "workspaces",
+        "windowtitle"
+      ],
+      "middle": [
+        "media"
+      ],
+      "right": [
+        "volume",
+        "network",
+        "bluetooth",
+        "battery",
+        "systray",
+        "clock",
+        "notifications"
+      ]
     },
     "1": {
-      "left": [],
-      "middle": [],
-      "right": []
+      "left": [
+        "dashboard",
+        "workspaces",
+        "windowtitle"
+      ],
+      "middle": [
+        "media"
+      ],
+      "right": [
+        "volume",
+        "network",
+        "bluetooth",
+        "battery",
+        "systray",
+        "clock",
+        "notifications"
+      ]
     },
     "2": {
       "left": [
