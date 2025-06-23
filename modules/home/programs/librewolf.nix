@@ -50,10 +50,16 @@ in {
             # (extension "tree-style-tab" "treestyletab@piro.sakura.ne.jp")
             (extension "ublock-origin" "uBlock0@raymondhill.net")
             (extension "bitwarden-password-manager" "{446900e4-71c2-419f-a6a7-df9c091e268b}")
+            (extension "privacy-badger17" "jid1-MnnxcxisBPnSXQ@jetpack")  # Privacy Badger
+            # Additional popular extensions (uncomment to enable):
             # (extension "tabliss" "extension@tabliss.io")
             # (extension "umatrix" "uMatrix@raymondhill.net")
             # (extension "libredirect" "7esoorv3@alefvanoon.anonaddy.me")
             # (extension "clearurls" "{74145f27-f039-47ce-a470-a662b129930a}")
+            # (extension "decentraleyes" "jid1-BoFifL9Vbdl2zQ@jetpack")     # Decentraleyes
+            # (extension "darkreader" "addon@darkreader.org")               # Dark Reader
+            # (extension "violentmonkey" "{aecec67f-0d10-4fa7-b7c7-609a2db280cf}") # Violentmonkey
+            # (extension "multi-account-containers" "@testpilot-containers") # Firefox Multi-Account Containers
           ];
           # To add additional extensions, find it on addons.mozilla.org, find
           # the short ID in the url (like https://addons.mozilla.org/en-US/firefox/addon/!SHORT_ID!/)
