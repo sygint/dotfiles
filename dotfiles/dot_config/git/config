@@ -64,7 +64,7 @@
   delete-gone-branches = !git remote prune origin && git branch -vv | grep ': gone]' | awk '{print $1}' | xargs git branch -d
 
 [core]
-  editor = code --wait
+  editor = code --wait --new-window
   # pager = delta
   abbrev = auto
   whitespace = -space-before-tab,tab-in-indent,blank-at-eol
