@@ -38,6 +38,16 @@ $webBrowser  = {{ .webBrowser }}
 $menu        = {{ .menu }}
 
 
+#############################
+### ENVIRONMENT VARIABLES ###
+#############################
+
+# See https://wiki.hyprland.org/Configuring/Environment-variables/
+
+env = XCURSOR_SIZE,    24
+env = HYPRCURSOR_SIZE, 24
+
+
 #################
 ### AUTOSTART ###
 #################
@@ -50,17 +60,7 @@ $menu        = {{ .menu }}
 # exec-once = waybar & hyprpaper & firefox
 exec-once = hyprpanel
 exec-once = hypridle
-exec-once = $NIXOS_CONFIG_DIR/scripts/monitors.sh
-
-
-#############################
-### ENVIRONMENT VARIABLES ###
-#############################
-
-# See https://wiki.hyprland.org/Configuring/Environment-variables/
-
-env = XCURSOR_SIZE,    24
-env = HYPRCURSOR_SIZE, 24
+exec-once = $HOME/.config/nixos/scripts/monitors.sh
 
 
 #####################
@@ -223,8 +223,8 @@ bind = $modMain,                     W,      exec,        $webBrowser
 bind = $modMain ALT,                 W,      exec,        waypaper
 # bind = $modMain,                     P,      pseudo,      # dwindle
 # bind = $modMain,                     J,      togglesplit, # dwindle
-bind = $modMain $modSecondary SHIFT, S,      exec,        $NIXOS_CONFIG_DIR/scripts/screenshootin.sh
-bind = $modMain $modSecondary SHIFT, M,      exec,        $NIXOS_CONFIG_DIR/scripts/monitors.sh 
+bind = $modMain $modSecondary SHIFT, S,      exec,        $HOME/.config/nixos/scripts/screenshot.sh
+bind = $modMain $modSecondary SHIFT, M,      exec,        $HOME/.config/nixos/scripts/monitors.sh 
 
 bind = $modMain,                     M,      exit
 bind = $modMain $modSecondary,       Q,      exec,        hyprlock

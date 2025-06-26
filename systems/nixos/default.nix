@@ -198,7 +198,7 @@
       gparted
       keepassxc
       kitty
-      librewolf
+      librewolf-unwrapped
       meld
       nemo
       obsidian

@@ -29,14 +29,52 @@ in {
         };
         DisablePocket = true;
         DisableFirefoxAccounts = true;
-        DisableAccounts = true;
         DisableFirefoxScreenshots = true;
         OverrideFirstRunPage = "";
         OverridePostUpdatePage = "";
-        DontCheckDefaultBrowser = true;
-        DisplayBookmarksToolbar = "never"; # alternatives: "always" or "newtab"
+        # DontCheckDefaultBrowser = true;
+        DisplayBookmarksToolbar = "newtab"; # alternatives: "always" or "newtab"
         DisplayMenuBar = "default-off"; # alternatives: "always", "never" or "default-on"
         SearchBar = "unified"; # alternative: "separate"
+
+        Preferences = {
+          # Check about:config for options.
+          "cookiebanners.service.mode" = 2; # Block cookie banners
+          "cookiebanners.service.mode.privateBrowsing" = 2; # Block cookie banners in private browsing
+
+          # privacy
+          "privacy.clearOnShutdown.cookies" = true;
+          "privacy.donottrackheader.enabled" = true;
+          #  --- protections enabled by default ---
+          # "privacy.clearOnShutdown.history" = false;
+          # "privacy.fingerprintingProtection" = true;
+          # "privacy.resistFingerprinting" = true;
+          # "privacy.trackingprotection.emailtracking.enabled" = true;
+          # "privacy.trackingprotection.enabled" = true;
+          # "privacy.trackingprotection.fingerprinting.enabled" = true;
+          # "privacy.trackingprotection.socialtracking.enabled" = true;
+          # "browser.contentblocking.category" = { Value = "strict"; Status = "locked"; };
+          # "webgl.disabled" = true;
+
+          # other
+          "extensions.screenshots.disabled" = true;
+          "browser.topsites.contile.enabled" = false;
+          "browser.urlbar.showSearchSuggestionsFirst" = false;
+          "browser.newtabpage.activity-stream.section.highlights.includePocket" = false;
+          "browser.newtabpage.activity-stream.section.highlights.includeBookmarks" = false;
+          #  --- protections enabled by default ---
+          # "extensions.pocket.enabled" = false;
+          # "browser.formfill.enable" = false;
+          # "browser.search.suggest.enabled" = false;
+          # "browser.search.suggest.enabled.private" = false;
+          # "browser.urlbar.suggest.searches" = false;
+          # "browser.newtabpage.activity-stream.feeds.section.topstories" = false;
+          # "browser.newtabpage.activity-stream.section.highlights.includeDownloads" = false;
+          # "browser.newtabpage.activity-stream.section.highlights.includeVisited" = false;
+          # "browser.newtabpage.activity-stream.showSponsored" = false;
+          # "browser.newtabpage.activity-stream.system.showSponsored" = false;
+          # "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+        };
 
         ExtensionSettings = with builtins;
           let extension = shortId: uuid: {
@@ -47,49 +85,20 @@ in {
             };
           };
           in listToAttrs [
-            # (extension "tree-style-tab" "treestyletab@piro.sakura.ne.jp")
-            (extension "ublock-origin" "uBlock0@raymondhill.net")
             (extension "bitwarden-password-manager" "{446900e4-71c2-419f-a6a7-df9c091e268b}")
-            (extension "privacy-badger17" "jid1-MnnxcxisBPnSXQ@jetpack")  # Privacy Badger
+            (extension "proton-vpn-firefox-extension" "vpn@proton.ch")
+            (extension "multi-account-containers" "@testpilot-containers") # Firefox Multi-Account Containers
+            (extension "pay-by-privacy" "privacy@privacy.com")
+            (extension "keepassxc-browser" "keepassxc-browser@keepassxc.org")
             # Additional popular extensions (uncomment to enable):
+            # (extension "tree-style-tab" "treestyletab@piro.sakura.ne.jp")
             # (extension "tabliss" "extension@tabliss.io")
             # (extension "umatrix" "uMatrix@raymondhill.net")
             # (extension "libredirect" "7esoorv3@alefvanoon.anonaddy.me")
-            # (extension "clearurls" "{74145f27-f039-47ce-a470-a662b129930a}")
-            # (extension "decentraleyes" "jid1-BoFifL9Vbdl2zQ@jetpack")     # Decentraleyes
             # (extension "darkreader" "addon@darkreader.org")               # Dark Reader
             # (extension "violentmonkey" "{aecec67f-0d10-4fa7-b7c7-609a2db280cf}") # Violentmonkey
-            # (extension "multi-account-containers" "@testpilot-containers") # Firefox Multi-Account Containers
           ];
-          # To add additional extensions, find it on addons.mozilla.org, find
-          # the short ID in the url (like https://addons.mozilla.org/en-US/firefox/addon/!SHORT_ID!/)
-          # Then, download the XPI by filling it in to the install_url template, unzip it,
-          # run `jq .browser_specific_settings.gecko.id manifest.json` or
-          # `jq .applications.gecko.id manifest.json` to get the UUID
       };
-  
-      /* ---- PREFERENCES ---- */
-      # Check about:config for options.
-      # Preferences = { 
-      #   "browser.contentblocking.category" = { Value = "strict"; Status = "locked"; };
-      #   "extensions.pocket.enabled" = lock-false;
-      #   "extensions.screenshots.disabled" = lock-true;
-      #   "browser.topsites.contile.enabled" = lock-false;
-      #   "browser.formfill.enable" = lock-false;
-      #   "browser.search.suggest.enabled" = lock-false;
-      #   "browser.search.suggest.enabled.private" = lock-false;
-      #   "browser.urlbar.suggest.searches" = lock-false;
-      #   "browser.urlbar.showSearchSuggestionsFirst" = lock-false;
-      #   "browser.newtabpage.activity-stream.feeds.section.topstories" = lock-false;
-      #   "browser.newtabpage.activity-stream.feeds.snippets" = lock-false;
-      #   "browser.newtabpage.activity-stream.section.highlights.includePocket" = lock-false;
-      #   "browser.newtabpage.activity-stream.section.highlights.includeBookmarks" = lock-false;
-      #   "browser.newtabpage.activity-stream.section.highlights.includeDownloads" = lock-false;
-      #   "browser.newtabpage.activity-stream.section.highlights.includeVisited" = lock-false;
-      #   "browser.newtabpage.activity-stream.showSponsored" = lock-false;
-      #   "browser.newtabpage.activity-stream.system.showSponsored" = lock-false;
-      #   "browser.newtabpage.activity-stream.showSponsoredTopSites" = lock-false;
-      # };
     };
   };
 }
