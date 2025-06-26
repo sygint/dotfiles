@@ -35,25 +35,25 @@ in {
             name = "gitless";
             publisher = "maattdd";
             version = "11.7.2";
-            sha256 = "rYeZNBz6HeZ059ksChGsXbuOao9H5m5lHGXJ4ELs6xc=";
+            sha256 = "sha256-rYeZNBz6HeZ059ksChGsXbuOao9H5m5lHGXJ4ELs6xc=";
           }
           {
             name = "github-local-actions";
             publisher = "sanjulaganepola";
             version = "1.2.5";
-            sha256 = "gc3iOB/ibu4YBRdeyE6nmG72RbAsV0WIhiD8x2HNCfY=";
+            sha256 = "sha256-gc3iOB/ibu4YBRdeyE6nmG72RbAsV0WIhiD8x2HNCfY=";
           }
           {
             name = "vscode-kanbn-boards";
             publisher = "samgiz";
             version = "0.14.1";
-            sha256 = "+BIMS5icyEmj1JXKVZmcOfTFI4w/F1zpjbt9ziG7XEk=";
+            sha256 = "sha256-+BIMS5icyEmj1JXKVZmcOfTFI4w/F1zpjbt9ziG7XEk=";
           }
           {
             name = "vscode-versionlens";
             publisher = "pflannery";
             version = "1.16.2";
-            sha256 = "avrq1e+L+2ZCIDBz1WOOHtU9a16VNkDOzrE1ccPnTKg=";
+            sha256 = "sha256-avrq1e+L+2ZCIDBz1WOOHtU9a16VNkDOzrE1ccPnTKg=";
           }
         ];
       };
