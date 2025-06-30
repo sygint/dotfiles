@@ -60,6 +60,25 @@ Some extensions are already configured but commented out. To enable them:
    (extension "short-id" "uuid@example.com")
    ```
 
+5. **Where to get the required information:**
+
+   - **Short ID:**
+     - This is the last part of the add-on’s URL on [addons.mozilla.org](https://addons.mozilla.org).
+     - Example: For `https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/`, the short ID is `ublock-origin`.
+
+   - **UUID (Extension ID):**
+     - **Method 1:** Download the `.xpi` file from the add-on page, unzip it, and look for the `id` in `manifest.json`:
+       ```bash
+       unzip addon.xpi -d addon
+       jq .browser_specific_settings.gecko.id addon/manifest.json
+       ```
+     - **Method 2:** Install the extension in LibreWolf, go to `about:support`, and look for the Extension ID under Extensions.
+
+   - **Example entry:**
+     ```nix
+     (extension "ublock-origin" "uBlock0@raymondhill.net")
+     ```
+
 ### Popular Extension UUIDs
 
 | Extension | Short ID | UUID |
