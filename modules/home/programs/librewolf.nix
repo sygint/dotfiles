@@ -57,6 +57,8 @@ in {
           # "webgl.disabled" = true;
 
           # other
+          "sidebar.revamp" = true; # Enable the revamped sidebar
+          "sidebar.verticalTabs.enabled" = false; # Disable vertical tabs sidebar
           "extensions.screenshots.disabled" = true;
           "browser.topsites.contile.enabled" = false;
           "browser.urlbar.showSearchSuggestionsFirst" = false;
@@ -90,6 +92,7 @@ in {
             (extension "multi-account-containers" "@testpilot-containers") # Firefox Multi-Account Containers
             (extension "pay-by-privacy" "privacy@privacy.com")
             (extension "keepassxc-browser" "keepassxc-browser@keepassxc.org")
+            (extension "ublock-origin" "keepassxc-browser@keepassxc.org")
             # Additional popular extensions (uncomment to enable):
             # (extension "tree-style-tab" "treestyletab@piro.sakura.ne.jp")
             # (extension "tabliss" "extension@tabliss.io")
