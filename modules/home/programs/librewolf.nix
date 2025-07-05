@@ -57,7 +57,7 @@ in {
           # "webgl.disabled" = true;
 
           # other
-          "sidebar.revamp" = true; # Enable the revamped sidebar
+          "sidebar.revamp" = true; # Enable the revamped sidebar, needed for verticalTabs
           "sidebar.verticalTabs.enabled" = false; # Disable vertical tabs sidebar
           "extensions.screenshots.disabled" = true;
           "browser.topsites.contile.enabled" = false;

@@ -32,16 +32,22 @@ in {
 
         ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
           {
-            name = "gitless";
-            publisher = "maattdd";
-            version = "11.7.2";
-            sha256 = "sha256-rYeZNBz6HeZ059ksChGsXbuOao9H5m5lHGXJ4ELs6xc=";
-          }
-          {
             name = "github-local-actions";
             publisher = "sanjulaganepola";
             version = "1.2.5";
             sha256 = "sha256-gc3iOB/ibu4YBRdeyE6nmG72RbAsV0WIhiD8x2HNCfY=";
+          }
+          {
+            name = "shellcheck";
+            publisher = "timonwong";
+            version = "0.37.7";
+            sha256 = "sha256-i8cVY8EcKSxnmWmRWDiARF79pOEcYMc+y+7i4d8EDTo=";
+          }
+          {
+            name = "gitless";
+            publisher = "maattdd";
+            version = "11.7.2";
+            sha256 = "sha256-rYeZNBz6HeZ059ksChGsXbuOao9H5m5lHGXJ4ELs6xc=";
           }
           {
             name = "vscode-kanbn-boards";
