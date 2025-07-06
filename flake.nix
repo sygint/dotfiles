@@ -17,7 +17,7 @@
     fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz";
   };
 
-  outputs = { nixpkgs, nixos-hardware, home-manager, fh, nix-snapd, ... } @ inputs:
+  outputs = { self, nixpkgs, nixos-hardware, home-manager, fh, nix-snapd, ... } @ inputs:
   let
     lib          = nixpkgs.lib;
     system       = "x86_64-linux";  # Make sure to specify the system architecture
@@ -34,6 +34,7 @@
         system = "x86_64-linux";
         specialArgs = {
           inherit
+            self
             system
             inputs
             fh
@@ -55,6 +56,7 @@
           {
             home-manager.extraSpecialArgs = {
               inherit
+                self
                 inputs
                 userVars
                 ;
@@ -73,7 +75,7 @@
       "syg" = home-manager.lib.homeManagerConfiguration {
         pkgs = pkgs;
         extraSpecialArgs = {
-          inherit inputs userVars;
+          inherit self inputs userVars;
         };
         modules = [
           ./home-standalone.nix
