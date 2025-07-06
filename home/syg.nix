@@ -1,10 +1,11 @@
-{ config, pkgs, inputs, userVars, ... }:
+{ config, pkgs, inputs, userVars, lib, ... }:
   let
-    inherit (userVars) username gitUsername gitEmail;
+    inherit (userVars) username;
   in
 {
   imports = [
     ../modules/home.nix
+    # ../modules/home/programs/git.nix
   ];
 
   # Home Manager Settings
@@ -25,12 +26,26 @@
       brave.enable = true;
       librewolf.enable = true;
       vscode.enable = true;
+      git.enable = true;
     };
   };
 
-  wayland.windowManager.sway.enable = true;
+  # wayland.windowManager.sway.enable = true;
 
-  # Install & Configure Git
+  # Enable XDG user directories
+  # xdg = {
+  #   enable = true;
+  #   createDirectories = true;
+  #   userDirs = {
+  #     enable = true;
+  #     documents = "Documents";
+  #     downloads = "Downloads";
+  #     music = "Music";
+  #     pictures = "Pictures";
+  #     videos = "Videos";
+  #   };
+  # };
+
   programs = {
     home-manager.enable = true;
     rofi.enable         = true;

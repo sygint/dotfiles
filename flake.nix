@@ -40,6 +40,9 @@
             userVars
           ;
         };
+        
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+
         modules = [
           inputs.stylix.nixosModules.stylix
           nix-snapd.nixosModules.default
