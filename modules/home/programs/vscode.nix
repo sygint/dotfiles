@@ -6,6 +6,7 @@
   ...
 }: let
   inherit (lib) mkEnableOption mkIf;
+  inherit (config.lib.file) mkOutOfStoreSymlink;
   cfg = config.settings.programs.vscode;
 in {
   options.settings.programs.vscode.enable = mkEnableOption "Visual Studio Code code editor";
@@ -66,7 +67,7 @@ in {
     };
 
     home.file.".config/Code/User/settings.json" = {
-      source = ../../../dotfiles/dot_config/Code/User/settings.json;
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/Code/User/settings.json";
     };
   };
 }
