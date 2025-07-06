@@ -1,6 +1,8 @@
+{ gitUsername, gitEmail }:
+''
 [user]
-  email = sygint@users.noreply.github.com
-  name = Sygint
+  name = ${gitUsername}
+  email = ${gitEmail}
 
 [alias]
   s = status
@@ -36,26 +38,24 @@
   unstage = restore --staged
 
   dm = diff --color-moved=plain
-  ds  = diff --staged
+  ds = diff --staged
 
   p = pull
   pushf = push --force-with-lease --force-if-includes
   pp = !git push --set-upstream origin $(git branch --show-current)
 
-  desc = !sh -c 'git log --format=format:\" - %s\" --reverse origin/${1:-master}..HEAD' --
+  desc = !sh -c 'git log --format=format:" - %s" --reverse origin/''${1:-master}..HEAD' --
 
   rf = reflog
 
   cgl = config --global --list
   whoami = !git config --get user.name && git config --get user.email
-  
+
   ll = log --graph --pretty=format:'%Cred%h%Creset %C(bold blue)%an%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset%n%B' --stat
   lll = log --no-decorate --format=medium
 
-  # git switch with autostashing
   sw = !sh /home/syg/.config/git/scripts/git_switch.sh
 
-  # git checkout with autostashing
   rbdev = !CURRENT_BRANCH=$(git branch --show-current) git rebase origin/dev --autostash
   pdev = !CURRENT_BRANCH=$(git branch --show-current) git pull origin dev --autostash
 
@@ -125,4 +125,5 @@
 #   recurse = true
 
 [format]
-	pretty = oneline
+  pretty = oneline
+''
