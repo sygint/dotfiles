@@ -63,6 +63,12 @@ in {
           }
         ];
       };
+      home.file.".config/Code/User/settings.json" = lib.mkOutOfStoreSymlink {
+        source = ../../dotfiles/dot_config/Code/User/settings.json;
+      };
+      home.file.".config/git/config" = lib.mkOutOfStoreSymlink {
+        source = ../../dotfiles/git/config;
+      };
     };
   };
 }

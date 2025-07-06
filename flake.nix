@@ -24,6 +24,9 @@
 
     userVars = import ./variables.nix;
     inherit (userVars) hostName username;
+    
+    # Common pkgs configuration
+    pkgs = nixpkgs.legacyPackages.${system};
   in
   {
     nixosConfigurations = {
@@ -57,6 +60,22 @@
             home-manager.useUserPackages     = true;
             home-manager.backupFileExtension = "backup";
             home-manager.users.${username}   = import ./home/${username}.nix;
+          }
+        ];
+      };
+    };
+
+    # Standalone Home Manager configuration
+    homeConfigurations = {
+      "syg" = home-manager.lib.homeManagerConfiguration {
+        pkgs = pkgs;
+        extraSpecialArgs = {
+          inherit inputs userVars;
+        };
+        modules = [
+          ./home-standalone.nix
+          {
+            nixpkgs.config.allowUnfree = true;
           }
         ];
       };
