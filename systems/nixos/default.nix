@@ -177,6 +177,7 @@
       fd
       fzf
       gnupg
+      jq
       killall
       libnotify # for notify-send
       lsof
