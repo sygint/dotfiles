@@ -29,6 +29,7 @@
       git.enable = true;
       btop.enable = true;
       kitty.enable = true;
+      zsh.enable = true;
     };
   };
 

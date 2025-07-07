@@ -8,5 +8,6 @@
     ./home/programs/vscode.nix
     ./home/programs/btop.nix
     ./home/programs/kitty.nix
+    ./home/programs/zsh.nix
   ];
 }
