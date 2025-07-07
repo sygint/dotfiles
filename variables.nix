@@ -9,7 +9,7 @@
   gitEmail    = "sygint@users.noreply.github.com";
 
   # Hyprland Application Configuration
-  terminal     = "kitty";
+  terminal     = "ghostty";
   fileManager  = "nemo";
   webBrowser   = "librewolf";
   menu         = "wofi";

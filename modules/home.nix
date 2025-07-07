@@ -10,5 +10,6 @@
     ./home/programs/kitty.nix
     ./home/programs/zsh.nix
     ./home/programs/hyprland.nix
+    ./home/programs/hyprpanel.nix
   ];
 }
