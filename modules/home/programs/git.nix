@@ -11,7 +11,7 @@ in {
     home.packages = [ pkgs.git ];
     
     xdg.configFile."git/config" = {
-      text = import ../../../dotfiles/config/git/config.nix { inherit gitUsername gitEmail; };
+      text = import ../../../dotfiles/.config/git/config.nix { inherit gitUsername gitEmail; };
     };
   };
 }

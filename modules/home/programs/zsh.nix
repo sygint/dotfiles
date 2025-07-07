@@ -41,17 +41,17 @@ in {
     };
 
     home.file.".config/zsh/.zshrc" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/config/zsh/zshrc";
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/zsh/zshrc";
       force = true;
     };
 
     home.file.".config/zsh/plugins.txt" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/config/zsh/plugins.txt";
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/zsh/plugins.txt";
       force = true;
     };
 
     home.file.".config/zsh/plugins.zsh" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/config/zsh/plugins.zsh";
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/zsh/plugins.zsh";
       force = true;
     };
   };

@@ -67,7 +67,7 @@ in {
     };
 
     home.file.".config/Code/User/settings.json" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/config/Code/User/settings.json";
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/Code/User/settings.json";
     };
   };
 }
