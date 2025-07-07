@@ -18,17 +18,17 @@ in {
     # Link hyprpanel configuration files with live updates
     # Note: JSON files are processed by Home Manager but will update on rebuild
     xdg.configFile."hyprpanel/config.json" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/hyprpanel/config.json";
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/config/hyprpanel/config.json";
       force = true;
     };
 
     xdg.configFile."hyprpanel/modules.json" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/hyprpanel/modules.json";
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/config/hyprpanel/modules.json";
       force = true;
     };
 
     xdg.configFile."hyprpanel/modules.scss" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/hyprpanel/modules.scss";
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/config/hyprpanel/modules.scss";
       force = true;
     };
   };

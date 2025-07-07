@@ -20,7 +20,7 @@
         (userVars.webBrowser or "librewolf")
         (userVars.menu or "wofi")
       ]
-      (builtins.readFile ../../../dotfiles/dot_config/hypr/hyprland.conf.nix)
+      (builtins.readFile ../../../dotfiles/config/hypr/hyprland.conf.nix)
   );
 in {
   options.settings.programs.hyprland.enable = mkEnableOption "Hyprland window manager configuration";
@@ -35,12 +35,12 @@ in {
 
     # Link hyprland configuration files with live updates
     home.file.".config/hypr/hypridle.conf" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/hypr/hypridle.conf";
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/config/hypr/hypridle.conf";
       force = true;
     };
 
     home.file.".config/hypr/hyprlock.conf" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/hypr/hyprlock.conf";
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/config/hypr/hyprlock.conf";
       force = true;
     };
 
@@ -50,7 +50,7 @@ in {
     };
 
     home.file.".config/hypr/mocha.conf" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/hypr/mocha.conf";
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/config/hypr/mocha.conf";
       force = true;
     };
   };

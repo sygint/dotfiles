@@ -9,13 +9,13 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
 
 # --- ZSH PLUGINS
   # Smart antidote loading: use antidote if available, fallback to pre-generated plugins
-  if command -v antidote >/dev/null 2>&1 && [[ -f "$NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.txt" ]]; then
+  if command -v antidote >/dev/null 2>&1 && [[ -f "$NIXOS_CONFIG_DIR/dotfiles/config/zsh/plugins.txt" ]]; then
     # Use antidote for full functionality (allows interactive commands)
     source <(antidote init)
-    antidote load "$NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.txt"
+    antidote load "$NIXOS_CONFIG_DIR/dotfiles/config/zsh/plugins.txt"
   else
     # Fallback to pre-generated plugins for reliability
-    [[ -f "$NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.zsh" ]] && source "$NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.zsh"
+    [[ -f "$NIXOS_CONFIG_DIR/dotfiles/config/zsh/plugins.zsh" ]] && source "$NIXOS_CONFIG_DIR/dotfiles/config/zsh/plugins.zsh"
   fi
 
 # ---- EZA - better ls

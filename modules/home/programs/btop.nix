@@ -15,7 +15,7 @@ in {
     home.packages = [ pkgs.btop ];
 
     home.file.".config/btop/btop.conf" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/btop/btop.conf";
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/config/btop/btop.conf";
       force = true;
     };
   };

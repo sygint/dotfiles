@@ -143,13 +143,13 @@ Some extensions are already configured but commented out. To enable them:
 ## 🔧 Other Configurations
 
 ### Hyprland
-- Configuration: `dotfiles/dot_config/hypr/`
+- Configuration: `dotfiles/config/hypr/`
 - Wallpapers: `wallpapers/`
 - Scripts: `scripts/`
 
 ### Development
-- VS Code settings: `dotfiles/dot_config/Code/User/settings.json`
-- Git configuration: `dotfiles/dot_config/git/`
+- VS Code settings: `dotfiles/config/Code/User/settings.json`
+- Git configuration: `dotfiles/config/git/`
 
 ## 📋 Notes
 

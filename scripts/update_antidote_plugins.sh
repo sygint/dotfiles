@@ -7,8 +7,8 @@ set -euo pipefail
 
 SCRIPT_DIR="${0:A:h}"
 NIXOS_CONFIG_DIR="${SCRIPT_DIR:h}"
-PLUGINS_TXT="$NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.txt"
-PLUGINS_ZSH="$NIXOS_CONFIG_DIR/dotfiles/dot_config/zsh/plugins.zsh"
+PLUGINS_TXT="$NIXOS_CONFIG_DIR/dotfiles/config/zsh/plugins.txt"
+PLUGINS_ZSH="$NIXOS_CONFIG_DIR/dotfiles/config/zsh/plugins.zsh"
 
 echo "🔄 Updating antidote plugins..."
 
