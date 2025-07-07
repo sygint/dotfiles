@@ -5,7 +5,9 @@
 - **I analyze output** - Success/failure analysis to determine next steps
 - **I maintain context** - No repeating info I should already have
 - **Notify manual changes** - Quick "I've updated `file.nix`" is perfect
-- **No interactive tools** - Never launch `nix repl`, `vim`, etc. without explicit instructions
+- **No interactive tools** - Never launch `nix repl`, `vim`, `git rebase -i`, etc. without explicit instructions
+  - Instead: Suggest you run interactive commands yourself
+  - Instead: Use non-interactive alternatives when possible
 - **Always check actual state** - Use `git status`, `ls`, etc. instead of assuming what exists
 - **Verify working tree** - Always check git status when working with commits, debugging, testing
 - **Cohesive commits** - Each commit should be logical and focused, split unrelated changes
@@ -28,3 +30,11 @@
 - Lint with `statix check` 
 - Remove dead code with `deadnix`
 - Test with `nh home switch` after changes
+
+## Interactive Command Reminders
+**Never run these without explicit instructions:**
+- `git rebase -i` (interactive rebase)
+- `git add -i` (interactive staging)
+- `nix repl` (interactive evaluation)
+- `vim`, `nano`, `emacs` (text editors)
+- Any command that opens an editor or interactive session
