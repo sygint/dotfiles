@@ -170,7 +170,6 @@
 
       # CLI applications
       bat
-      chezmoi
       curl
       eza
       fastfetch

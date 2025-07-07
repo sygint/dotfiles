@@ -16,17 +16,18 @@ in {
     # For now, we'll assume it's installed manually or via other means
     
     # Link hyprpanel configuration files with live updates
-    home.file.".config/hyprpanel/config.json" = {
+    # Note: JSON files are processed by Home Manager but will update on rebuild
+    xdg.configFile."hyprpanel/config.json" = {
       source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/hyprpanel/config.json";
       force = true;
     };
 
-    home.file.".config/hyprpanel/modules.json" = {
+    xdg.configFile."hyprpanel/modules.json" = {
       source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/hyprpanel/modules.json";
       force = true;
     };
 
-    home.file.".config/hyprpanel/modules.scss" = {
+    xdg.configFile."hyprpanel/modules.scss" = {
       source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/hyprpanel/modules.scss";
       force = true;
     };

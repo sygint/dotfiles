@@ -1,6 +1,0 @@
-[data]
-terminal = "ghostty"
-fileBrowser = "nemo"
-webBrowser = "brave"
-menu = "rofi -show drun"
-keyboardLayout = "us"

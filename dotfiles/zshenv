@@ -5,4 +5,3 @@ export XDG_STATE_HOME="$HOME/.local/state"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export NIXOS_CONFIG_DIR="$XDG_CONFIG_HOME/nixos"
 # export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship"
-# Test live update

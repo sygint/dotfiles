@@ -18,5 +18,10 @@ in {
       source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/kitty/kitty.conf";
       force = true;
     };
+
+    home.file.".config/kitty/base16-catppuccin-mocha.conf" = {
+      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/dot_config/kitty/base16-catppuccin-mocha.conf";
+      force = true;
+    };
   };
 }

@@ -13,7 +13,7 @@ This repository contains my personal NixOS and Home Manager configuration using 
 │   ├── home/            # Home Manager modules
 │   └── nixos/           # NixOS system modules
 ├── systems/             # System configurations
-├── dotfiles/            # Dotfiles managed by chezmoi
+├── dotfiles/            # Dotfiles managed by Home Manager
 ├── scripts/             # Utility scripts
 └── wallpapers/          # Desktop wallpapers
 ```
@@ -153,6 +153,6 @@ Some extensions are already configured but commented out. To enable them:
 
 ## 📋 Notes
 
-- Dotfiles are managed using chezmoi
+- Dotfiles are managed using Home Manager with live-updating symlinks
 - Monitor configuration is stored in `monitors.json`
 - Additional notes in `notes.txt`
