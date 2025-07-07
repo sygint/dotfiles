@@ -6,10 +6,13 @@
 - **I maintain context** - No repeating info I should already have
 - **Notify manual changes** - Quick "I've updated `file.nix`" is perfect
 - **No interactive tools** - Never launch `nix repl`, `vim`, etc. without explicit instructions
+- **Always check actual state** - Use `git status`, `ls`, etc. instead of assuming what exists
+- **Verify working tree** - Always check git status when working with commits, debugging, testing
+- **Cohesive commits** - Each commit should be logical and focused, split unrelated changes
 
 ## Current Focus
 - **Live-update symlinks** - Implement `mkOutOfStoreSymlink` pattern for dotfiles
-- **Extend pattern** - Apply to kitty, btop, and other applications
+- **Extend pattern** - Apply to kitty, btop, and other applications  
 - **Workflow** - Maintain declarative management + live editing capability
 - **Tools** - Use `nh os switch` and `nh home switch` for system management
 
