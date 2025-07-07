@@ -32,10 +32,10 @@ monitor = , preferred, auto, 1
 # See https://wiki.hyprland.org/Configuring/Keywords/
 
 # Set programs that you use
-$terminal    = {{ .terminal }}
-$fileManager = {{ .fileBrowser }}
-$webBrowser  = {{ .webBrowser }}
-$menu        = {{ .menu }}
+$terminal    = @terminal@
+$fileManager = @fileManager@
+$webBrowser  = @webBrowser@
+$menu        = @menu@
 
 
 #############################
@@ -176,7 +176,7 @@ misc {
 
 # https://wiki.hyprland.org/Configuring/Variables/#input
 input {
-    kb_layout  = {{ .keyboardLayout }}
+    kb_layout  = us
     kb_variant =
     kb_model   =
     kb_options =

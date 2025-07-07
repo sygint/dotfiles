@@ -9,5 +9,6 @@
     ./home/programs/btop.nix
     ./home/programs/kitty.nix
     ./home/programs/zsh.nix
+    ./home/programs/hyprland.nix
   ];
 }

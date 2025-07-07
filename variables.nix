@@ -1,13 +1,18 @@
 {
   # NixOS system configuration variables
-  # Note: Application preferences (terminal, browser, etc.) are in dotfiles/chezmoi.toml
   
   hostName = "nixos";
   username = "syg";
 
   # Git Configuration ( For Pulling Software Repos )
-  gitUsername = "Sygint";
+  gitUsername = "sygint";
   gitEmail    = "sygint@users.noreply.github.com";
+
+  # Hyprland Application Configuration
+  terminal     = "kitty";
+  fileManager  = "nemo";
+  webBrowser   = "librewolf";
+  menu         = "wofi";
 
   # Password for Syncthing
   syncPassword = "syncmybattleship";
