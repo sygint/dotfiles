@@ -1,14 +1,12 @@
 { lib, ... }:
 {
-  imports =
-    lib.fileset.toList (
-      lib.fileset.fileFilter
-        (file:
-          file.hasExt "nix"
-          && file.name != "default.nix"
-          && !lib.strings.hasSuffix ".conf.nix" file.name
-          && !lib.strings.hasSuffix ".tmpl.nix" file.name
-        )
-        ./home
-    );
+  imports = [
+    # Program modules
+    ./home/programs/git.nix
+    ./home/programs/brave.nix
+    ./home/programs/librewolf.nix
+    ./home/programs/vscode.nix
+    ./home/programs/btop.nix
+    ./home/programs/kitty.nix
+  ];
 }

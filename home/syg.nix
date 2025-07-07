@@ -27,6 +27,8 @@
       librewolf.enable = true;
       vscode.enable = true;
       git.enable = true;
+      btop.enable = true;
+      kitty.enable = true;
     };
   };
 
