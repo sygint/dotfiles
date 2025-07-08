@@ -32,6 +32,7 @@
       zsh.enable = true;
       hyprland.enable = true;
       hyprpanel.enable = true;
+      # devenv.enable = true;
     };
   };
 

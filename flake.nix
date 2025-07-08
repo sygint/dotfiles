@@ -10,6 +10,7 @@
     hyprpanel.url = "github:Jas-SinghFSU/HyprPanel";
     stylix.url = "github:danth/stylix";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
+    devenv.url = "github:cachix/devenv";
     home-manager = {
       url                    = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -17,7 +18,7 @@
     fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz";
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, home-manager, fh, nix-snapd, ... } @ inputs:
+  outputs = { self, nixpkgs, nixos-hardware, home-manager, fh, nix-snapd, devenv, ... } @ inputs:
   let
     lib          = nixpkgs.lib;
     system       = "x86_64-linux";  # Make sure to specify the system architecture
@@ -41,6 +42,7 @@
             system
             inputs
             fh
+            devenv
             userVars
           ;
         };
@@ -64,6 +66,7 @@
               inherit
                 self
                 inputs
+                devenv
                 userVars
                 ;
             };
@@ -81,7 +84,7 @@
       "syg" = home-manager.lib.homeManagerConfiguration {
         pkgs = pkgs;
         extraSpecialArgs = {
-          inherit self inputs userVars;
+          inherit self inputs devenv userVars;
         };
         modules = [
           ./home-standalone.nix

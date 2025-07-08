@@ -65,6 +65,7 @@
     programs = {
       nix-helpers.enable = true;
       screenshots.enable = true;
+      # devenv.enable = true;
     };
 
     wayland = {
@@ -150,6 +151,7 @@
     zsh.enable = true;
     nix-index.enable = true;
     command-not-found.enable = false;
+    direnv.enable = true;
   };
 
   # List packages installed in system profile. To search, run:
@@ -209,6 +211,7 @@
       direnv
       git
       lazygit
+      inputs.devenv.packages."${system}".devenv
 
       # other
       home-manager

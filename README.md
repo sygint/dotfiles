@@ -142,6 +142,71 @@ Some extensions are already configured but commented out. To enable them:
 
 ## 🔧 Other Configurations
 
+### Development Environments (devenv)
+
+This configuration includes support for [devenv](https://devenv.sh/), a fast and declarative development environment manager.
+
+#### Quick Start with devenv
+
+1. **Navigate to a project directory**:
+   ```bash
+   mkdir my-project && cd my-project
+   ```
+
+2. **Initialize devenv**:
+   ```bash
+   devenv init
+   ```
+
+3. **Edit `devenv.nix`** to configure your development environment
+
+4. **Create `.envrc`**:
+   ```bash
+   echo "use devenv" > .envrc
+   direnv allow
+   ```
+
+#### Example Development Environments
+
+The configuration includes example devenv setups in the `shells/` directory:
+
+- **Node.js**: `shells/node-devenv/` - Complete Node.js development environment with TypeScript, pnpm, and pre-commit hooks
+- **Python**: `shells/python-devenv/` - Python development environment with virtual env, ruff, black, and testing tools
+
+#### Using the Examples
+
+```bash
+# Copy an example to your project
+cp -r ~/.config/nixos/shells/node-devenv/* ./
+# or
+cp -r ~/.config/nixos/shells/python-devenv/* ./
+
+# Allow direnv
+direnv allow
+
+# Your development environment is now active!
+```
+
+#### devenv Features Available
+
+- **Language support**: Python, Node.js, Go, Rust, and more
+- **Services**: PostgreSQL, Redis, databases, etc.
+- **Pre-commit hooks**: Automatic linting and formatting
+- **Scripts**: Custom development commands
+- **Process management**: Run multiple services
+- **Testing**: Automated environment testing
+
+#### Comparison with Traditional Flakes
+
+| Feature | Traditional `flake.nix` | devenv |
+|---------|-------------------------|--------|
+| **Learning curve** | Steep | Gentle |
+| **Configuration** | Complex | Declarative & simple |
+| **Services** | Manual setup | Built-in service management |
+| **Pre-commit** | Manual integration | Automatic setup |
+| **Processes** | External tools needed | Built-in process manager |
+| **Speed** | Fast | Very fast with caching |
+
 ### Hyprland
 - Configuration: `dotfiles/.config/hypr/`
 - Wallpapers: `wallpapers/`
