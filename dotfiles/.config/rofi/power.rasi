@@ -1,0 +1,55 @@
+/* Power menu theme: large icons, centered, Catppuccin Mocha colors */
+* {
+    bg-col:         #1e1e2e;
+    border-col:     #cba6f7;
+    fg-col:         #cdd6f4;
+    accent:         #a6e3a1;
+    urgent:         #f38ba8;
+    font: "JetBrainsMono Nerd Font 32";
+}
+window {
+    background-color: @bg-col;
+    border: 4px;
+    border-color: @border-col;
+    border-radius: 20px;
+    width: 420px;
+    location: center;
+    anchor: center;
+}
+mainbox {
+    background-color: transparent;
+    padding: 32px 0px 24px 0px;
+    children: [ inputbar, listview ];
+}
+inputbar {
+    background-color: transparent;
+    text-color: @fg-col;
+    font: "JetBrainsMono Nerd Font 18";
+    margin: 0px 0px 16px 0px;
+}
+listview {
+    columns: 4;
+    lines: 1;
+    spacing: 32px;
+    background-color: transparent;
+    fixed-height: true;
+    fixed-columns: true;
+    margin: 0px 0px 0px 0px;
+}
+element {
+    background-color: transparent;
+    border-radius: 12px;
+    padding: 0px 0px 0px 0px;
+    text-color: @fg-col;
+    vertical-align: 0.5;
+    horizontal-align: 0.5;
+    font: "JetBrainsMono Nerd Font 32";
+}
+element selected {
+    background-color: @accent;
+    text-color: @bg-col;
+}
+element urgent, element selected urgent {
+    background-color: @urgent;
+    text-color: @bg-col;
+}
