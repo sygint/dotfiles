@@ -12,7 +12,7 @@
   terminal     = "ghostty";
   fileManager  = "nemo";
   webBrowser   = "librewolf";
-  menu         = "wofi";
+  menu         = "rofi";
 
   # Password for Syncthing
   syncPassword = "syncmybattleship";

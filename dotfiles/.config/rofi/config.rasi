@@ -1,0 +1,147 @@
+/* Enhanced Catppuccin Mocha theme for rofi */
+
+* {
+    /* Catppuccin Mocha colors */
+    bg-col:         #1e1e2e;
+    bg-col-light:   #313244;
+    bg-col-dark:    #11111b;
+    border-col:     #cba6f7;
+    selected-col:   #313244;
+    blue:           #89b4fa;
+    fg-col:         #cdd6f4;
+    fg-col2:        #f38ba8;
+    grey:           #6c7086;
+    mauve:          #cba6f7;
+    surface0:       #313244;
+    overlay0:       #6c7086;
+    text:           #cdd6f4;
+    
+    width: 700;
+    font: "JetBrainsMono Nerd Font 14";
+}
+
+element-text, element-icon , mode-switcher {
+    background-color: inherit;
+    text-color:       inherit;
+}
+
+window {
+    height: 400px;
+    border: 3px;
+    border-color: @border-col;
+    background-color: @bg-col;
+    border-radius: 15px;
+    transparency: "real";
+    location: center;
+    anchor: center;
+}
+
+mainbox {
+    background-color: @bg-col;
+    padding: 15px;
+}
+
+inputbar {
+    children: [prompt,entry];
+    background-color: @bg-col-light;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 0px 0px 10px 0px;
+    border: 2px;
+    border-color: @surface0;
+}
+
+prompt {
+    background-color: @blue;
+    padding: 8px 12px;
+    text-color: @bg-col-dark;
+    border-radius: 6px;
+    margin: 0px 8px 0px 0px;
+    font: "JetBrainsMono Nerd Font Bold 14";
+}
+
+textbox-prompt-colon {
+    expand: false;
+    str: ":";
+}
+
+entry {
+    padding: 8px 12px;
+    text-color: @text;
+    background-color: transparent;
+    placeholder: "Search applications...";
+    placeholder-color: @overlay0;
+}
+
+listview {
+    border: 0px;
+    padding: 10px 0px 0px 0px;
+    columns: 1;
+    lines: 8;
+    background-color: transparent;
+    spacing: 2px;
+}
+
+element {
+    padding: 10px;
+    background-color: transparent;
+    text-color: @fg-col;
+    border-radius: 8px;
+}
+
+element-icon {
+    size: 28px;
+    margin: 0px 10px 0px 0px;
+}
+
+element selected {
+    background-color: @selected-col;
+    border: 2px;
+    border-radius: 8px;
+    border-color: @mauve;
+    text-color: @text;
+}
+
+element selected.urgent {
+    background-color: @bg-col;
+    text-color: @fg-col2;
+    border-color: @fg-col2;
+}
+
+element selected.active {
+    background-color: @bg-col;
+    text-color: @blue;
+    border-color: @blue;
+}
+
+mode-switcher {
+    spacing: 0;
+    background-color: @bg-col-light;
+    border-radius: 8px;
+    margin: 10px 0px 0px 0px;
+    padding: 5px;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: transparent;
+    text-color: @overlay0;
+    vertical-align: 0.5; 
+    horizontal-align: 0.5;
+    border-radius: 6px;
+}
+
+button selected {
+    background-color: @blue;
+    text-color: @bg-col-dark;
+    font: "JetBrainsMono Nerd Font Bold 14";
+}
+
+configuration {
+    display-drun: " Apps";
+    display-run: " Run";
+    display-window: "﩯 Windows";
+    display-ssh: " SSH";
+    drun-display-format: "{name}";
+    window-format: "{w} · {c} · {t}";
+}

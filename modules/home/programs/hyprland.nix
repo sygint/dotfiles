@@ -18,7 +18,7 @@
         (userVars.terminal or "kitty")
         (userVars.fileManager or "nemo") 
         (userVars.webBrowser or "librewolf")
-        (userVars.menu or "wofi")
+        (userVars.menu or "rofi")
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf.nix)
   );
@@ -28,7 +28,7 @@ in {
   config = mkIf cfg.enable {
     # Install additional packages needed for hyprland
     home.packages = with pkgs; [
-      wofi        # Application launcher
+      rofi        # Application launcher
       waypaper    # Wallpaper selector
       playerctl   # Media player control
     ];

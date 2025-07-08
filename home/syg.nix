@@ -54,6 +54,9 @@
 
   programs = {
     home-manager.enable = true;
-    rofi.enable         = true;
+    rofi = {
+      enable = true;
+      theme = "/home/syg/.config/nixos/dotfiles/.config/rofi/config.rasi";
+    };
   };
 }
