@@ -25,8 +25,11 @@
     userVars = import ./variables.nix;
     inherit (userVars) hostName username;
     
-    # Common pkgs configuration
+    # Common pkgs configuration with allowUnfree
     pkgs = nixpkgs.legacyPackages.${system};
+    pkgsConfig = {
+      allowUnfree = true;
+    };
   in
   {
     nixosConfigurations = {
@@ -42,7 +45,10 @@
           ;
         };
         
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        pkgs = import nixpkgs {
+          inherit system;
+          config = pkgsConfig;
+        };
 
         modules = [
           inputs.stylix.nixosModules.stylix

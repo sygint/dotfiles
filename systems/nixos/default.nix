@@ -152,9 +152,6 @@
     command-not-found.enable = false;
   };
 
-  # Allow unfree packages (e.g., proprietary software)
-  nixpkgs.config.allowUnfree = true;
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment = {
