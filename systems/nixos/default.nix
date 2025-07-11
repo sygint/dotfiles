@@ -81,6 +81,7 @@
 
     # Fixed deprecated options
     displayManager.gdm.enable = true;
+    displayManager.defaultSession = "hyprland-uwsm";
     desktopManager.gnome.enable = true;
 
     # Enable touchpad support (enabled default in most desktopManager).
