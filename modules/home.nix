@@ -11,6 +11,7 @@
     ./home/programs/zsh.nix
     ./home/programs/hyprland.nix
     ./home/programs/hyprpanel.nix
+    ./home/programs/rofi.nix
     # ./home/programs/devenv.nix
   ];
 }

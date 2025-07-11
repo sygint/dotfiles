@@ -32,6 +32,7 @@
       zsh.enable = true;
       hyprland.enable = true;
       hyprpanel.enable = true;
+      rofi.enable = true;
       # devenv.enable = true;
     };
   };
@@ -52,11 +53,5 @@
   #   };
   # };
 
-  programs = {
-    home-manager.enable = true;
-    rofi = {
-      enable = true;
-      theme = "/home/syg/.config/nixos/dotfiles/.config/rofi/config.rasi";
-    };
-  };
+  programs.home-manager.enable = true;
 }

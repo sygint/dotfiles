@@ -28,7 +28,6 @@ in {
   config = mkIf cfg.enable {
     # Install additional packages needed for hyprland
     home.packages = with pkgs; [
-      rofi        # Application launcher
       waypaper    # Wallpaper selector
       playerctl   # Media player control
     ];
