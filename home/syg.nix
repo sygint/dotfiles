@@ -40,18 +40,21 @@
   # wayland.windowManager.sway.enable = true;
 
   # Enable XDG user directories
-  # xdg = {
-  #   enable = true;
-  #   createDirectories = true;
-  #   userDirs = {
-  #     enable = true;
-  #     documents = "Documents";
-  #     downloads = "Downloads";
-  #     music = "Music";
-  #     pictures = "Pictures";
-  #     videos = "Videos";
-  #   };
-  # };
+  xdg = {
+    enable = true;
+    userDirs = {
+      enable = true;
+      createDirectories = true;
+      documents = "$HOME/Documents";
+      download = "$HOME/Downloads";
+      music = "$HOME/Music";
+      pictures = "$HOME/Pictures";
+      videos = "$HOME/Videos";
+      desktop = "$HOME/Desktop";
+      publicShare = "$HOME/Public";
+      templates = "$HOME/Templates";
+    };
+  };
 
   programs.home-manager.enable = true;
 }
