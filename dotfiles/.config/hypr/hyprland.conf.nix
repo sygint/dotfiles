@@ -60,7 +60,7 @@ env = HYPRCURSOR_SIZE, 24
 # exec-once = waybar & hyprpaper & firefox
 exec-once = hyprpanel
 exec-once = hypridle
-exec-once = $HOME/.config/nixos/scripts/monitors.sh
+exec = $HOME/.config/nixos/scripts/monitors.sh
 
 
 #####################
