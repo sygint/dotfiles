@@ -19,14 +19,14 @@
 
   outputs = { self, nixpkgs, nixos-hardware, home-manager, fh, nix-snapd, ... } @ inputs:
   let
-    lib          = nixpkgs.lib;
-    system       = "x86_64-linux";  # Make sure to specify the system architecture
+  inherit (nixpkgs) lib;
+  system       = "x86_64-linux";  # Make sure to specify the system architecture
 
-    userVars = import ./variables.nix;
-    inherit (userVars) hostName username;
-    
-    # Common pkgs configuration
-    pkgs = nixpkgs.legacyPackages.${system};
+  userVars = import ./variables.nix;
+  inherit (userVars) hostName username;
+
+  # Common pkgs configuration
+  inherit (nixpkgs.legacyPackages.${system}) pkgs;
   in
   {
     nixosConfigurations = {
@@ -54,17 +54,15 @@
 
           home-manager.nixosModules.home-manager
           {
-            home-manager.extraSpecialArgs = {
-              inherit
-                self
-                inputs
-                userVars
-                ;
+            home-manager = {
+              extraSpecialArgs = {
+                inherit self inputs userVars;
+              };
+              useGlobalPkgs       = true;
+              useUserPackages     = true;
+              backupFileExtension = "backup";
+              users.${username}   = import ./home/${username}.nix;
             };
-            home-manager.useGlobalPkgs       = true;
-            home-manager.useUserPackages     = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.users.${username}   = import ./home/${username}.nix;
           }
         ];
       };
@@ -73,7 +71,7 @@
     # Standalone Home Manager configuration
     homeConfigurations = {
       "syg" = home-manager.lib.homeManagerConfiguration {
-        pkgs = pkgs;
+  inherit pkgs;
         extraSpecialArgs = {
           inherit self inputs userVars;
         };

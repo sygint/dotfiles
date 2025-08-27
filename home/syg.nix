@@ -10,9 +10,9 @@ in
 
   # Home Manager Settings
   home = {
-    username      = "${username}";
+    username = "${username}";
     homeDirectory = "/home/${username}";
-    stateVersion  = "24.11";
+    stateVersion = "24.11";
 
     file.wallpapers = {
       source = ../wallpapers;
@@ -55,6 +55,6 @@ in
 
   programs = {
     home-manager.enable = true;
-    rofi.enable         = true;
+    rofi.enable = true;
   };
 }
