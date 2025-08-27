@@ -20,7 +20,7 @@
         (userVars.webBrowser or "librewolf")
         (userVars.menu or "wofi")
       ]
-      (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf.nix)
+      (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)
   );
 in {
   options.settings.programs.hyprland.enable = mkEnableOption "Hyprland window manager configuration";
