@@ -1,11 +1,11 @@
-{ config, pkgs, inputs, userVars, lib, ... }:
-  let
-    inherit (userVars) username;
-  in
+{ userVars, ... }:
+let
+  inherit (userVars) username;
+in
 {
   imports = [
     ../modules/home.nix
-    # ../modules/home/programs/git.nix
+    ../modules/home/programs/screenshots.nix
   ];
 
   # Home Manager Settings
@@ -22,14 +22,16 @@
 
   settings = {
     programs = {
+      # utilities
+      btop.enable = true;
+      kitty.enable = true;
+      screenshots.enable = true;
+      zsh.enable = true;
       # Desktop
       brave.enable = true;
       librewolf.enable = true;
       vscode.enable = true;
       git.enable = true;
-      btop.enable = true;
-      kitty.enable = true;
-      zsh.enable = true;
       hyprland.enable = true;
       hyprpanel.enable = true;
     };
