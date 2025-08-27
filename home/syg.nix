@@ -7,6 +7,7 @@ in
     ../modules/home.nix
     ../modules/home/programs/screenshots.nix
     ../modules/home/programs/devenv.nix
+    ../modules/home/programs/protonmail-bridge.nix
   ];
 
   # Home Manager Settings
@@ -57,5 +58,10 @@ in
   programs = {
     home-manager.enable = true;
     rofi.enable = true;
+    protonmail-bridge = {
+      enable = true;
+      username = "admin";
+      password = "password";
+    };
   };
 }

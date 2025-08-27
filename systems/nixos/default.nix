@@ -38,7 +38,6 @@
 
       mullvad.enable = true;
 
-      protonmail-bridge.enable = true;
 
       syncthing = {
         enable   = true;
