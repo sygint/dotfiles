@@ -6,6 +6,7 @@ in
   imports = [
     ../modules/home.nix
     ../modules/home/programs/screenshots.nix
+    ../modules/home/programs/devenv.nix
   ];
 
   # Home Manager Settings
