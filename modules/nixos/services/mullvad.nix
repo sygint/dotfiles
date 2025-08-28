@@ -18,8 +18,5 @@ in {
       };
     };
 
-    environment.systemPackages = with pkgs; [
-      mullvad-browser
-    ];
   };
 }
