@@ -38,7 +38,7 @@
         modules = [
           inputs.stylix.nixosModules.stylix
           nix-snapd.nixosModules.default
-          ./systems/nixos
+          ./systems/orion
           nixos-hardware.nixosModules.framework-13-7040-amd
 
           home-manager.nixosModules.home-manager

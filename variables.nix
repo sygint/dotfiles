@@ -1,7 +1,7 @@
 {
   # NixOS system configuration variables
   
-  hostName = "nixos";
+  hostName = "orion";
   username = "syg";
 
   # Git Configuration ( For Pulling Software Repos )
