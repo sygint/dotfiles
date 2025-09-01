@@ -7,7 +7,6 @@
     nixpkgs.url   = "github:nixos/nixpkgs?shallow=1&ref=nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     hyprland.url  = "git+https://github.com/hyprwm/Hyprland?submodules=1";
-    hyprpanel.url = "github:Jas-SinghFSU/HyprPanel";
     stylix.url = "github:danth/stylix";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     home-manager = {
@@ -19,38 +18,28 @@
 
   outputs = { self, nixpkgs, nixos-hardware, home-manager, fh, nix-snapd, ... } @ inputs:
   let
-  inherit (nixpkgs) lib;
+    inherit (nixpkgs) lib;
   system       = "x86_64-linux";  # Make sure to specify the system architecture
 
-  userVars = import ./variables.nix;
-  inherit (userVars) hostName username;
+    userVars = import ./variables.nix;
+    inherit (userVars) hostName username;
 
-  # Common pkgs configuration
-  inherit (nixpkgs.legacyPackages.${system}) pkgs;
+    # Common pkgs configuration
+    inherit (nixpkgs.legacyPackages.${system}) pkgs;
   in
   {
     nixosConfigurations = {
       "${hostName}" = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
-          inherit
-            self
-            system
-            inputs
-            fh
-            userVars
-          ;
+          inherit self system inputs fh userVars;
         };
         
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-
         modules = [
           inputs.stylix.nixosModules.stylix
           nix-snapd.nixosModules.default
           ./systems/nixos
           nixos-hardware.nixosModules.framework-13-7040-amd
-
-          {nixpkgs.overlays = [inputs.hyprpanel.overlay];}
 
           home-manager.nixosModules.home-manager
           {
@@ -71,7 +60,7 @@
     # Standalone Home Manager configuration
     homeConfigurations = {
       "syg" = home-manager.lib.homeManagerConfiguration {
-  inherit pkgs;
+        inherit pkgs;
         extraSpecialArgs = {
           inherit self inputs userVars;
         };

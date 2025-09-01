@@ -12,8 +12,10 @@ in {
   options.settings.programs.hyprpanel.enable = mkEnableOption "HyprPanel - A Bar/Panel for Hyprland";
 
   config = mkIf cfg.enable {
-    # Install hyprpanel from AUR or build from source
-    # For now, we'll assume it's installed manually or via other means
+    # Install hyprpanel from nixpkgs
+    home.packages = with pkgs; [
+      hyprpanel
+    ];
 
     # Link hyprpanel configuration files with live updates
     # Note: JSON files are processed by Home Manager but will update on rebuild
