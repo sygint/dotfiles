@@ -22,14 +22,14 @@
   system       = "x86_64-linux";  # Make sure to specify the system architecture
 
     userVars = import ./variables.nix;
-    inherit (userVars) hostName username;
+    inherit (userVars) username;
 
     # Common pkgs configuration
     inherit (nixpkgs.legacyPackages.${system}) pkgs;
   in
   {
     nixosConfigurations = {
-      "${hostName}" = nixpkgs.lib.nixosSystem {
+      orion = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
           inherit self system inputs fh userVars;

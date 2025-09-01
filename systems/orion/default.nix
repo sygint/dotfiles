@@ -4,7 +4,8 @@
 
 { config, pkgs, inputs, fh, userVars, lib, ... }:
   let
-    inherit (userVars) hostName username syncPassword;
+    systemVars = import ./variables.nix;
+    inherit (systemVars.system) hostName username syncPassword;
   in
 {
   imports = [ # Include the results of the hardware scan.
