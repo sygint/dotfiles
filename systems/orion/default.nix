@@ -150,7 +150,6 @@
     nix-index.enable = true;
     command-not-found.enable = false;
   };
-  # nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -222,11 +221,15 @@
   };
 
   # Allow unfree packages (e.g., proprietary software)
+  # nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "obsidian"
     "slack"
     "synology-drive-client"
     "vscode"
+    "vscode-with-extensions"
+    "vscode-extension-github-copilot"
+    "vscode-extension-github-copilot-chat"
     "Oracle_VirtualBox_Extension_Pack"
     "vscode-extension-mhutchie-git-graph"
   ];

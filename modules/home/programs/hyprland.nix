@@ -15,10 +15,10 @@
     lib.replaceStrings 
       [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" ]
       [ 
-        (userVars.terminal or "kitty")
-        (userVars.fileManager or "nemo") 
-        (userVars.webBrowser or "librewolf")
-        (userVars.menu or "wofi")
+        (userVars.user.hyprland.terminal or "ghostty")
+        (userVars.user.hyprland.fileManager or "nemo")
+        (userVars.user.hyprland.webBrowser or "brave")
+        (userVars.user.hyprland.menu or "rofi")
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)
   );

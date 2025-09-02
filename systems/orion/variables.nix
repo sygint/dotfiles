@@ -16,7 +16,7 @@
       terminal = "ghostty";
       fileManager = "nemo";
       webBrowser = "brave";
-      menu = "rofi-wayland";
+      menu = "rofi -show drun";
     };
   };
 }

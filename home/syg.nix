@@ -1,4 +1,4 @@
-{ userVars, ... }:
+{ userVars, pkgs, lib, ... }:
 let
   inherit (userVars.user) username;
 in
@@ -15,6 +15,10 @@ in
     username = "${username}";
     homeDirectory = "/home/${username}";
     stateVersion = "24.11";
+
+    packages = with pkgs; [
+      rofi-wayland
+    ];
 
     file.wallpapers = {
       source = ../wallpapers;

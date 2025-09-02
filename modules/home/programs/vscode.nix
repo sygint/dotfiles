@@ -28,7 +28,10 @@ in {
         bradlc.vscode-tailwindcss
         yzhang.markdown-all-in-one
 
+        timonwong.shellcheck
+
         # git
+        # maattdd.gitless
         mhutchie.git-graph
 
         # copilot
@@ -40,12 +43,6 @@ in {
           publisher = "sanjulaganepola";
           version = "1.2.5";
           sha256 = "sha256-gc3iOB/ibu4YBRdeyE6nmG72RbAsV0WIhiD8x2HNCfY=";
-        }
-        {
-          name = "shellcheck";
-          publisher = "timonwong";
-          version = "0.37.7";
-          sha256 = "sha256-i8cVY8EcKSxnmWmRWDiARF79pOEcYMc+y+7i4d8EDTo=";
         }
         {
           name = "gitless";
@@ -65,19 +62,19 @@ in {
           version = "1.16.2";
           sha256 = "sha256-avrq1e+L+2ZCIDBz1WOOHtU9a16VNkDOzrE1ccPnTKg=";
         }
-      ]
+      ];
     })];
 
     # Manual extension installation script
-    home.activation.installVSCodeExtensions = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      $DRY_RUN_CMD ${pkgs.vscode}/bin/code --install-extension ms-vscode.vscode-github-actions || true
-      # Add more extensions as needed
-    '';
+    # home.activation.installVSCodeExtensions = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    #   $DRY_RUN_CMD ${pkgs.vscode}/bin/code --install-extension ms-vscode.vscode-github-actions || true
+    #   # Add more extensions as needed
+    # '';
 
     # Fix the settings.json symlink after everything else runs
-    home.activation.fixVSCodeSettings = lib.hm.dag.entryAfter ["linkGeneration"] ''
-      $DRY_RUN_CMD rm -f /home/syg/.config/Code/User/settings.json
-      $DRY_RUN_CMD ln -sf /home/syg/.config/nixos/dotfiles/.config/Code/User/settings.json /home/syg/.config/Code/User/settings.json
-    '';
+    # home.activation.fixVSCodeSettings = lib.hm.dag.entryAfter ["linkGeneration"] ''
+    #   $DRY_RUN_CMD rm -f /home/syg/.config/Code/User/settings.json
+    #   $DRY_RUN_CMD ln -sf /home/syg/.config/nixos/dotfiles/.config/Code/User/settings.json /home/syg/.config/Code/User/settings.json
+    # '';
   };
 }
