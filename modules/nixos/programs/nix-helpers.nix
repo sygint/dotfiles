@@ -8,7 +8,7 @@
 }: let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.programs.nix-helpers;
-  inherit (userVars) username;
+  inherit (userVars.user) username;
 in {
   options.settings.programs.nix-helpers.enable = mkEnableOption "Nix helpers";
 
@@ -21,6 +21,7 @@ in {
     };
 
     environment.systemPackages = with pkgs; [
+      nh
       nix-inspect
       nix-output-monitor
       nixpkgs-fmt

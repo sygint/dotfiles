@@ -5,7 +5,8 @@
 { config, pkgs, inputs, fh, userVars, lib, ... }:
   let
     systemVars = import ./variables.nix;
-    inherit (systemVars.system) hostName username syncPassword;
+    inherit (systemVars.system) hostName;
+    inherit (systemVars.user) username syncPassword;
   in
 {
   imports = [ # Include the results of the hardware scan.
@@ -38,7 +39,6 @@
       # xserver.enable = true;
 
       mullvad.enable = true;
-
 
       syncthing = {
         enable   = true;
@@ -177,6 +177,7 @@
       killall
       libnotify # for notify-send
       lsof
+      nh
       nix-index
       wget
       tealdeer

@@ -19,10 +19,10 @@
   outputs = { self, nixpkgs, nixos-hardware, home-manager, fh, nix-snapd, ... } @ inputs:
   let
     inherit (nixpkgs) lib;
-  system       = "x86_64-linux";  # Make sure to specify the system architecture
+    system = "x86_64-linux";  # Make sure to specify the system architecture
 
-    userVars = import ./variables.nix;
-    inherit (userVars) username;
+    userVars = import ./systems/orion/variables.nix;
+    inherit (userVars.user) username;
 
     # Common pkgs configuration
     inherit (nixpkgs.legacyPackages.${system}) pkgs;

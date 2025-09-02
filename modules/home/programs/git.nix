@@ -2,7 +2,8 @@
 
 let
   inherit (lib) mkEnableOption mkIf;
-  inherit (userVars) gitUsername gitEmail;
+  gitUsername = userVars.user.git.username;
+  gitEmail = userVars.user.git.email;
   cfg = config.settings.programs.git;
 in {
   options.settings.programs.git.enable = mkEnableOption "Git version control";
