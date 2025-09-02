@@ -3,5 +3,5 @@
   terminal     = "ghostty";
   fileManager  = "nemo";
   webBrowser   = "librewolf";
-  menu         = "wofi";
+  menu         = "rofi-wayland";
 }

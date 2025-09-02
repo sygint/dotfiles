@@ -9,7 +9,7 @@
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
   cfg = config.settings.programs.hyprland;
-  
+
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
     lib.replaceStrings 
@@ -28,10 +28,11 @@ in {
   config = mkIf cfg.enable {
     home = {
       packages = with pkgs; [
-        wofi        # Application launcher
-        waypaper    # Wallpaper selector
-        playerctl   # Media player control
+        rofi-wayland # Application launcher
+        waypaper     # Wallpaper selector
+        playerctl    # Media player control
       ];
+
       file = {
         ".config/hypr/hypridle.conf" = {
           source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/hypr/hypridle.conf";

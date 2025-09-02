@@ -57,7 +57,6 @@ in
 
   programs = {
     home-manager.enable = true;
-    rofi.enable = true;
     protonmail-bridge = {
       enable = true;
       username = "admin";
