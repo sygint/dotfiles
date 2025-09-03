@@ -89,7 +89,7 @@
   defaultBranch = main
 
 [interactive]
-  # diffFilter = delta --color-only
+  diffFilter = delta --color-only
 
 [delta]
   nagivate = true # use n and N to move between diff sections
@@ -106,7 +106,7 @@
   colormovedws = allow-indentation-change
 
 [sequence]
-  # editor = interactive-rebase-tool
+  editor = interactive-rebase-tool
 
 [rebase]
   autoStash = true

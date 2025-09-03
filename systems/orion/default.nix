@@ -2,9 +2,11 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, fh, userVars, ... }:
+{ config, pkgs, inputs, fh, userVars, lib, ... }:
   let
-    inherit (userVars) hostName username syncPassword;
+    systemVars = import ./variables.nix;
+    inherit (systemVars.system) hostName;
+    inherit (systemVars.user) username syncPassword;
   in
 {
   imports = [ # Include the results of the hardware scan.
@@ -38,8 +40,6 @@
 
       mullvad.enable = true;
 
-      protonmail-bridge.enable = true;
-
       syncthing = {
         enable   = true;
         username = "${username}";
@@ -64,7 +64,6 @@
 
     programs = {
       nix-helpers.enable = true;
-      screenshots.enable = true;
     };
 
     wayland = {
@@ -152,9 +151,6 @@
     command-not-found.enable = false;
   };
 
-  # Allow unfree packages (e.g., proprietary software)
-  nixpkgs.config.allowUnfree = true;
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment = {
@@ -180,6 +176,7 @@
       killall
       libnotify # for notify-send
       lsof
+      nh
       nix-index
       wget
       tealdeer
@@ -201,10 +198,8 @@
       librewolf-unwrapped
       meld
       nemo
-      obsidian
       shiori
       signal-desktop
-      slack
       inputs.zen-browser.packages."${system}".default
 
       # Software Development
@@ -215,7 +210,6 @@
 
       # other
       home-manager
-      synology-drive-client
       fh.packages.x86_64-linux.default
       
       # Qt theming support
@@ -225,6 +219,20 @@
       adwaita-qt6
     ];
   };
+
+  # Allow unfree packages (e.g., proprietary software)
+  # nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "obsidian"
+    "slack"
+    "synology-drive-client"
+    "vscode"
+    "vscode-with-extensions"
+    "vscode-extension-github-copilot"
+    "vscode-extension-github-copilot-chat"
+    "Oracle_VirtualBox_Extension_Pack"
+    "vscode-extension-mhutchie-git-graph"
+  ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 

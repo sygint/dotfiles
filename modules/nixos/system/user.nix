@@ -5,7 +5,7 @@
   ...
 }:
   let
-    inherit (userVars) username;
+    inherit (userVars.user) username;
   in
 {
   config = {

@@ -11,5 +11,8 @@
     ./home/programs/zsh.nix
     ./home/programs/hyprland.nix
     ./home/programs/hyprpanel.nix
+    ./home/programs/devenv.nix
+    ./home/programs/protonmail-bridge.nix
+    ./home/programs/mullvad.nix
   ];
 }
