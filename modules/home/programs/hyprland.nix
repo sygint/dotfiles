@@ -50,6 +50,10 @@ in {
           source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/hypr/mocha.conf";
           force = true;
         };
+        ".config/rofi/config.rasi" = {
+          source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/rofi/config.rasi";
+          force = true;
+        };
       };
     };
   };

@@ -1,0 +1,216 @@
+/* Catppuccin Mocha Rofi Theme - Refined Colors */
+
+* {
+    /* Catppuccin Mocha Palette */
+    base:      #1e1e2e;  /* Main background */
+    mantle:    #181825;  /* Darker background */
+    surface0:  #313244;  /* Surface color */
+    surface1:  #45475a;  /* Lighter surface */
+    surface2:  #585b70;  /* Even lighter surface */
+    text:      #cdd6f4;  /* Main text */
+    subtext0:  #a6adc8;  /* Dimmed text */
+    subtext1:  #bac2de;  /* Less dimmed text */
+    overlay0:  #6c7086;  /* Overlay */
+    overlay1:  #7f849c;  /* Lighter overlay */
+    blue:      #89b4fa;  /* Accent blue */
+    lavender:  #b4befe;  /* Accent lavender */
+    mauve:     #cba6f7;  /* Accent purple */
+    pink:      #f5c2e7;  /* Accent pink */
+    red:       #f38ba8;  /* Accent red */
+    peach:     #fab387;  /* Accent orange */
+    yellow:    #f9e2af;  /* Accent yellow */
+    green:     #a6e3a1;  /* Accent green */
+    teal:      #94e2d5;  /* Accent teal */
+    sky:       #89dceb;  /* Accent sky */
+    sapphire:  #74c7ec;  /* Accent sapphire */
+
+    /* Global settings */
+    font: "JetBrainsMono Nerd Font 14";
+    background-color: transparent;
+    text-color: @text;
+}
+
+window {
+    transparency: "real";
+    location: center;
+    anchor: center;
+    fullscreen: false;
+    width: 700px;
+    height: 400px;
+    
+    background-color: @base;
+    border: 2px solid;
+    border-color: @surface1;
+    border-radius: 12px;
+}
+
+mainbox {
+    background-color: @base;
+    children: [ inputbar, listview, mode-switcher ];
+    spacing: 10px;
+    padding: 15px;
+}
+
+inputbar {
+    children: [ prompt, entry ];
+    background-color: @mantle;
+    text-color: @text;
+    border-radius: 8px;
+    padding: 8px;
+    border: 1px solid;
+    border-color: @surface0;
+}
+
+prompt {
+    background-color: @blue;
+    text-color: @base;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 0px 8px 0px 0px;
+    font: "JetBrainsMono Nerd Font Bold 14";
+}
+
+entry {
+    background-color: transparent;
+    text-color: @text;
+    placeholder: "Search applications...";
+    placeholder-color: @overlay0;
+    padding: 8px;
+    border: none;
+}
+
+listview {
+    background-color: @base;
+    columns: 1;
+    lines: 8;
+    spacing: 4px;
+    cycle: true;
+    dynamic: true;
+    layout: vertical;
+    border: none;
+    padding: 0px;
+}
+
+element {
+    background-color: @mantle;
+    text-color: @text;
+    orientation: horizontal;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid;
+    border-color: transparent;
+}
+
+element normal.normal {
+    background-color: @mantle;
+    text-color: @text;
+    border-color: transparent;
+}
+
+element normal.urgent {
+    background-color: @mantle;
+    text-color: @red;
+    border-color: transparent;
+}
+
+element normal.active {
+    background-color: @mantle;
+    text-color: @green;
+    border-color: transparent;
+}
+
+element selected.normal {
+    background-color: @surface1;
+    text-color: @text;
+    border-color: @blue;
+}
+
+element selected.urgent {
+    background-color: @surface1;
+    text-color: @red;
+    border-color: @red;
+}
+
+element selected.active {
+    background-color: @surface1;
+    text-color: @green;
+    border-color: @green;
+}
+
+element alternate.normal {
+    background-color: @mantle;
+    text-color: @text;
+    border-color: transparent;
+}
+
+element alternate.urgent {
+    background-color: @mantle;
+    text-color: @red;
+    border-color: transparent;
+}
+
+element alternate.active {
+    background-color: @mantle;
+    text-color: @green;
+    border-color: transparent;
+}
+
+element-icon {
+    background-color: transparent;
+    text-color: inherit;
+    size: 28px;
+    cursor: inherit;
+    margin: 0px 10px 0px 0px;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    cursor: inherit;
+    vertical-align: 0.5;
+    horizontal-align: 0.0;
+}
+
+mode-switcher {
+    background-color: @mantle;
+    text-color: @text;
+    border: 1px solid;
+    border-color: @surface0;
+    border-radius: 8px;
+    padding: 4px;
+    spacing: 0px;
+}
+
+button {
+    background-color: transparent;
+    text-color: @subtext0;
+    padding: 8px 16px;
+    border-radius: 6px;
+    horizontal-align: 0.5;
+}
+
+button selected {
+    background-color: @blue;
+    text-color: @base;
+    font: "JetBrainsMono Nerd Font Bold 14";
+}
+
+scrollbar {
+    width: 4px;
+    border: 0px;
+    handle-color: @surface1;
+    handle-width: 8px;
+    padding: 0px;
+}
+
+/* Configuration */
+configuration {
+    display-drun: " Apps";
+    display-run: " Run";
+    display-window: "﩯 Windows";
+    display-ssh: " SSH";
+    drun-display-format: "{name}";
+    window-format: "{w} · {c} · {t}";
+    show-icons: true;
+    icon-theme: "Papirus";
+}
