@@ -1,14 +1,14 @@
-{
-  config,
-  lib,
-  options,
-  pkgs,
-  inputs,
-  ...
-}: let
+{ config
+, lib
+, options
+, pkgs
+, ...
+}:
+let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.wayland;
-in {
+in
+{
   options.settings.wayland.enable = mkEnableOption "Wayland";
 
   config = mkIf cfg.enable {

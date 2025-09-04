@@ -1,14 +1,15 @@
-{
-  config,
-  lib,
-  options,
-  pkgs,
-  ...
-}: let
+{ config
+, lib
+, options
+, pkgs
+, ...
+}:
+let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
   cfg = config.settings.programs.kitty;
-in {
+in
+{
   options.settings.programs.kitty.enable = mkEnableOption "Kitty terminal emulator";
 
   config = mkIf cfg.enable {

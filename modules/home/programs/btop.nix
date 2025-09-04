@@ -1,14 +1,15 @@
-{
-  config,
-  lib,
-  options,
-  pkgs,
-  ...
-}: let
+{ config
+, lib
+, options
+, pkgs
+, ...
+}:
+let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
   cfg = config.settings.programs.btop;
-in {
+in
+{
   options.settings.programs.btop.enable = mkEnableOption "btop system monitor";
 
   config = mkIf cfg.enable {

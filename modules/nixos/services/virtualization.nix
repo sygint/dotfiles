@@ -1,13 +1,14 @@
-{
-  config,
-  lib,
-  options,
-  pkgs,
-  ...
-}: let
+{ config
+, lib
+, options
+, pkgs
+, ...
+}:
+let
   inherit (lib) mkEnableOption mkIf mkMerge;
   cfg = config.settings.services.virtualization;
-in {
+in
+{
   options.settings.services.virtualization = {
     enable = mkEnableOption "Enable Virtualization (VirtualBox or QEMU)";
 
@@ -63,7 +64,7 @@ in {
       environment.systemPackages = with pkgs; [
         virt-manager
         virt-viewer
-        spice 
+        spice
         spice-gtk
         spice-protocol
         win-virtio
@@ -73,8 +74,8 @@ in {
 
       home-manager.users."${cfg.username}".dconf.settings = {
         "org/virt-manager/virt-manager/connections" = {
-          autoconnect = ["qemu:///system"];
-          uris = ["qemu:///system"];
+          autoconnect = [ "qemu:///system" ];
+          uris = [ "qemu:///system" ];
         };
       };
     })

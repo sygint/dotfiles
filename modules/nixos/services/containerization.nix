@@ -1,13 +1,14 @@
-{
-  config,
-  lib,
-  options,
-  pkgs,
-  ...
-}: let
+{ config
+, lib
+, options
+, pkgs
+, ...
+}:
+let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.services.containerization;
-in {
+in
+{
   options.settings.services.containerization = {
     enable = mkEnableOption "Enable Containerization (Podman)";
 
@@ -26,7 +27,7 @@ in {
 
         podman = {
           enable = true;
-          
+
           # Create a `docker` alias for podman, to use it as a drop-in replacement
           dockerCompat = true;
 
@@ -43,7 +44,7 @@ in {
           #podman-compose # start group of containers for dev
           podman-desktop
         ];
-      
+
         # for running rootless podman
         extraInit = ''
           if [ -z "$DOCKER_HOST" -a -n "$XDG_RUNTIME_DIR" ]; then
@@ -51,7 +52,7 @@ in {
           fi
         '';
       };
-    # } // mkIf (cfg.service == "docker") {
+      # } // mkIf (cfg.service == "docker") {
       # not currently supported
     }
   );

@@ -1,14 +1,15 @@
-{
-  config,
-  lib,
-  options,
-  pkgs,
-  ...
-}: let
+{ config
+, lib
+, options
+, pkgs
+, ...
+}:
+let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
   cfg = config.settings.programs.hyprpanel;
-in {
+in
+{
   options.settings.programs.hyprpanel.enable = mkEnableOption "HyprPanel - A Bar/Panel for Hyprland";
 
   config = mkIf cfg.enable {

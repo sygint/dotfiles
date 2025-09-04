@@ -1,20 +1,20 @@
-{
-  config,
-  lib,
-  options,
-  pkgs,
-  userVars,
-  ...
-}: let
+{ config
+, lib
+, options
+, pkgs
+, userVars
+, ...
+}:
+let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
   cfg = config.settings.programs.hyprland;
 
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
-    lib.replaceStrings 
+    lib.replaceStrings
       [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" ]
-      [ 
+      [
         (userVars.user.hyprland.terminal or "ghostty")
         (userVars.user.hyprland.fileManager or "nemo")
         (userVars.user.hyprland.webBrowser or "brave")
@@ -22,15 +22,16 @@
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)
   );
-in {
+in
+{
   options.settings.programs.hyprland.enable = mkEnableOption "Hyprland window manager configuration";
 
   config = mkIf cfg.enable {
     home = {
       packages = with pkgs; [
         rofi-wayland # Application launcher
-        waypaper     # Wallpaper selector
-        playerctl    # Media player control
+        waypaper # Wallpaper selector
+        playerctl # Media player control
       ];
 
       file = {

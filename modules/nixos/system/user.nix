@@ -1,19 +1,18 @@
-{
-  config,
-  userVars,
-  pkgs,
-  ...
+{ config
+, userVars
+, pkgs
+, ...
 }:
-  let
-    inherit (userVars.user) username;
-  in
+let
+  inherit (userVars.user) username;
+in
 {
   config = {
     users.users.${username} = {
       isNormalUser = true;
-      description  = "${username}";
-      extraGroups  = [ "networkmanager" "wheel" "dialout" ];
-      shell        = pkgs.zsh;
+      description = "${username}";
+      extraGroups = [ "networkmanager" "wheel" "dialout" ];
+      shell = pkgs.zsh;
       # packages = with pkgs; [
       #   thunderbird
       # ];

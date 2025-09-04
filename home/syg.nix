@@ -1,4 +1,4 @@
-{ userVars, pkgs, lib, ... }:
+{ userVars, pkgs, ... }:
 let
   inherit (userVars.user) username;
 in

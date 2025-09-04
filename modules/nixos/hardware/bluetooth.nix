@@ -1,13 +1,13 @@
-{
-  config,
-  lib,
-  options,
-  pkgs,
-  ...
-}: let
+{ config
+, lib
+, options
+, ...
+}:
+let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.hardware.bluetooth;
-in {
+in
+{
   options.settings.hardware.bluetooth.enable = mkEnableOption "Bluetooth";
 
   config = mkIf cfg.enable {

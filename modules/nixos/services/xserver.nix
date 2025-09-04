@@ -1,13 +1,13 @@
-{
-  config,
-  lib,
-  options,
-  pkgs,
-  ...
-}: let
+{ config
+, lib
+, options
+, ...
+}:
+let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.services.xserver;
-in {
+in
+{
   options.settings.services.xserver.enable = mkEnableOption "Xserver";
 
   config = mkIf cfg.enable {
@@ -16,8 +16,8 @@ in {
 
       # Configure keymap for X11 (optional)
       xkb = {
-        layout  = "us"; # Set keymap layout
-        variant = "";  # Use the default variant
+        layout = "us"; # Set keymap layout
+        variant = ""; # Use the default variant
       };
     };
   };

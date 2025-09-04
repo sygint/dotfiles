@@ -2,21 +2,22 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, fh, userVars, lib, ... }:
-  let
-    systemVars = import ./variables.nix;
-    inherit (systemVars.system) hostName;
-    inherit (systemVars.user) username syncPassword;
-  in
+{ config, pkgs, inputs, fh, lib, ... }:
+let
+  systemVars = import ./variables.nix;
+  inherit (systemVars.system) hostName;
+  inherit (systemVars.user) username syncPassword;
+in
 {
-  imports = [ # Include the results of the hardware scan.
+  imports = [
+    # Include the results of the hardware scan.
     ./hardware.nix
     ../../modules/nixos.nix
   ];
 
   boot = {
     loader = {
-      systemd-boot.enable      = true;
+      systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
     supportedFilesystems = [ "ntfs" ];
@@ -27,10 +28,10 @@
 
   settings = {
     hardware = {
-      bluetooth.enable  = true;
-      audio.enable      = true;
+      bluetooth.enable = true;
+      audio.enable = true;
       networking = {
-        enable   = true;
+        enable = true;
         hostName = "${hostName}";
       };
     };
@@ -41,7 +42,7 @@
       mullvad.enable = true;
 
       syncthing = {
-        enable   = true;
+        enable = true;
         username = "${username}";
         password = "${syncPassword}";
       };
@@ -141,7 +142,7 @@
   # Fix deprecated Qt platform theme warning
   qt = {
     enable = true;
-    platformTheme = "qt5ct";  # Use qt5ct to match stylix configuration
+    platformTheme = "qt5ct"; # Use qt5ct to match stylix configuration
     # Let stylix handle the style
   };
 
@@ -211,7 +212,7 @@
       # other
       home-manager
       fh.packages.x86_64-linux.default
-      
+
       # Qt theming support
       libsForQt5.qt5ct
       qt6ct

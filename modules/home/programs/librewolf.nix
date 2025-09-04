@@ -1,13 +1,13 @@
-{
-  config,
-  lib,
-  options,
-  pkgs,
-  ...
-}: let
+{ config
+, lib
+, options
+, ...
+}:
+let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.programs.librewolf;
-in {
+in
+{
   options.settings.programs.librewolf.enable = mkEnableOption "Librewolf web browser";
 
   config = mkIf cfg.enable {
@@ -22,7 +22,7 @@ in {
         DisableTelemetry = true;
         DisableFirefoxStudies = true;
         EnableTrackingProtection = {
-          Value= true;
+          Value = true;
           Locked = true;
           Cryptomining = true;
           Fingerprinting = true;
@@ -79,14 +79,16 @@ in {
         };
 
         ExtensionSettings = with builtins;
-          let extension = shortId: uuid: {
-            name = uuid;
-            value = {
-              install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/${shortId}/latest.xpi";
-              installation_mode = "normal_installed";
+          let
+            extension = shortId: uuid: {
+              name = uuid;
+              value = {
+                install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/${shortId}/latest.xpi";
+                installation_mode = "normal_installed";
+              };
             };
-          };
-          in listToAttrs [
+          in
+          listToAttrs [
             (extension "bitwarden-password-manager" "{446900e4-71c2-419f-a6a7-df9c091e268b}")
             (extension "proton-vpn-firefox-extension" "vpn@proton.ch")
             (extension "multi-account-containers" "@testpilot-containers") # Firefox Multi-Account Containers

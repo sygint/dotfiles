@@ -1,15 +1,16 @@
-{
-  config,
-  lib,
-  options,
-  pkgs,
-  userVars,
-  ...
-}: let
+{ config
+, lib
+, options
+, pkgs
+, userVars
+, ...
+}:
+let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.settings.programs.nix-helpers;
   inherit (userVars.user) username;
-in {
+in
+{
   options.settings.programs.nix-helpers.enable = mkEnableOption "Nix helpers";
 
   config = mkIf cfg.enable {
