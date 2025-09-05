@@ -12,14 +12,13 @@ in
   imports = [
     # Include the results of the hardware scan.
     ./hardware.nix
+    # Import base system configuration
+    ../../modules/system/base
+    # Import all other system modules
     ../../modules/system.nix
   ];
 
   boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
     supportedFilesystems = [ "ntfs" ];
   };
 
@@ -59,13 +58,7 @@ in
       };
     };
 
-    system = {
-      security.enable = true;
-    };
-
-    programs = {
-      nix-helpers.enable = true;
-    };
+    # Base security and program modules are enabled in base config
 
     wayland = {
       enable = true;
@@ -146,11 +139,7 @@ in
     # Let stylix handle the style
   };
 
-  programs = {
-    zsh.enable = true;
-    nix-index.enable = true;
-    command-not-found.enable = false;
-  };
+  # Base system programs (zsh, nix-index, etc.) are enabled in base config
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -160,30 +149,18 @@ in
     };
 
     systemPackages = with pkgs; [
-      # shell
+      # Enhanced shell tools (base has basic zsh)
       antidote
       starship
-      zsh
 
-      # CLI applications
+      # Enhanced CLI applications (base has basic set)
       bat
-      curl
       eza
       fastfetch
       fd
       fzf
-      gnupg
-      jq
-      killall
-      libnotify # for notify-send
-      lsof
-      nh
-      nix-index
-      wget
       tealdeer
       tree
-      unzip
-      vim
       yazi
       zellij
       zoxide
@@ -203,14 +180,12 @@ in
       signal-desktop
       inputs.zen-browser.packages."${system}".default
 
-      # Software Development
+      # Enhanced development tools (base has basic git)
       act # gh actions cli
       direnv
-      git
       lazygit
 
-      # other
-      home-manager
+      # System-specific tools
       fh.packages.x86_64-linux.default
 
       # Qt theming support
@@ -221,8 +196,7 @@ in
     ];
   };
 
-  # Allow unfree packages (e.g., proprietary software)
-  # nixpkgs.config.allowUnfree = true;
+  # Extend base unfree packages with orion-specific ones
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "obsidian"
     "slack"
@@ -235,7 +209,7 @@ in
     "vscode-extension-mhutchie-git-graph"
   ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # Base Nix settings, like flakes, are handled in base config
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -256,11 +230,5 @@ in
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.11"; # Did you read the comment?
+ # System State Version Handled in base config
 }
