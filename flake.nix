@@ -76,9 +76,9 @@
       # Standalone Home Manager configuration
       homeConfigurations = {
         # Standard username configuration
-        ${username} = mkHomeConfiguration username userVars;
+        ${username} = mkHomeConfiguration userVars;
         # Also provide hostname@user format for nh compatibility
-        "${username}@${userVars.system.hostName}" = mkHomeConfiguration username userVars;
+        "${username}@${userVars.system.hostName}" = mkHomeConfiguration userVars;
       };
     };
 }

@@ -15,11 +15,6 @@ in
     username = actualUser;
     homeDirectory = "/home/${actualUser}";
     stateVersion = "24.11";
-
-    file.wallpapers = {
-      source = ../../../wallpapers;
-      recursive = true;
-    };
   };
 
   # Base programs that every user should have regardless of system
@@ -27,7 +22,6 @@ in
     programs = {
       # Core utilities - essential for everyone
       btop.enable = true;
-      kitty.enable = true;
       zsh.enable = true;
       git.enable = true;
     };
