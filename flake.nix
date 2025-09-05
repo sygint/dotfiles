@@ -28,7 +28,7 @@
       inherit (nixpkgs.legacyPackages.${system}) pkgs;
 
       # Function to create home configuration for any user
-      mkHomeConfiguration = user: userConfig: 
+      mkHomeConfiguration = userConfig:
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           extraSpecialArgs = {

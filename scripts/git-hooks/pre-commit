@@ -137,8 +137,8 @@ if ! grep -r "system\.stateVersion" systems/ >/dev/null 2>&1; then
 fi
 
 # Check for proper module structure
-if [ ! -d "modules/nixos" ] || [ ! -d "modules/home" ]; then
-    log_error "Missing required module directories (modules/nixos or modules/home)"
+if [ ! -d "modules/system" ] || [ ! -d "modules/home" ]; then
+    log_error "Missing required module directories (modules/system or modules/home)"
     CONFIG_ISSUES=1
 fi
 

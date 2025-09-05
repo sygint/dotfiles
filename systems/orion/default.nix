@@ -12,7 +12,7 @@ in
   imports = [
     # Include the results of the hardware scan.
     ./hardware.nix
-    ../../modules/nixos.nix
+    ../../modules/system.nix
   ];
 
   boot = {

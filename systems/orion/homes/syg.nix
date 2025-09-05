@@ -1,4 +1,4 @@
-{ userVars, pkgs, lib, ... }:
+{ pkgs, ... }:
 {
   imports = [
     # Import the base user configuration (system-agnostic)

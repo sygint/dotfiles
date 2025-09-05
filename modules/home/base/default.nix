@@ -1,4 +1,4 @@
-{ userVars, pkgs, lib, ... }:
+{ userVars, ... }:
 let
   inherit (userVars.user) username;
   # Get the actual system user from environment or fall back to variables

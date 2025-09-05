@@ -2,6 +2,6 @@
 
 {
   imports = [
-    ./home/syg.nix
+    ./systems/orion/homes/syg.nix
   ];
 }

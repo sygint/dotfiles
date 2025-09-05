@@ -7,6 +7,6 @@
         && file.name != "default.nix"
         && !lib.strings.hasSuffix ".conf.nix" file.name
       )
-      ./nixos
+      ./system
   );
 }
