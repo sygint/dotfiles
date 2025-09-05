@@ -25,7 +25,7 @@
     sapphire:  #74c7ec;  /* Accent sapphire */
 
     /* Global settings */
-    font: "JetBrainsMono Nerd Font 14";
+    font: "JetBrainsMono Nerd Font 10";
     background-color: transparent;
     text-color: @text;
 }
@@ -36,8 +36,7 @@ window {
     anchor: center;
     fullscreen: false;
     width: 700px;
-    height: 400px;
-    
+    height: 600px;
     background-color: @base;
     border: 2px solid;
     border-color: @surface1;
@@ -67,7 +66,7 @@ prompt {
     padding: 8px 12px;
     border-radius: 6px;
     margin: 0px 8px 0px 0px;
-    font: "JetBrainsMono Nerd Font Bold 14";
+    font: "JetBrainsMono Nerd Font Bold 10";
 }
 
 entry {
@@ -192,7 +191,7 @@ button {
 button selected {
     background-color: @blue;
     text-color: @base;
-    font: "JetBrainsMono Nerd Font Bold 14";
+    font: "JetBrainsMono Nerd Font Bold 10";
 }
 
 scrollbar {
@@ -205,10 +204,10 @@ scrollbar {
 
 /* Configuration */
 configuration {
-    display-drun: " Apps";
-    display-run: " Run";
-    display-window: "﩯 Windows";
-    display-ssh: " SSH";
+    display-drun: "  Apps";
+    display-run: "  Run";
+    display-window: "󰖯  Windows";
+    display-ssh: "󰒋  SSH";
     drun-display-format: "{name}";
     window-format: "{w} · {c} · {t}";
     show-icons: true;
