@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+#
+# Pre-push hook for NixOS configuration
+# Runs more thorough checks before pushing to remote
+#
+
+set -euo pipefail
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+echo -e "${BLUE}🚀 Running pre-push validation...${NC}"
+
+# Track if any checks fail
+FAILED=0
+
+log_success() {
+    echo -e "${GREEN}✓${NC} $1"
+}
+
+log_warning() {
+    echo -e "${YELLOW}⚠${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}✗${NC} $1"
+    FAILED=1
+}
+
+# 1. Full flake check with build
+echo -e "\n${BLUE}1. Running comprehensive flake check...${NC}"
+if timeout 300 nix flake check 2>/dev/null; then
+    log_success "Full flake validation passed"
+else
+    log_error "Flake check failed or timed out"
+fi
+
+# 2. Security audit
+echo -e "\n${BLUE}2. Running security audit...${NC}"
+if [ -f "scripts/security-audit.sh" ]; then
+    if timeout 120 ./scripts/security-audit.sh >/dev/null 2>&1; then
+        log_success "Security audit passed"
+    else
+        log_warning "Security audit found issues (run manually for details)"
+    fi
+else
+    log_warning "Security audit script not found"
+fi
+
+# 3. Check for sensitive information in commit history
+echo -e "\n${BLUE}3. Scanning for sensitive information...${NC}"
+SENSITIVE_PATTERNS=(
+    "password"
+    "secret"
+    "private.*key"
+    "api.*key"
+    "token"
+    "credential"
+)
+
+SENSITIVE_FOUND=0
+for pattern in "${SENSITIVE_PATTERNS[@]}"; do
+    if git log --oneline -10 | grep -i "$pattern" >/dev/null 2>&1; then
+        log_warning "Recent commit messages contain potentially sensitive terms: $pattern"
+        SENSITIVE_FOUND=1
+    fi
+done
+
+if [ $SENSITIVE_FOUND -eq 0 ]; then
+    log_success "No sensitive terms found in recent commit messages"
+fi
+
+# 4. Validate that critical security settings are maintained
+echo -e "\n${BLUE}4. Validating critical security settings...${NC}"
+
+SECURITY_VIOLATIONS=0
+
+# Check that security is enabled
+if ! grep -r "settings\.system\.security\.enable.*=.*true" systems/ >/dev/null 2>&1; then
+    log_error "Security module appears to be disabled"
+    SECURITY_VIOLATIONS=1
+fi
+
+# Check that firewall is not disabled
+if grep -r "firewall\.enable.*=.*false" . | grep -v ".git" | grep -v "pre-push" >/dev/null 2>&1; then
+    log_error "Firewall is disabled somewhere in configuration"
+    SECURITY_VIOLATIONS=1
+fi
+
+if [ $SECURITY_VIOLATIONS -eq 0 ]; then
+    log_success "Critical security settings are maintained"
+fi
+
+# Summary
+echo -e "\n${BLUE}📋 Pre-push Summary${NC}"
+if [ $FAILED -eq 0 ]; then
+    echo -e "${GREEN}🎉 All checks passed! Push proceeding...${NC}"
+    exit 0
+else
+    echo -e "${RED}💥 Some checks failed. Push blocked.${NC}"
+    echo -e "${YELLOW}💡 Fix the issues above or use 'git push --no-verify' to bypass${NC}"
+    exit 1
+fi

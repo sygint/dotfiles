@@ -26,6 +26,22 @@
 
       # Common pkgs configuration
       inherit (nixpkgs.legacyPackages.${system}) pkgs;
+
+      # Function to create home configuration for any user
+      mkHomeConfiguration = user: userConfig: 
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = {
+            inherit self inputs;
+            userVars = userConfig;
+          };
+          modules = [
+            ./modules/home/base
+            {
+              nixpkgs.config.allowUnfree = true;
+            }
+          ];
+        };
     in
     {
       nixosConfigurations = {
@@ -50,7 +66,7 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "backup";
-                users.${username} = import ./home/${username}.nix;
+                users.${username} = import ./systems/orion/homes/syg.nix;
               };
             }
           ];
@@ -59,18 +75,10 @@
 
       # Standalone Home Manager configuration
       homeConfigurations = {
-        "syg" = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          extraSpecialArgs = {
-            inherit self inputs userVars;
-          };
-          modules = [
-            ./home-standalone.nix
-            {
-              nixpkgs.config.allowUnfree = true;
-            }
-          ];
-        };
+        # Standard username configuration
+        ${username} = mkHomeConfiguration username userVars;
+        # Also provide hostname@user format for nh compatibility
+        "${username}@${userVars.system.hostName}" = mkHomeConfiguration username userVars;
       };
     };
 }
