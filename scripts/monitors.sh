@@ -14,6 +14,9 @@ fi
 
 echo "🔍 Detecting monitors..."
 
+# Wait a moment for monitors to be ready
+sleep 0.5
+
 # Parse monitors using a simpler approach
 current_monitor=""
 
