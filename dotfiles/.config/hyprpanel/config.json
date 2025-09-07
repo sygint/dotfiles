@@ -19,7 +19,7 @@
   "theme.bar.buttons.network.enableBorder": false,
   "theme.matugen": false,
   "wallpaper.image": "$NIXOS_CONFIG_DIR/wallpapers/wallpaperflare.com_wallpaper-6.jpg",
-  "wallpaper.enable": true,
+  "wallpaper.enable": false,
   "theme.matugen_settings.mode": "dark",
   "theme.matugen_settings.scheme_type": "tonal-spot",
   "theme.bar.menus.opacity": 100,

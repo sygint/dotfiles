@@ -26,7 +26,6 @@ let
   hyprlandPkgs = [
     pkgs.hypridle
     pkgs.hyprlock
-    pkgs.hyprpaper
   ] ++ lib.filter (x: x != null) [defaultTerminalPkg defaultBrowserPkg defaultFileMgrPkg] ++ cfg.packages.extra;
 
 in
