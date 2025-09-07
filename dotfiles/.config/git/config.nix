@@ -106,7 +106,7 @@
   colormovedws = allow-indentation-change
 
 [sequence]
-  editor = interactive-rebase-tool
+  # editor = interactive-rebase-tool
 
 [rebase]
   autoStash = true
