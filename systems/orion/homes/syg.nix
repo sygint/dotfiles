@@ -1,9 +1,6 @@
 { pkgs, ... }:
 {
   imports = [
-    # Import the base user configuration (system-agnostic)
-    ../../../modules/home/base
-    # Import desktop-specific base config
     ../../../modules/home/base-desktop
     # Add syg-specific modules
     ../../../modules/home/programs/screenshots.nix
