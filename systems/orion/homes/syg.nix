@@ -2,18 +2,15 @@
 {
   imports = [
     ../../../modules/home/base-desktop
-    # Add syg-specific modules
     ../../../modules/home/programs/screenshots.nix
     ../../../modules/home/programs/devenv.nix
     ../../../modules/home/programs/protonmail-bridge.nix
   ];
 
-  # Syg-specific packages
   home.packages = with pkgs; [
     rofi-wayland
   ];
 
-  # Syg-specific program settings
   settings = {
     programs = {
       # Additional programs for syg
@@ -27,7 +24,6 @@
     };
   };
 
-  # Syg-specific services
   programs = {
     protonmail-bridge = {
       enable = true;

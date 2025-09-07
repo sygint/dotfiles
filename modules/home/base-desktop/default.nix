@@ -9,6 +9,4 @@
   };
 
   settings.programs.kitty.enable = true;
-
-  # Add more desktop-specific programs/configs here
 }
