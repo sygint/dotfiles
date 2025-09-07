@@ -7,10 +7,10 @@
 let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
-  cfg = config.settings.programs.zsh;
+  cfg = config.modules.programs.zsh;
 in
 {
-  options.settings.programs.zsh.enable = mkEnableOption "Zsh shell with live-updating configuration";
+  options.modules.programs.zsh.enable = mkEnableOption "Zsh shell with live-updating configuration";
 
   config = mkIf cfg.enable {
     # Install zsh as a package instead of using programs.zsh to avoid .zshenv conflicts

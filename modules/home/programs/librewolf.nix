@@ -5,10 +5,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.programs.librewolf;
+  cfg = config.modules.programs.librewolf;
 in
 {
-  options.settings.programs.librewolf.enable = mkEnableOption "Librewolf web browser";
+  options.modules.programs.librewolf.enable = mkEnableOption "Librewolf web browser";
 
   config = mkIf cfg.enable {
     programs.librewolf = {

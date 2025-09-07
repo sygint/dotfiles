@@ -5,10 +5,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.hardware.networking;
+  cfg = config.modules.hardware.networking;
 in
 {
-  options.settings.hardware.networking = {
+  options.modules.hardware.networking = {
     enable = mkEnableOption "Networking";
 
     hostName = lib.mkOption {

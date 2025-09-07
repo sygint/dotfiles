@@ -6,10 +6,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.services.mullvad;
+  cfg = config.modules.services.mullvad;
 in
 {
-  options.settings.services.mullvad.enable = mkEnableOption "Mullvad VPN and Browser";
+  options.modules.services.mullvad.enable = mkEnableOption "Mullvad VPN and Browser";
 
   config = mkIf cfg.enable {
     services = {

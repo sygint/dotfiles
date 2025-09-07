@@ -14,5 +14,6 @@
     ./home/programs/devenv.nix
     ./home/programs/protonmail-bridge.nix
     ./home/programs/mullvad.nix
+    ./home/programs/screenshots.nix
   ];
 }

@@ -2,29 +2,24 @@
 {
   imports = [
     ../../../modules/home/base-desktop
-    ../../../modules/home/programs/screenshots.nix
-    ../../../modules/home/programs/devenv.nix
-    ../../../modules/home/programs/protonmail-bridge.nix
+    ../../../modules/home.nix
   ];
 
   home.packages = with pkgs; [
     rofi-wayland
   ];
 
-  settings = {
-    programs = {
-      # Additional programs for syg
-      screenshots.enable = true;
-      # Desktop applications
-      brave.enable = true;
-      librewolf.enable = true;
-      vscode.enable = true;
-      hyprland.enable = true;
-      hyprpanel.enable = true;
+  modules.programs = {
+    hyprland = {
+      enable = true;
+      packages.enable = true;
     };
-  };
 
-  programs = {
+    screenshots.enable = true;
+    brave.enable = true;
+    librewolf.enable = true;
+    vscode.enable = true;
+
     protonmail-bridge = {
       enable = true;
       username = "admin";

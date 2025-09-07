@@ -8,5 +8,5 @@
     recursive = true;
   };
 
-  settings.programs.kitty.enable = true;
+  modules.programs.kitty.enable = true;
 }

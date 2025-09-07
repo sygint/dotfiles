@@ -1,10 +1,10 @@
 { config, lib, pkgs, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.programs.screenshots;
+  cfg = config.modules.programs.screenshots;
 in
 {
-  options.settings.programs.screenshots.enable = mkEnableOption "Screenshot helpers (user)";
+  options.modules.programs.screenshots.enable = mkEnableOption "Screenshot helpers (user)";
 
   config = mkIf cfg.enable {
     home.packages = with pkgs; [

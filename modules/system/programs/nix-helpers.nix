@@ -7,11 +7,11 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.programs.nix-helpers;
+  cfg = config.modules.programs.nix-helpers;
   inherit (userVars.user) username;
 in
 {
-  options.settings.programs.nix-helpers.enable = mkEnableOption "Nix helpers";
+  options.modules.programs.nix-helpers.enable = mkEnableOption "Nix helpers";
 
   config = mkIf cfg.enable {
     programs.nh = {

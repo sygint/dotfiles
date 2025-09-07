@@ -1,9 +1,9 @@
 { config, lib, pkgs, ... }:
 let
-  cfg = config.programs.protonmail-bridge;
+  cfg = config.modules.programs.protonmail-bridge;
 in
 {
-  options.programs.protonmail-bridge = {
+  options.modules.programs.protonmail-bridge = {
     enable = lib.mkEnableOption "ProtonMail Bridge CLI";
     username = lib.mkOption {
       type = lib.types.str;

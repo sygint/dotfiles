@@ -5,10 +5,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.services.syncthing;
+  cfg = config.modules.services.syncthing;
 in
 {
-  options.settings.services.syncthing = {
+  options.modules.services.syncthing = {
     enable = mkEnableOption "Syncthing";
 
     username = lib.mkOption {

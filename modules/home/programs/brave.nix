@@ -6,10 +6,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.programs.brave;
+  cfg = config.modules.programs.brave;
 in
 {
-  options.settings.programs.brave.enable = mkEnableOption "Brave web browser";
+  options.modules.programs.brave.enable = mkEnableOption "Brave web browser";
 
   config = mkIf cfg.enable {
     programs.chromium = {

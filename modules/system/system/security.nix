@@ -6,10 +6,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.system.security;
+  cfg = config.modules.system.security;
 in
 {
-  options.settings.system.security.enable = mkEnableOption "Security";
+  options.modules.system.security.enable = mkEnableOption "Security";
 
   config = mkIf cfg.enable {
     security = {

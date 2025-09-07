@@ -1,14 +1,8 @@
-{ config
-, lib
-, options
-, pkgs
-, userVars
-, ...
-}:
+{ config, lib, pkgs, userVars, ... }:
 let
-  inherit (lib) mkEnableOption mkIf;
+  inherit (lib) mkEnableOption mkOption mkIf types;
   inherit (config.lib.file) mkOutOfStoreSymlink;
-  cfg = config.settings.programs.hyprland;
+  cfg = config.modules.programs.hyprland;
 
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
@@ -22,17 +16,45 @@ let
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)
   );
+
+  # Only install package for the default if the user did NOT override it
+  defaultTerminalPkg = if cfg.defaults ? terminal && cfg.defaults.terminal != "ghostty" then null else pkgs.ghostty;
+  defaultBrowserPkg  = if cfg.defaults ? browser  && cfg.defaults.browser  != "brave"   then null else pkgs.brave;
+  defaultFileMgrPkg  = if cfg.defaults ? fileManager && cfg.defaults.fileManager != "nemo" then null else pkgs.nemo;
+
+  # Always include hyprland itself when enabled. Related utilities and extras are controlled by packages.
+  hyprlandPkgs = [
+    pkgs.hypridle
+    pkgs.hyprlock
+    pkgs.hyprpaper
+  ] ++ lib.filter (x: x != null) [defaultTerminalPkg defaultBrowserPkg defaultFileMgrPkg] ++ cfg.packages.extra;
+
 in
 {
-  options.settings.programs.hyprland.enable = mkEnableOption "Hyprland window manager configuration";
+  options.modules.programs.hyprland = {
+    enable = mkEnableOption "Enable Hyprland window manager";
+
+    packages = {
+      enable = mkEnableOption "Install Hyprland-related packages";
+
+      extra = mkOption {
+        type = types.listOf types.package;
+        default = [];
+        description = "Extra packages to install with Hyprland";
+      };
+    };
+
+    defaults = {
+      terminal = mkOption { type = types.str; default = "ghostty"; };
+      browser = mkOption { type = types.str; default = "brave"; };
+      fileManager = mkOption { type = types.str; default = "nemo"; };
+    };
+  };
 
   config = mkIf cfg.enable {
     home = {
-      packages = with pkgs; [
-        rofi-wayland # Application launcher
-        waypaper # Wallpaper selector
-        playerctl # Media player control
-      ];
+      # Always include hyprland itself when enabled
+      packages = [ pkgs.hyprland ] ++ (if cfg.packages.enable then hyprlandPkgs else []);
 
       file = {
         ".config/hypr/hypridle.conf" = {

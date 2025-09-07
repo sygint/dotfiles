@@ -25,7 +25,7 @@ in
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
 
-  settings = {
+  modules = {
     hardware = {
       bluetooth.enable = true;
       audio.enable = true;

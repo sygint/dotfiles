@@ -7,10 +7,10 @@
 let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
-  cfg = config.settings.programs.kitty;
+  cfg = config.modules.programs.kitty;
 in
 {
-  options.settings.programs.kitty.enable = mkEnableOption "Kitty terminal emulator";
+  options.modules.programs.kitty.enable = mkEnableOption "Kitty terminal emulator";
 
   config = mkIf cfg.enable {
     home = {

@@ -7,10 +7,10 @@
 let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
-  cfg = config.settings.programs.hyprpanel;
+  cfg = config.modules.programs.hyprpanel;
 in
 {
-  options.settings.programs.hyprpanel.enable = mkEnableOption "HyprPanel - A Bar/Panel for Hyprland";
+  options.modules.programs.hyprpanel.enable = mkEnableOption "HyprPanel - A Bar/Panel for Hyprland";
 
   config = mkIf cfg.enable {
     # Install hyprpanel from nixpkgs

@@ -18,7 +18,7 @@ in
   };
 
   # Base programs that every user should have regardless of system
-  settings = {
+  modules = {
     programs = {
       # Core utilities - essential for everyone
       btop.enable = true;

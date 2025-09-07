@@ -7,10 +7,10 @@
 let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
-  cfg = config.settings.programs.btop;
+  cfg = config.modules.programs.btop;
 in
 {
-  options.settings.programs.btop.enable = mkEnableOption "btop system monitor";
+  options.modules.programs.btop.enable = mkEnableOption "btop system monitor";
 
   config = mkIf cfg.enable {
     home.packages = [ pkgs.btop ];

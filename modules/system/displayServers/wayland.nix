@@ -6,10 +6,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.wayland;
+  cfg = config.modules.wayland;
 in
 {
-  options.settings.wayland.enable = mkEnableOption "Wayland";
+  options.modules.wayland.enable = mkEnableOption "Wayland";
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [

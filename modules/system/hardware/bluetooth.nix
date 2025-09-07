@@ -5,10 +5,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.hardware.bluetooth;
+  cfg = config.modules.hardware.bluetooth;
 in
 {
-  options.settings.hardware.bluetooth.enable = mkEnableOption "Bluetooth";
+  options.modules.hardware.bluetooth.enable = mkEnableOption "Bluetooth";
 
   config = mkIf cfg.enable {
     hardware.bluetooth = {

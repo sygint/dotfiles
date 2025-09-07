@@ -6,10 +6,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.services.containerization;
+  cfg = config.modules.services.containerization;
 in
 {
-  options.settings.services.containerization = {
+  options.modules.services.containerization = {
     enable = mkEnableOption "Enable Containerization (Podman)";
 
     service = lib.mkOption {

@@ -6,10 +6,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf mkMerge;
-  cfg = config.settings.services.virtualization;
+  cfg = config.modules.services.virtualization;
 in
 {
-  options.settings.services.virtualization = {
+  options.modules.services.virtualization = {
     enable = mkEnableOption "Enable Virtualization (VirtualBox or QEMU)";
 
     service = lib.mkOption {

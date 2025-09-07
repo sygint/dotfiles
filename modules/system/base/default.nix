@@ -11,7 +11,7 @@
   };
 
   # Base system settings
-  settings = {
+  modules = {
     system.security.enable = true;
     programs.nix-helpers.enable = true;
   };

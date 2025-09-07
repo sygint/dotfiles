@@ -1,5 +1,16 @@
 # NixOS Configuration
 
+## Namespace Strategy
+
+This configuration uses a custom namespace for all user-defined modules to avoid collisions with upstream Home Manager modules and keep things modular and future-proof.
+
+- **Custom modules:** Options and config are defined under `modules.programs.<name>` (e.g., `modules.programs.protonmail-bridge`).
+- **Upstream modules:** Configuration uses the standard `programs.<name>` namespace (e.g., `programs.kitty`).
+- **Why:** This avoids any risk of collision if Home Manager adds support for a program you already manage, and keeps your config organized.
+- **If a collision occurs:** Refactor your custom module to a new namespace or migrate to the upstream module as needed.
+
+This strategy is documented here for clarity and future maintainers.
+
 This repository contains my personal NixOS and Home Manager configuration using Nix flakes.
 
 ## 📁 Structure

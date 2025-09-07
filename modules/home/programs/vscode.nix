@@ -6,10 +6,10 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.settings.programs.vscode;
+  cfg = config.modules.programs.vscode;
 in
 {
-  options.settings.programs.vscode.enable = mkEnableOption "Visual Studio Code code editor";
+  options.modules.programs.vscode.enable = mkEnableOption "Visual Studio Code code editor";
 
   config = mkIf cfg.enable {
     # Build VS Code with selected extensions included. Installing extension

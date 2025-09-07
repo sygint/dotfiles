@@ -4,10 +4,10 @@ let
   inherit (lib) mkEnableOption mkIf;
   gitUsername = userVars.user.git.username;
   gitEmail = userVars.user.git.email;
-  cfg = config.settings.programs.git;
+  cfg = config.modules.programs.git;
 in
 {
-  options.settings.programs.git.enable = mkEnableOption "Git version control";
+  options.modules.programs.git.enable = mkEnableOption "Git version control";
 
   config = mkIf cfg.enable {
     home.packages = [ pkgs.git ];
