@@ -120,6 +120,6 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
 # --- nixos
   alias update="nh os switch && chezmoi apply"
 
-# --- chezmoi
-  alias update_dotfiles="chezmoi apply"
-  export CHEZMOI_CONFIGFILE="$NIXOS_CONFIG_DIR/dotfiles/chezmoi.toml"
+# --- nix helper
+  alias nos="nh os switch"
+  alias nhs="nh home switch"
