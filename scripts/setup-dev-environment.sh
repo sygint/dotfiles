@@ -39,12 +39,11 @@ check_git() {
 set_repo_root() {
     REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || echo "$(pwd)")"
     cd "$REPO_ROOT"
-    echo -e "${BLUE}🔧 Setting up NixOS configuration repository...${NC}"
     echo -e "${BLUE}Repo root:${NC} $REPO_ROOT"
 }
 
 print_namespace_strategy() {
-    echo -e "${BLUE}ℹ️ Namespace Strategy:${NC}"
+    echo -e "\n${BLUE}ℹ️ Namespace Strategy:${NC}"
     echo -e "• Custom modules should use the 'modules.programs.<name>' namespace for options and config."
     echo -e "• Upstream Home Manager modules use the standard 'programs.<name>' namespace for configuration."
     echo -e "• See README.md and CONTRIBUTING.md for details."
@@ -74,9 +73,28 @@ install_git_hooks() {
         rm "$PRE_COMMIT"
     fi
     if [ -f "scripts/git-hooks/pre-commit" ]; then
-        cp "scripts/git-hooks/pre-commit" "$PRE_COMMIT"
-        chmod +x "$PRE_COMMIT"
-        echo -e "${GREEN}✓${NC} Installed pre-commit hook"
+        # create an idempotent symlink in .git/hooks to the canonical script
+        if [ -L "$PRE_COMMIT" ]; then
+            # if symlink exists and points to the right target, do nothing
+            target=$(readlink -f "$PRE_COMMIT" || true)
+            want=$(readlink -f "scripts/git-hooks/pre-commit")
+            if [ "$target" = "$want" ]; then
+                echo -e "${GREEN}✓${NC} Pre-commit hook symlink already in place"
+            else
+                rm "$PRE_COMMIT"
+                ln -s "$want" "$PRE_COMMIT"
+                chmod +x "scripts/git-hooks/pre-commit"
+                echo -e "${GREEN}✓${NC} Updated pre-commit hook symlink"
+            fi
+        else
+            # remove existing file if it's not the desired symlink
+            if [ -e "$PRE_COMMIT" ]; then
+                rm -f "$PRE_COMMIT"
+            fi
+            ln -s "$(readlink -f scripts/git-hooks/pre-commit)" "$PRE_COMMIT"
+            chmod +x "scripts/git-hooks/pre-commit"
+            echo -e "${GREEN}✓${NC} Installed pre-commit hook (symlink)"
+        fi
     else
         echo -e "${YELLOW}⚠ Pre-commit hook script not found at scripts/git-hooks/pre-commit${NC}"
     fi
@@ -86,9 +104,25 @@ install_git_hooks() {
         rm "$PRE_PUSH"
     fi
     if [ -f "scripts/git-hooks/pre-push" ]; then
-        cp "scripts/git-hooks/pre-push" "$PRE_PUSH"
-        chmod +x "$PRE_PUSH"
-        echo -e "${GREEN}✓${NC} Installed pre-push hook"
+        if [ -L "$PRE_PUSH" ]; then
+            target=$(readlink -f "$PRE_PUSH" || true)
+            want=$(readlink -f "scripts/git-hooks/pre-push")
+            if [ "$target" = "$want" ]; then
+                echo -e "${GREEN}✓${NC} Pre-push hook symlink already in place"
+            else
+                rm "$PRE_PUSH"
+                ln -s "$want" "$PRE_PUSH"
+                chmod +x "scripts/git-hooks/pre-push"
+                echo -e "${GREEN}✓${NC} Updated pre-push hook symlink"
+            fi
+        else
+            if [ -e "$PRE_PUSH" ]; then
+                rm -f "$PRE_PUSH"
+            fi
+            ln -s "$(readlink -f scripts/git-hooks/pre-push)" "$PRE_PUSH"
+            chmod +x "scripts/git-hooks/pre-push"
+            echo -e "${GREEN}✓${NC} Installed pre-push hook (symlink)"
+        fi
     fi
 }
 
@@ -132,13 +166,15 @@ test_configuration() {
 
 check_dev_tools() {
     echo -e "\n${BLUE}🛠️ Development tools...${NC}"
-    DEV_TOOLS=("nixpkgs-fmt" "alejandra" "statix" "deadnix" "nix-tree" "nvd")
+    DEV_TOOLS=("jq" "nixpkgs-fmt" "alejandra" "statix" "deadnix" "nix-tree" "nvd")
+    MISSING=()
     for tool in "${DEV_TOOLS[@]}"; do
         if command -v "$tool" >/dev/null 2>&1; then
             echo -e "${GREEN}✓${NC} $tool is available"
         else
             echo -e "${YELLOW}⚠${NC} $tool is not installed (optional but useful)"
             case $tool in
+                "jq") echo "  Purpose: JSON parsing for hooks and tooling" ;;
                 "nixpkgs-fmt"|"alejandra") echo "  Purpose: Nix code formatting" ;;
                 "statix") echo "  Purpose: Nix linting and best practices" ;;
                 "deadnix") echo "  Purpose: Find unused Nix code" ;;
@@ -146,8 +182,13 @@ check_dev_tools() {
                 "nvd") echo "  Purpose: Compare system generations" ;;
             esac
             echo "  Install with: nix profile install nixpkgs#$tool"
+            MISSING+=("$tool")
         fi
     done
+
+    if [ ${#MISSING[@]} -ne 0 ]; then
+        echo -e "\n${YELLOW}Missing dev tools:${NC} ${MISSING[*]}"
+    fi
 }
 
 print_dev_tools_summary() {

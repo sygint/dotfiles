@@ -1,213 +1,258 @@
 #!/usr/bin/env bash
-#
-# Pre-commit hook for NixOS configuration validation
-# This hook runs various checks before allowing commits
-#
-
 set -euo pipefail
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Pre-commit hook for NixOS configuration validation
+# This hook runs various checks before allowing commits
 
-# Configuration
-REPO_ROOT="$(git rev-parse --show-toplevel)"
-cd "$REPO_ROOT"
+## Colors
+GREEN="\033[0;32m"
+YELLOW="\033[1;33m"
+RED="\033[0;31m"
+BLUE="\033[0;34m"
+NC="\033[0m"
 
-echo -e "${BLUE}🔍 Running NixOS configuration validation...${NC}"
+main() {
+    set_repo_root
+    print_header
+    check_nix_syntax
+    check_formatting
+    check_security
+    check_secrets
+    check_nixos_config
+    check_build_test
+    check_large_files
+    print_summary
+}
 
-# Track if any checks fail
-FAILED=0
+set_repo_root() {
+    REPO_ROOT="$(git rev-parse --show-toplevel)"
+    cd "$REPO_ROOT" || exit
+}
 
-# Function to log results
+print_header() {
+    echo -e "${BLUE}🔍 Running NixOS configuration validation...${NC}"
+    FAILED=0
+}
+
+check_nix_syntax() {
+    echo -e "\n${BLUE}1. Checking Nix syntax and evaluation...${NC}"
+    if nix flake check --no-build 2>/dev/null; then
+        log_success "Nix syntax and evaluation passed"
+    else
+        log_error "Nix syntax or evaluation errors found"
+        echo "Run 'nix flake check' for details"
+    fi
+}
+
+check_formatting() {
+    echo -e "\n${BLUE}2. Checking code formatting...${NC}"
+    staged_nix_files=$(git diff --cached --name-only | grep -E '\.nix$' || true)
+    if [ -n "${staged_nix_files}" ]; then
+        if echo "$staged_nix_files" | xargs grep -l $'\t' 2>/dev/null; then
+            log_warning "Found tabs in Nix files (consider using spaces)"
+        else
+            log_success "No tabs found in staged Nix files"
+        fi
+    else
+        log_warn "No staged Nix files to check for tabs"
+    fi
+    if git diff --cached --check 2>/dev/null; then
+        log_success "No trailing whitespace found"
+    else
+        log_warning "Trailing whitespace found (will be highlighted above)"
+    fi
+}
+
+check_security() {
+    echo -e "\n${BLUE}3. Running security configuration checks...${NC}"
+    SECURITY_ISSUES=0
+    if grep -r -A5 "settings\s*=" systems/ 2>/dev/null | grep -q "security\s*=" || grep -r "security\s*=" systems/ 2>/dev/null >/dev/null; then
+        log_success "Security module is configured"
+    else
+        log_warning "Security module might not be configured"
+    fi
+    if grep -r "^\s*[^#]*firewall\.enable\s*=\s*false" . 2>/dev/null | grep -v ".git" | grep -v "pre-commit"; then
+        log_error "Found disabled firewall configuration"
+        SECURITY_ISSUES=1
+    fi
+    if grep -r "PasswordAuthentication.*=.*true" . 2>/dev/null | grep -v ".git" | grep -v "pre-commit"; then
+        log_error "Found SSH password authentication enabled"
+        SECURITY_ISSUES=1
+    fi
+    if grep -r "PermitRootLogin.*=.*yes" . 2>/dev/null | grep -v ".git" | grep -v "pre-commit"; then
+        log_error "Found root SSH login enabled"
+        SECURITY_ISSUES=1
+    fi
+    if [ $SECURITY_ISSUES -eq 0 ]; then
+        log_success "No obvious security issues found"
+    fi
+}
+
+check_secrets() {
+    echo -e "\n${BLUE}4. Checking for potential secrets...${NC}"
+    SECRETS_FOUND=0
+    SECRET_PATTERNS=(
+        "password.*=.*\".*\""
+        "secret.*=.*\".*\""
+        "key.*=.*\".*[A-Za-z0-9]{16,}\""
+        "token.*=.*\".*[A-Za-z0-9]{16,}\""
+        "api.*key.*=.*\".*[A-Za-z0-9]{16,}\""
+    )
+
+    # Check each staged file individually to avoid complex pipelines that can
+    # trigger 'set -e' on non-zero exits.
+    staged_files=$(git diff --cached --name-only --diff-filter=ACM | \
+        grep -v -E '\.(example|template|sample)$' | \
+        grep -v '^scripts/git-hooks/' || true)
+
+    if [ -z "$staged_files" ]; then
+        log_warn "No staged files to scan for secrets"
+        return
+    fi
+
+    while IFS= read -r file; do
+        # skip empty names
+        if [ -z "$file" ]; then
+            continue
+        fi
+
+        # If 'file' is available, use it to skip non-text files. Otherwise
+        # rely on grep -I which ignores binary files on most systems.
+        if command -v file >/dev/null 2>&1; then
+            if file --mime-type -b "$file" | grep -qv text; then
+                continue
+            fi
+        fi
+
+        for pattern in "${SECRET_PATTERNS[@]}"; do
+            if grep -I -n -i -E "$pattern" "$file" >/dev/null 2>&1; then
+                log_warning "Potential secret in $file matching pattern: $pattern"
+                SECRETS_FOUND=1
+            fi
+        done
+    done <<< "$staged_files"
+
+    if [ $SECRETS_FOUND -eq 0 ]; then
+        log_success "No obvious secrets found"
+    fi
+}
+
+check_nixos_config() {
+    echo -e "\n${BLUE}5. Validating NixOS-specific configurations...${NC}"
+    CONFIG_ISSUES=0
+    # Dynamically check system.stateVersion for all flake nixosConfigurations
+    # Use `nix flake show --json` to enumerate configuration keys without
+    # forcing a full JSON serialization of module functions (which often fails).
+    if command -v jq >/dev/null 2>&1 && nix flake show --json >/dev/null 2>&1; then
+        systems=$(nix flake show --json | jq -r '.nixosConfigurations? // {} | keys[]' 2>/dev/null || true)
+        missing=0
+        for sys in $systems; do
+            if ! nix eval --raw ".#nixosConfigurations.\"$sys\".config.system.stateVersion" >/dev/null 2>&1; then
+                log_error "Missing system.stateVersion for $sys"
+                CONFIG_ISSUES=1
+                missing=1
+            fi
+        done
+        if [ ${#systems} -eq 0 ] || [ -z "$systems" ]; then
+            log_warn "No nixosConfigurations found in the flake"
+        elif [ $missing -eq 0 ]; then
+            log_success "All nixosConfigurations include system.stateVersion"
+        fi
+    else
+        log_warn "jq or 'nix flake show' not available; skipping per-system stateVersion checks"
+    fi
+    if [ ! -d "modules/system" ] || [ ! -d "modules/home" ]; then
+        log_error "Missing required module directories (modules/system or modules/home)"
+        CONFIG_ISSUES=1
+    fi
+    if [ ! -f "flake.nix" ]; then
+        log_error "Missing flake.nix file"
+        CONFIG_ISSUES=1
+    fi
+    broken_imports=0
+    for nix_file in $(find . -name "*.nix" -not -path "./.git/*" | head -50); do
+        if grep -q "^\s*\./" "$nix_file" 2>/dev/null; then
+            while IFS= read -r import_line; do
+                # Extract the first './path' occurrence using parameter expansion to avoid quoting issues
+                tmp="${import_line#*./}"
+                if [ "$tmp" != "$import_line" ]; then
+                    # Strip everything after the first double-quote or space
+                    import_path="./${tmp%%[\" ]*}"
+                else
+                    import_path=""
+                fi
+                if [ -n "$import_path" ]; then
+                    full_path="$(dirname "$nix_file")/$import_path"
+                    if [ ! -f "$full_path" ] && [ ! -d "$full_path" ] && [ ! -f "$full_path.nix" ]; then
+                        log_error "Broken import in $nix_file: $import_path"
+                        broken_imports=1
+                    fi
+                fi
+            done < <(grep "^\s*\./" "$nix_file" 2>/dev/null)
+        fi
+    done
+    if [ $broken_imports -eq 1 ]; then
+        CONFIG_ISSUES=1
+    fi
+    if [ $CONFIG_ISSUES -eq 0 ]; then
+        log_success "NixOS configuration structure looks good"
+    fi
+}
+
+check_build_test() {
+    if [ "${NIXOS_VALIDATE_BUILD:-false}" = "true" ]; then
+        echo -e "\n${BLUE}6. Testing build (this may take a while)...${NC}"
+        if nix build .#nixosConfigurations.nixos.config.system.build.toplevel --no-link 2>/dev/null; then
+            log_success "Configuration builds successfully"
+        else
+            log_error "Configuration fails to build"
+        fi
+    else
+        echo -e "\n${BLUE}6. Skipping build test${NC} (set NIXOS_VALIDATE_BUILD=true to enable)"
+    fi
+}
+
+check_large_files() {
+    echo -e "\n${BLUE}7. Checking for large files...${NC}"
+    LARGE_FILES=0
+    while IFS= read -r file; do
+        size=$(git cat-file -s ":$file" 2>/dev/null || echo 0)
+        if [ "$size" -gt 1048576 ]; then
+            log_warning "Large file found: $file ($(( size / 1024 ))KB)"
+            LARGE_FILES=1
+        fi
+    done < <(git diff --cached --name-only)
+    if [ $LARGE_FILES -eq 0 ]; then
+        log_success "No large files found"
+    fi
+}
+
+print_summary() {
+    echo -e "\n${BLUE}📋 Validation Summary${NC}"
+    if [ $FAILED -eq 0 ]; then
+        echo -e "${GREEN}🎉 All critical checks passed! Commit proceeding...${NC}"
+        exit 0
+    else
+        echo -e "${RED}💥 Some critical checks failed. Commit blocked.${NC}"
+        echo -e "${YELLOW}💡 Fix the issues above or use git commit --no-verify to bypass${NC}"
+        exit 1
+    fi
+}
+
+# Logging functions
 log_success() {
     echo -e "${GREEN}✓${NC} $1"
 }
-
 log_warning() {
     echo -e "${YELLOW}⚠${NC} $1"
 }
-
+log_warn() {
+    # Backwards-compatible alias used in several checks
+    log_warning "$1"
+}
 log_error() {
     echo -e "${RED}✗${NC} $1"
     FAILED=1
 }
 
-# 1. Check Nix syntax and evaluation
-echo -e "\n${BLUE}1. Checking Nix syntax and evaluation...${NC}"
-if nix flake check --no-build 2>/dev/null; then
-    log_success "Nix syntax and evaluation passed"
-else
-    log_error "Nix syntax or evaluation errors found"
-    echo "Run 'nix flake check' for details"
-fi
-
-# 2. Check for common formatting issues
-echo -e "\n${BLUE}2. Checking code formatting...${NC}"
-
-# Check for tabs (should use spaces in Nix)
-if git diff --cached --name-only | grep -E '\.(nix)$' | xargs grep -l $'\t' 2>/dev/null; then
-    log_warning "Found tabs in Nix files (consider using spaces)"
-else
-    log_success "No tabs found in Nix files"
-fi
-
-# Check for trailing whitespace
-if git diff --cached --check 2>/dev/null; then
-    log_success "No trailing whitespace found"
-else
-    log_warning "Trailing whitespace found (will be highlighted above)"
-fi
-
-# 3. Security-specific checks
-echo -e "\n${BLUE}3. Running security configuration checks...${NC}"
-
-# Check if security module is properly configured
-if grep -r -A5 "settings\s*=" systems/ 2>/dev/null | grep -q "security\s*=" || grep -r "security\s*=" systems/ 2>/dev/null >/dev/null; then
-    log_success "Security module is configured"
-else
-    log_warning "Security module might not be configured"
-fi
-
-# Check for potential security issues
-SECURITY_ISSUES=0
-
-# Check for disabled firewall (exclude comments)
-if grep -r "^\s*[^#]*firewall\.enable\s*=\s*false" . 2>/dev/null | grep -v ".git" | grep -v "pre-commit"; then
-    log_error "Found disabled firewall configuration"
-    SECURITY_ISSUES=1
-fi
-
-# Check for SSH with password authentication
-if grep -r "PasswordAuthentication.*=.*true" . 2>/dev/null | grep -v ".git" | grep -v "pre-commit"; then
-    log_error "Found SSH password authentication enabled"
-    SECURITY_ISSUES=1
-fi
-
-# Check for root login enabled
-if grep -r "PermitRootLogin.*=.*yes" . 2>/dev/null | grep -v ".git" | grep -v "pre-commit"; then
-    log_error "Found root SSH login enabled"
-    SECURITY_ISSUES=1
-fi
-
-if [ $SECURITY_ISSUES -eq 0 ]; then
-    log_success "No obvious security issues found"
-fi
-
-# 4. Check for secrets or sensitive information
-echo -e "\n${BLUE}4. Checking for potential secrets...${NC}"
-
-SECRETS_FOUND=0
-
-# Common patterns that might indicate secrets
-SECRET_PATTERNS=(
-    "password.*=.*\".*\""
-    "secret.*=.*\".*\""
-    "key.*=.*\".*[A-Za-z0-9]{16,}\""
-    "token.*=.*\".*[A-Za-z0-9]{16,}\""
-    "api.*key.*=.*\".*[A-Za-z0-9]{16,}\""
-)
-
-for pattern in "${SECRET_PATTERNS[@]}"; do
-    # Check staged files but exclude example/template files and git-hooks directory
-    staged_files=$(git diff --cached --name-only | grep -v -E '\.(example|template|sample)$' | grep -v '\.example\.' | grep -v 'scripts/git-hooks/')
-    if [ -n "$staged_files" ] && echo "$staged_files" | xargs grep -l -i -E "$pattern" 2>/dev/null; then
-        log_warning "Potential secret found matching pattern: $pattern"
-        SECRETS_FOUND=1
-    fi
-done
-
-if [ $SECRETS_FOUND -eq 0 ]; then
-    log_success "No obvious secrets found"
-fi
-
-# 5. Validate specific NixOS configurations
-echo -e "\n${BLUE}5. Validating NixOS-specific configurations...${NC}"
-
-# Check for basic Nix configuration issues
-CONFIG_ISSUES=0
-
-# Check for missing required configurations
-if ! grep -r "system\.stateVersion" systems/ >/dev/null 2>&1; then
-    log_error "Missing system.stateVersion in system configuration"
-    CONFIG_ISSUES=1
-fi
-
-# Check for proper module structure
-if [ ! -d "modules/system" ] || [ ! -d "modules/home" ]; then
-    log_error "Missing required module directories (modules/system or modules/home)"
-    CONFIG_ISSUES=1
-fi
-
-# Check for proper flake structure
-if [ ! -f "flake.nix" ]; then
-    log_error "Missing flake.nix file"
-    CONFIG_ISSUES=1
-fi
-
-# Check for broken relative imports (simple validation)
-broken_imports=0
-for nix_file in $(find . -name "*.nix" -not -path "./.git/*" | head -50); do
-    if grep -q "^\s*\./" "$nix_file" 2>/dev/null; then
-        # Found relative import, do basic validation
-        while IFS= read -r import_line; do
-            import_path=$(echo "$import_line" | sed -n 's/.*\(\.\/[^"]*\).*/\1/p' | head -1)
-            if [ -n "$import_path" ]; then
-                full_path="$(dirname "$nix_file")/$import_path"
-                if [ ! -f "$full_path" ] && [ ! -d "$full_path" ] && [ ! -f "$full_path.nix" ]; then
-                    log_error "Broken import in $nix_file: $import_path"
-                    broken_imports=1
-                fi
-            fi
-        done < <(grep "^\s*\./" "$nix_file" 2>/dev/null)
-    fi
-done
-
-if [ $broken_imports -eq 1 ]; then
-    CONFIG_ISSUES=1
-fi
-
-if [ $CONFIG_ISSUES -eq 0 ]; then
-    log_success "NixOS configuration structure looks good"
-fi
-
-# 6. Quick build test (optional - can be slow)
-if [ "${NIXOS_VALIDATE_BUILD:-false}" = "true" ]; then
-    echo -e "\n${BLUE}6. Testing build (this may take a while)...${NC}"
-    if nix build .#nixosConfigurations.nixos.config.system.build.toplevel --no-link 2>/dev/null; then
-        log_success "Configuration builds successfully"
-    else
-        log_error "Configuration fails to build"
-    fi
-else
-    echo -e "\n${BLUE}6. Skipping build test${NC} (set NIXOS_VALIDATE_BUILD=true to enable)"
-fi
-
-# 7. Check for large files
-echo -e "\n${BLUE}7. Checking for large files...${NC}"
-LARGE_FILES=0
-while IFS= read -r file; do
-    size=$(git cat-file -s ":$file" 2>/dev/null || echo 0)
-    if [ "$size" -gt 1048576 ]; then  # 1MB
-        log_warning "Large file found: $file ($(( size / 1024 ))KB)"
-        LARGE_FILES=1
-    fi
-done < <(git diff --cached --name-only)
-
-if [ $LARGE_FILES -eq 0 ]; then
-    log_success "No large files found"
-fi
-
-# Summary
-echo -e "\n${BLUE}📋 Validation Summary${NC}"
-if [ $FAILED -eq 0 ]; then
-    echo -e "${GREEN}🎉 All critical checks passed! Commit proceeding...${NC}"
-    exit 0
-else
-    echo -e "${RED}💥 Some critical checks failed. Commit blocked.${NC}"
-    echo -e "${YELLOW}💡 Fix the issues above or use 'git commit --no-verify' to bypass${NC}"
-    exit 1
-fi
+main "$@"
