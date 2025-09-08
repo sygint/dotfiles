@@ -29,10 +29,15 @@ in
           bradlc.vscode-tailwindcss
           yzhang.markdown-all-in-one
 
+          # productivity
+          streetsidesoftware.code-spell-checker
+          usernamehw.errorlens
+          dbaeumer.vscode-eslint
+          alefragnani.project-manager
+          ryu1kn.partial-diff
           timonwong.shellcheck
 
           # git
-          # maattdd.gitless
           mhutchie.git-graph
 
           # copilot
@@ -50,6 +55,18 @@ in
             publisher = "maattdd";
             version = "11.7.2";
             sha256 = "sha256-rYeZNBz6HeZ059ksChGsXbuOao9H5m5lHGXJ4ELs6xc=";
+          }
+          # {
+          #   name = "pretty-ts-error";
+          #   publisher = "yoavbls";
+          #   version = "0.6.1";
+          #   sha256 = "";
+          # }
+          {
+            name = "specstory-vscode";
+            publisher = "specstory";
+            version = "0.19.1";
+            sha256 = "sha256-ivCZL7lJ1G3sb2VQyoxO4KdG7dHJldagpYlmYpOdmVo=";
           }
           {
             name = "vscode-kanbn-boards";
