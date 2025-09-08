@@ -30,6 +30,7 @@
     
     # Essential CLI applications
     curl
+    file
     gnupg
     jq
     killall
