@@ -36,7 +36,7 @@
             userVars = userConfig;
           };
           modules = [
-            ./modules/home/base
+            ./systems/orion/homes/syg.nix
             {
               nixpkgs.config.allowUnfree = true;
             }
