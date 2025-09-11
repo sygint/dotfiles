@@ -15,6 +15,8 @@
       packages.enable = true;
     };
 
+    waybar.enable = true;      # Enable Waybar
+
     screenshots.enable = true;
     brave.enable = true;
     librewolf.enable = true;

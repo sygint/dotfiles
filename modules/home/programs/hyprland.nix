@@ -3,16 +3,22 @@ let
   inherit (lib) mkEnableOption mkOption mkIf types;
   inherit (config.lib.file) mkOutOfStoreSymlink;
   cfg = config.modules.programs.hyprland;
+  barCfg = config.modules.programs.desktopBar;
 
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
     lib.replaceStrings
-      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" ]
+      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@desktopBarScript@" ]
       [
         (userVars.user.hyprland.terminal or "ghostty")
         (userVars.user.hyprland.fileManager or "nemo")
         (userVars.user.hyprland.webBrowser or "brave")
         (userVars.user.hyprland.menu or "rofi")
+        (
+          if barCfg.type == "waybar" then "$NIXOS_CONFIG_DIR/scripts/start-waybar.sh"
+          else if barCfg.type == "hyprpanel" then "$NIXOS_CONFIG_DIR/scripts/start-hyprpanel.sh"
+          else ""
+        )
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)
   );
@@ -48,6 +54,13 @@ in
       browser = mkOption { type = types.str; default = "brave"; };
       fileManager = mkOption { type = types.str; default = "nemo"; };
     };
+  };
+
+  # Desktop bar type option (shared)
+  options.modules.programs.desktopBar.type = mkOption {
+    type = types.enum [ "waybar" "hyprpanel" "none" ];
+    default = "waybar";
+    description = "Which desktop bar to start (waybar, hyprpanel, none)";
   };
 
   config = mkIf cfg.enable {
