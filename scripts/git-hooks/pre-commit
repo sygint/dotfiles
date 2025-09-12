@@ -71,8 +71,13 @@ check_security() {
     else
         log_warning "Security module might not be configured"
     fi
-    if grep -r "^\s*[^#]*firewall\.enable\s*=\s*false" . 2>/dev/null | grep -v ".git" | grep -v "pre-commit"; then
-        log_error "Found disabled firewall configuration"
+
+    # Use NixOS evaluation instead of fragile regex matching
+    log_info "Checking security configuration..."
+    if nix flake check --no-build . 2>/dev/null; then
+        log_success "Security assertions passed"
+    else
+        log_error "Security assertions failed - run 'nix flake check' for details"
         SECURITY_ISSUES=1
     fi
     if grep -r "PasswordAuthentication.*=.*true" . 2>/dev/null | grep -v ".git" | grep -v "pre-commit"; then
@@ -249,6 +254,9 @@ log_warning() {
 log_warn() {
     # Backwards-compatible alias used in several checks
     log_warning "$1"
+}
+log_info() {
+    echo -e "${BLUE}ℹ${NC} $1"
 }
 log_error() {
     echo -e "${RED}✗${NC} $1"

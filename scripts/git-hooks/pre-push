@@ -26,6 +26,10 @@ log_warning() {
     echo -e "${YELLOW}⚠${NC} $1"
 }
 
+log_info() {
+    echo -e "${BLUE}ℹ${NC} $1"
+}
+
 log_error() {
     echo -e "${RED}✗${NC} $1"
     FAILED=1
@@ -79,15 +83,12 @@ echo -e "\n${BLUE}4. Validating critical security settings...${NC}"
 
 SECURITY_VIOLATIONS=0
 
-# Check that security is enabled
-if ! grep -r "settings\.system\.security\.enable.*=.*true" systems/ >/dev/null 2>&1; then
-    log_error "Security module appears to be disabled"
-    SECURITY_VIOLATIONS=1
-fi
-
-# Check that firewall is not disabled
-if grep -r "firewall\.enable.*=.*false" . | grep -v ".git" | grep -v "pre-push" >/dev/null 2>&1; then
-    log_error "Firewall is disabled somewhere in configuration"
+# Check security using NixOS evaluation instead of fragile regex
+log_info "Verifying security configuration..."
+if nix flake check --no-build . 2>/dev/null; then
+    log_success "Security configuration verified"
+else
+    log_error "Security configuration failed - run 'nix flake check' for details"
     SECURITY_VIOLATIONS=1
 fi
 

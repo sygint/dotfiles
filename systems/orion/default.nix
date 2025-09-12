@@ -209,6 +209,8 @@ in
     "vscode-extension-mhutchie-git-graph"
   ];
 
+  nix.settings.trusted-users = [ "root" "syg" ];
+
   # Base Nix settings, like flakes, are handled in base config
 
   # Some programs need SUID wrappers, can be configured further or are
