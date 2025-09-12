@@ -8,7 +8,7 @@ let
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
     lib.replaceStrings
-      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@desktopBarScript@" ]
+      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@desktopBarScript@" "@makoStartup@" ]
       [
         (userVars.user.hyprland.terminal or "ghostty")
         (userVars.user.hyprland.fileManager or "nemo")
@@ -18,6 +18,10 @@ let
           if barCfg.type == "waybar" then "$NIXOS_CONFIG_DIR/scripts/start-waybar.sh"
           else if barCfg.type == "hyprpanel" then "$NIXOS_CONFIG_DIR/scripts/start-hyprpanel.sh"
           else ""
+        )
+        (
+          if barCfg.type == "waybar" then "exec-once = mako"
+          else "# mako not needed - using hyprpanel notifications"
         )
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)
@@ -32,7 +36,10 @@ let
   hyprlandPkgs = [
     pkgs.hypridle
     pkgs.hyprlock
-  ] ++ lib.filter (x: x != null) [defaultTerminalPkg defaultBrowserPkg defaultFileMgrPkg] ++ cfg.packages.extra;
+    pkgs.brightnessctl  # For screen brightness control
+  ] ++ lib.filter (x: x != null) [defaultTerminalPkg defaultBrowserPkg defaultFileMgrPkg] ++ cfg.packages.extra
+    # Only include mako when using waybar (hyprpanel has its own notification system)
+    ++ lib.optionals (barCfg.type == "waybar") [ pkgs.mako ];
 
 in
 {
@@ -89,6 +96,29 @@ in
           source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/rofi/config.rasi";
           force = true;
         };
+      };
+    };
+
+    # Start mako notification daemon only when using waybar
+    # (HyprPanel has its own notification system)
+    services.mako = mkIf (barCfg.type == "waybar") {
+      enable = true;
+      settings = lib.mkForce {
+        default-timeout = 5000;
+        anchor = "top-right";
+        background-color = "#1e1e2e";
+        text-color = "#cdd6f4";
+        border-color = "#89b4fa";
+        border-size = 2;
+        border-radius = 10;
+        font = "Inter 11";
+        width = 300;
+        height = 100;
+        margin = "10";
+        padding = "10";
+        max-visible = 5;
+        group-by = "app-name";
+        actions = 1;
       };
     };
   };

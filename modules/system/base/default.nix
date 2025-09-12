@@ -21,6 +21,14 @@
     zsh.enable = true;
     nix-index.enable = true;
     command-not-found.enable = false;
+    dconf.enable = true;  # Required for many desktop services
+  };
+
+  # Essential system services
+  services = {
+    dbus.enable = true;
+    udisks2.enable = true;  # Disk mounting
+    upower.enable = true;   # Power management
   };
 
   # Core system packages - essential for any NixOS system

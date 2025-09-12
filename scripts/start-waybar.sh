@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# Ensure Bluetooth is unblocked and powered on
-/home/syg/.config/nixos/scripts/bluetooth-startup.sh &
+# Kill any existing instances first (but not this script)
+pkill -x waybar
+pkill -x blueman-applet
+
+# Wait a moment for clean shutdown
+sleep 0.5
 
 # Start blueman-applet for bluetooth support
 blueman-applet 2>/dev/null &
