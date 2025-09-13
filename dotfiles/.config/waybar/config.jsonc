@@ -11,6 +11,7 @@
     "disable-scroll": true,
     "all-outputs": true,
     "format": "{name}: {icon}",
+    "swap-icon-label": false,
     "format-icons": {
       "1": "󰲠",
       "2": "󰲢",
