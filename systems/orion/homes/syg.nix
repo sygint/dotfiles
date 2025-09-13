@@ -3,6 +3,7 @@
   imports = [
     ../../../modules/home/base-desktop
     ../../../modules/home.nix
+    ./extra-programs.nix
   ];
 
   home.packages = with pkgs; [
