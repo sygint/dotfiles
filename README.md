@@ -1,6 +1,220 @@
 # NixOS Configuration
 
-## Namespace Strategy
+## 🏗️ Architecture Overview
+
+This repository implements a modular, composable NixOS configuration designed for easy maintenance and multi-system/multi-user support.
+
+### 📁 Directory Structure
+
+```
+├── flake.nix              # Main flake entry point & system definitions
+├── modules/               # Reusable configuration modules
+│   ├── home/             # Home Manager modules
+│   │   ├── base/         # Minimal user profile (zsh, git, btop)
+│   │   ├── base-desktop/ # Desktop user profile (kitty, wallpapers)
+│   │   └── programs/     # Individual program modules
+│   └── system/           # NixOS system modules
+│       ├── base/         # Essential NixOS foundation
+│       ├── hardware/     # Audio, bluetooth, networking
+│       ├── services/     # System services (syncthing, mullvad)
+│       └── windowManagers/ # Desktop environments
+├── systems/              # System-specific configurations
+│   └── orion/           # Example system configuration
+│       ├── variables.nix # System & user variables
+│       ├── hardware.nix  # Hardware-specific config
+│       ├── default.nix   # System configuration
+│       └── homes/        # User home configurations
+├── scripts/              # Utility scripts
+├── dotfiles/             # Configuration files (symlinked)
+└── wallpapers/           # Desktop wallpapers
+```
+
+## 🧩 How Modules Work
+
+### System Modules (`modules/system/`)
+
+**Base Foundation:**
+- `base/default.nix` - Essential NixOS configuration for any system
+- Provides: Boot loader, core packages, basic services, Nix settings
+
+**Modular Components:**
+- `hardware/audio.nix` - Audio support via PipeWire
+- `hardware/networking.nix` - Network configuration
+- `services/syncthing.nix` - File synchronization
+- `windowManagers/hyprland.nix` - Wayland compositor
+
+**Usage Pattern:**
+```nix
+# In systems/mysystem/default.nix
+modules = {
+  hardware.audio.enable = true;
+  services.mullvad.enable = true;
+  wayland.hyprland.enable = true;
+};
+```
+
+### Home Manager Modules (`modules/home/`)
+
+**Layered Profile System:**
+1. **Base** (`base/default.nix`) - Essential tools for any user
+2. **Desktop** (`base-desktop/default.nix`) - Adds desktop environment tools
+3. **User-specific** (`systems/*/homes/user.nix`) - Personal preferences
+
+**Program Modules:**
+Each program has its own module with:
+- Options for enabling/configuring the program
+- Package installation
+- Configuration file management
+- Service setup (if needed)
+
+**Example Module Structure:**
+```nix
+# modules/home/programs/myapp.nix
+{ config, lib, pkgs, userVars, ... }:
+let
+  inherit (lib) mkEnableOption mkIf;
+  cfg = config.modules.programs.myapp;
+in
+{
+  options.modules.programs.myapp.enable = mkEnableOption "MyApp";
+
+  config = mkIf cfg.enable {
+    home.packages = [ pkgs.myapp ];
+    # Configuration files, services, etc.
+  };
+}
+```
+
+## 🏠 How Systems & Homes Work
+
+### System Configuration (`systems/systemname/`)
+
+Each system is self-contained with:
+
+1. **`variables.nix`** - Configuration data:
+   ```nix
+   {
+     system = { hostName = "mysystem"; };
+     user = {
+       username = "myuser";
+       git = { username = "Git User"; email = "user@example.com"; };
+       hyprland = { terminal = "kitty"; fileManager = "nemo"; };
+     };
+   }
+   ```
+
+2. **`default.nix`** - System configuration:
+   ```nix
+   {
+     imports = [
+       ./hardware.nix
+       ../../modules/system/base    # Essential foundation
+       ../../modules/system.nix     # All available modules
+     ];
+
+     modules = {
+       hardware.audio.enable = true;
+       services.syncthing.enable = true;
+       # Mix and match as needed
+     };
+   }
+   ```
+
+3. **`homes/user.nix`** - User configuration:
+   ```nix
+   {
+     imports = [ ../../../modules/home/base-desktop ];
+
+     modules.programs = {
+       hyprland.enable = true;
+       vscode.enable = true;
+       # User-specific applications
+     };
+   }
+   ```
+
+### Variable System
+
+**Two-tier structure passed to all modules:**
+
+- **`userVars`** - User-specific settings (`variables.user`)
+  - `userVars.username` - System username
+  - `userVars.git.*` - Git configuration  
+  - `userVars.hyprland.*` - Desktop preferences
+
+- **`systemVars`** - System-specific settings (`variables.system`)
+  - `systemVars.hostName` - System hostname
+
+## 🔧 How Scripts Work
+
+### Script Integration
+
+**Location:** `scripts/` directory
+**Access:** Available in modules via `${configRoot}/scripts/`
+
+**Key Scripts:**
+- `monitor-handler.sh` - Display management for Hyprland
+- `start-waybar.sh` - Launch waybar with proper environment
+- `start-hyprpanel.sh` - Launch hyprpanel alternative
+- `screenshot.sh` - Screenshot utilities with upload
+
+**Usage in Modules:**
+```nix
+# Example: Hyprland module referencing scripts
+after_sleep_cmd = "hyprctl dispatch dpms on && ${configscriptsDir}/monitor-handler.sh";
+```
+
+**Environment Setup:**
+Scripts have access to `$NIXOS_CONFIG_DIR` pointing to the configuration root.
+
+## 🎯 Design Principles
+
+1. **Composition over Inheritance** - Mix and match modules as needed
+2. **Parameterization** - All modules accept configuration via `userVars`/`systemVars`
+3. **Reusability** - Modules work across different systems and users
+4. **Self-Documentation** - Clear structure makes patterns obvious
+5. **Minimal Abstraction** - Only add complexity when it provides clear value
+
+## ➕ Adding New Components
+
+### Adding a New System
+
+1. **Copy existing system:**
+   ```bash
+   cp -r systems/orion systems/newsystem
+   ```
+
+2. **Update variables:**
+   ```nix
+   # systems/newsystem/variables.nix
+   { system.hostName = "newsystem"; user.username = "newuser"; }
+   ```
+
+3. **Generate hardware config:**
+   ```bash
+   nixos-generate-config --dir systems/newsystem
+   ```
+
+4. **Add to flake.nix:**
+   ```nix
+   nixosConfigurations.newsystem = nixpkgs.lib.nixosSystem { ... };
+   ```
+
+### Adding a New User
+
+1. **Update variables:** Add user to `systems/systemname/variables.nix`
+2. **Create home config:** `systems/systemname/homes/newuser.nix`
+3. **Choose base layer:** Import appropriate base (minimal/desktop)
+4. **Add programs:** Enable desired applications
+
+### Adding a New Module
+
+1. **Create module file** in appropriate directory
+2. **Follow module pattern** with options and config
+3. **Add to imports** (auto-imported for system modules)
+4. **Use in systems** by enabling the module
+
+## 🔧 Namespace Strategy
 
 This configuration uses a custom namespace for all user-defined modules to avoid collisions with upstream Home Manager modules and keep things modular and future-proof.
 
@@ -8,10 +222,6 @@ This configuration uses a custom namespace for all user-defined modules to avoid
 - **Upstream modules:** Configuration uses the standard `programs.<name>` namespace (e.g., `programs.kitty`).
 - **Why:** This avoids any risk of collision if Home Manager adds support for a program you already manage, and keeps your config organized.
 - **If a collision occurs:** Refactor your custom module to a new namespace or migrate to the upstream module as needed.
-
-This strategy is documented here for clarity and future maintainers.
-
-This repository contains my personal NixOS and Home Manager configuration using Nix flakes.
 
 ## 📁 Structure
 
