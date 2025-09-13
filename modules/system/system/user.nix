@@ -1,10 +1,10 @@
 { config
-, userVars
 , pkgs
+, userVars
 , ...
 }:
 let
-  inherit (userVars.user) username;
+  inherit (userVars) username;
 in
 {
   config = {

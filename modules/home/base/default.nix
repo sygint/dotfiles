@@ -1,6 +1,6 @@
 { userVars, ... }:
 let
-  inherit (userVars.user) username;
+  inherit (userVars) username;
   # Get the actual system user from environment or fall back to variables
   actualUser = if (builtins.getEnv "USER") != "" then (builtins.getEnv "USER") else username;
 in

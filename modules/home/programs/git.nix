@@ -2,8 +2,8 @@
 
 let
   inherit (lib) mkEnableOption mkIf;
-  gitUsername = userVars.user.git.username;
-  gitEmail = userVars.user.git.email;
+  gitUsername = userVars.git.username;
+  gitEmail = userVars.git.email;
   cfg = config.modules.programs.git;
 in
 {

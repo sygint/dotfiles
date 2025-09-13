@@ -8,7 +8,7 @@
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.modules.programs.nix-helpers;
-  inherit (userVars.user) username;
+  inherit (userVars) username;
 in
 {
   options.modules.programs.nix-helpers.enable = mkEnableOption "Nix helpers";

@@ -1,7 +1,18 @@
-{ config, lib, options, pkgs, ... }:
+{ config
+, lib
+, options
+, pkgs
+, userVars
+, userConfig ? null
+, systemConfig ? null
+, ...
+}:
 let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
+
+  configRoot = "/home/${userVars.username}/.config/nixos";
+  configWaybarDir = "${configRoot}/dotfiles/.config/waybar";
   cfg = config.modules.programs.waybar;
 in
 {
@@ -38,11 +49,11 @@ in
     xdg = {
       configFile = {
         "waybar/config.jsonc" = {
-          source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/waybar/config.jsonc";
+          source = mkOutOfStoreSymlink "${configWaybarDir}/config.jsonc";
           force = true;
         };
         "waybar/style.css" = {
-          source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/waybar/style.css";
+          source = mkOutOfStoreSymlink "${configWaybarDir}/style.css";
           force = true;
         };
       };

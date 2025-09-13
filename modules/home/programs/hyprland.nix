@@ -1,19 +1,28 @@
-{ config, lib, pkgs, userVars, ... }:
+{ config
+, lib
+, pkgs
+, userVars
+, ...
+}:
 let
   inherit (lib) mkEnableOption mkOption mkIf types;
   inherit (config.lib.file) mkOutOfStoreSymlink;
+
+  configRoot = "/home/${userVars.username}/.config/nixos";
+  configDotfilesDir = "${configRoot}/dotfiles/.config";
   cfg = config.modules.programs.hyprland;
   barCfg = config.modules.programs.desktopBar;
+  hyprland = userVars.hyprland;
 
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
     lib.replaceStrings
       [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@desktopBarScript@" "@makoStartup@" ]
       [
-        (userVars.user.hyprland.terminal or "ghostty")
-        (userVars.user.hyprland.fileManager or "nemo")
-        (userVars.user.hyprland.webBrowser or "brave")
-        (userVars.user.hyprland.menu or "rofi")
+        (hyprland.terminal or "ghostty")
+        (hyprland.fileManager or "nemo")
+        (hyprland.webBrowser or "brave")
+        (hyprland.menu or "rofi")
         (
           if barCfg.type == "waybar" then "$NIXOS_CONFIG_DIR/scripts/start-waybar.sh"
           else if barCfg.type == "hyprpanel" then "$NIXOS_CONFIG_DIR/scripts/start-hyprpanel.sh"
@@ -77,11 +86,11 @@ in
 
       file = {
         ".config/hypr/hypridle.conf" = {
-          source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/hypr/hypridle.conf";
+          source = mkOutOfStoreSymlink "${configDotfilesDir}/hypr/hypridle.conf";
           force = true;
         };
         ".config/hypr/hyprlock.conf" = {
-          source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/hypr/hyprlock.conf";
+          source = mkOutOfStoreSymlink "${configDotfilesDir}/hypr/hyprlock.conf";
           force = true;
         };
         # Use generated config with variables for hyprland.conf
@@ -89,11 +98,11 @@ in
           source = hyprlandConf;
         };
         ".config/hypr/mocha.conf" = {
-          source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/hypr/mocha.conf";
+          source = mkOutOfStoreSymlink "${configDotfilesDir}/hypr/mocha.conf";
           force = true;
         };
         ".config/rofi/config.rasi" = {
-          source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/rofi/config.rasi";
+          source = mkOutOfStoreSymlink "${configDotfilesDir}/rofi/config.rasi";
           force = true;
         };
       };

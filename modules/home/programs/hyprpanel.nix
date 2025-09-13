@@ -2,11 +2,16 @@
 , lib
 , options
 , pkgs
+, userVars
+, userConfig ? null
 , ...
 }:
 let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
+
+  configRoot = "/home/${userVars.username}/.config/nixos";
+  configHyprpanelDir = "${configRoot}/dotfiles/dotfiles/.config/dotfiles/.config/hyprpanel";
   cfg = config.modules.programs.hyprpanel;
 in
 {
@@ -23,15 +28,15 @@ in
     xdg = {
       configFile = {
         "hyprpanel/config.json" = {
-          source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/hyprpanel/config.json";
+          source = mkOutOfStoreSymlink "${configHyprpanelDir}/config.json";
           force = true;
         };
         "hyprpanel/modules.json" = {
-          source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/hyprpanel/modules.json";
+          source = mkOutOfStoreSymlink "${configHyprpanelDir}/modules.json";
           force = true;
         };
         "hyprpanel/modules.scss" = {
-          source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/hyprpanel/modules.scss";
+          source = mkOutOfStoreSymlink "${configHyprpanelDir}/modules.scss";
           force = true;
         };
       };

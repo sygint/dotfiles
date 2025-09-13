@@ -2,11 +2,14 @@
 , lib
 , options
 , pkgs
+, userVars
 , ...
 }:
 let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
+
+  configRoot = "/home/${userVars.username}/.config/nixos";
   cfg = config.modules.programs.btop;
 in
 {
@@ -16,7 +19,7 @@ in
     home.packages = [ pkgs.btop ];
 
     home.file.".config/btop/btop.conf" = {
-      source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/btop/btop.conf";
+      source = mkOutOfStoreSymlink "${configRoot}/dotfiles/.config/btop/btop.conf";
       force = true;
     };
   };

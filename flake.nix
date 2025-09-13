@@ -21,19 +21,21 @@
       inherit (nixpkgs) lib;
       system = "x86_64-linux"; # Make sure to specify the system architecture
 
-      userVars = import ./systems/orion/variables.nix;
-      inherit (userVars.user) username;
+      variables = import ./systems/orion/variables.nix;
+      inherit (variables.user) username;
+
+      userVars = variables.user;
+      systemVars = variables.system;
 
       # Common pkgs configuration
       inherit (nixpkgs.legacyPackages.${system}) pkgs;
 
       # Function to create home configuration for any user
-      mkHomeConfiguration = userConfig:
+      mkHomeConfiguration = variables:
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           extraSpecialArgs = {
-            inherit self inputs;
-            userVars = userConfig;
+            inherit self inputs userVars;
           };
           modules = [
             ./systems/orion/homes/syg.nix
@@ -78,7 +80,7 @@
         # Standard username configuration
         ${username} = mkHomeConfiguration userVars;
         # Also provide hostname@user format for nh compatibility
-        "${username}@${userVars.system.hostName}" = mkHomeConfiguration userVars;
+        "${username}@${systemVars.hostName}" = mkHomeConfiguration userVars;
       };
     };
 }

@@ -2,11 +2,16 @@
 , lib
 , options
 , pkgs
+, userVars
 , ...
 }:
 let
   inherit (lib) mkEnableOption mkIf;
   inherit (config.lib.file) mkOutOfStoreSymlink;
+
+  configRoot = "/home/${userVars.username}/.config/nixos";
+  dotfilesDir = "${configRoot}/dotfiles";
+  configZshDir = "${dotfilesDir}/.config/zsh";
   cfg = config.modules.programs.zsh;
 in
 {
@@ -24,19 +29,19 @@ in
 
     home.file = {
       ".zshenv" = {
-        source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/zshenv";
+        source = mkOutOfStoreSymlink "${dotfilesDir}/zshenv";
         force = true;
       };
       ".config/zsh/.zshrc" = {
-        source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/zsh/zshrc";
+        source = mkOutOfStoreSymlink "${configZshDir}/zshrc";
         force = true;
       };
       ".config/zsh/plugins.txt" = {
-        source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/zsh/plugins.txt";
+        source = mkOutOfStoreSymlink "${configZshDir}/plugins.txt";
         force = true;
       };
       ".config/zsh/plugins.zsh" = {
-        source = mkOutOfStoreSymlink "/home/syg/.config/nixos/dotfiles/.config/zsh/plugins.zsh";
+        source = mkOutOfStoreSymlink "${configZshDir}/plugins.zsh";
         force = true;
       };
     };
