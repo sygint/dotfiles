@@ -16,6 +16,7 @@
     };
 
     waybar.enable = true;      # Enable Waybar
+    hypridle.enable = true;    # Enable Hypridle idle daemon
 
     screenshots.enable = true;
     brave.enable = true;

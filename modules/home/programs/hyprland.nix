@@ -85,10 +85,6 @@ in
       packages = [ pkgs.hyprland ] ++ (if cfg.packages.enable then hyprlandPkgs else []);
 
       file = {
-        ".config/hypr/hypridle.conf" = {
-          source = mkOutOfStoreSymlink "${configDotfilesDir}/hypr/hypridle.conf";
-          force = true;
-        };
         ".config/hypr/hyprlock.conf" = {
           source = mkOutOfStoreSymlink "${configDotfilesDir}/hypr/hyprlock.conf";
           force = true;

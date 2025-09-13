@@ -9,6 +9,7 @@
     ./home/programs/kitty.nix
     ./home/programs/zsh.nix
     ./home/programs/hyprland.nix
+    ./home/programs/hypridle.nix
     ./home/programs/hyprpanel.nix
     ./home/programs/waybar.nix
     ./home/programs/devenv.nix
