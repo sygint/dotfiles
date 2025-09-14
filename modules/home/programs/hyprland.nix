@@ -17,7 +17,7 @@ let
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
     lib.replaceStrings
-      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@desktopBarScript@" "@makoStartup@" ]
+      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@desktopBarScript@" ]
       [
         (hyprland.terminal or "ghostty")
         (hyprland.fileManager or "nemo")
@@ -27,10 +27,6 @@ let
           if barCfg.type == "waybar" then "$NIXOS_CONFIG_DIR/scripts/start-waybar.sh"
           else if barCfg.type == "hyprpanel" then "$NIXOS_CONFIG_DIR/scripts/start-hyprpanel.sh"
           else ""
-        )
-        (
-          if barCfg.type == "waybar" then "exec-once = mako"
-          else "# mako not needed - using hyprpanel notifications"
         )
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)
@@ -109,7 +105,7 @@ in
     services.mako = mkIf (barCfg.type == "waybar") {
       enable = true;
       settings = lib.mkForce {
-        default-timeout = 5000;
+        default-timeout = 3000;
         anchor = "top-right";
         background-color = "#1e1e2e";
         text-color = "#cdd6f4";
@@ -125,6 +121,10 @@ in
         group-by = "app-name";
         actions = 1;
       };
+      extraConfig = ''
+        [app-name=volume-control]
+        format=%s\n%b
+      '';
     };
   };
 }

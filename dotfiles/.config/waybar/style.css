@@ -161,6 +161,7 @@ button:hover {
     padding: 0 10px;
     border-radius: 8px;
     font-weight: bold;
+    transition: all 0.3s ease;
 }
 
 #pulseaudio.muted {
