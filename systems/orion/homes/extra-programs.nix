@@ -5,6 +5,7 @@
   # their own complex configuration modules
   home.packages = with pkgs; [
     obsidian
+    solaar
     # Add other extra programs here as needed
   ];
 }

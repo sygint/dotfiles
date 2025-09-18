@@ -25,6 +25,20 @@ in
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
 
+  # Enable Logitech device support
+  hardware.logitech.wireless = {
+    enable = true;
+    enableGraphical = true;
+  };
+
+  # Additional udev rules for Logitech devices with plugdev group access
+  services.udev.extraRules = ''
+    # Enable plugdev group access for Logitech devices
+    KERNEL=="uinput", SUBSYSTEM=="misc", GROUP="input", MODE="0664"
+    SUBSYSTEM=="hidraw", ATTRS{idVendor}=="046d", GROUP="plugdev", MODE="0664"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", GROUP="plugdev", MODE="0664"
+  '';
+
   modules = {
     hardware = {
       bluetooth.enable = true;
@@ -161,6 +175,7 @@ in
       fzf
       tealdeer
       tree
+      usbutils
       yazi
       zellij
       zoxide
