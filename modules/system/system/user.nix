@@ -11,7 +11,7 @@ in
     users.users.${username} = {
       isNormalUser = true;
       description = "${username}";
-      extraGroups = [ "networkmanager" "wheel" "dialout" ];
+      extraGroups = [ "networkmanager" "wheel" "dialout" "plugdev" ];
       shell = pkgs.zsh;
       # packages = with pkgs; [
       #   thunderbird
