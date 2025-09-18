@@ -24,8 +24,8 @@ let
         (hyprland.webBrowser or "brave")
         (hyprland.menu or "rofi")
         (
-          if barCfg.type == "waybar" then "$NIXOS_CONFIG_DIR/scripts/start-waybar.sh"
-          else if barCfg.type == "hyprpanel" then "$NIXOS_CONFIG_DIR/scripts/start-hyprpanel.sh"
+          if barCfg.type == "waybar" then "/home/${userVars.username}/.config/nixos/scripts/start-waybar.sh"
+          else if barCfg.type == "hyprpanel" then "/home/${userVars.username}/.config/nixos/scripts/start-hyprpanel.sh"
           else ""
         )
       ]
