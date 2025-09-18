@@ -11,9 +11,12 @@
     "disable-scroll": true,
     "all-outputs": true,
     "format": "{name}: {icon}",
+    "swap-icon-label": false,
+    "show-special": false,
+    "sort-by": "id",
     "format-icons": {
       "1": "󰲠",
-      "2": "󰲢",
+      "2": "󰲢", 
       "3": "󰲤",
       "4": "󰲦",
       "5": "󰲨",
@@ -41,7 +44,8 @@
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
     "format-alt": "{:%Y-%m-%d}",
     "format": "{:%a %d %b %I:%M %p}",
-    "interval": 60
+    "interval": 60,
+    "locale": "C"
   },
   "battery": {
     "states": {
@@ -54,7 +58,9 @@
     "format-plugged": "{capacity}% 󰚥",
     "format-alt": "{time} {icon}",
     "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-    "tooltip-format": "{timeTo}, {capacity}%"
+    "tooltip-format": "{timeTo}, {capacity}%",
+    "interval": 30,
+    "bat": "BAT0"
   },
   "bluetooth": {
     "format": "󰂯 {status}",
@@ -75,7 +81,8 @@
     "format-linked": "{ifname} (No IP) 󰈀",
     "format-disconnected": "Disconnected 󰖪",
     "format-alt": "{ifname}: {ipaddr}/{cidr}",
-    "on-click-right": "nm-connection-editor"
+    "on-click-right": "nm-connection-editor",
+    "interval": 5
   },
   "pulseaudio": {
     "scroll-step": 0,
