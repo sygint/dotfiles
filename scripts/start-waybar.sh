@@ -9,5 +9,5 @@ sleep 0.5
 # Start blueman-applet for bluetooth support
 blueman-applet 2>/dev/null &
 
-# Start waybar with suppressed cursor warnings
-waybar 2>/dev/null &
+# Start waybar with proper Wayland backend setting
+pkill waybar && env GDK_BACKEND=wayland waybar 2>/dev/null &
