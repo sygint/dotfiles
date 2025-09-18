@@ -70,6 +70,12 @@ in
         enable = true;
         service = "podman";
       };
+
+      printing = {
+        enable = true;
+        enableAutoDiscovery = true;
+        enableSharing = false;
+      };
     };
 
     # Base security and program modules are enabled in base config
@@ -91,9 +97,6 @@ in
 
     # Enable touchpad support (enabled default in most desktopManager).
     # libinput.enable = true;
-
-    # Enable CUPS to print documents.
-    printing.enable = true;
 
     # Enable the systemd service for automatic login (if you want autologin)
     # displayManager.autoLogin = {
