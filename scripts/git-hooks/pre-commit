@@ -66,13 +66,13 @@ check_formatting() {
 check_security() {
     echo -e "\n${BLUE}3. Running security configuration checks...${NC}"
     SECURITY_ISSUES=0
+    # Check for security module configuration (optional, still grep-based)
     if grep -r -A5 "settings\s*=" systems/ 2>/dev/null | grep -q "security\s*=" || grep -r "security\s*=" systems/ 2>/dev/null >/dev/null; then
         log_success "Security module is configured"
     else
         log_warning "Security module might not be configured"
     fi
 
-    # Use NixOS evaluation instead of fragile regex matching
     log_info "Checking security configuration..."
     if nix flake check --no-build . 2>/dev/null; then
         log_success "Security assertions passed"
@@ -80,13 +80,24 @@ check_security() {
         log_error "Security assertions failed - run 'nix flake check' for details"
         SECURITY_ISSUES=1
     fi
-    if grep -r "PasswordAuthentication.*=.*true" . 2>/dev/null | grep -v ".git" | grep -v "pre-commit"; then
-        log_error "Found SSH password authentication enabled"
-        SECURITY_ISSUES=1
-    fi
-    if grep -r "PermitRootLogin.*=.*yes" . 2>/dev/null | grep -v ".git" | grep -v "pre-commit"; then
-        log_error "Found root SSH login enabled"
-        SECURITY_ISSUES=1
+
+    # Nix eval-based SSH security checks for all flake systems
+    if command -v jq >/dev/null 2>&1 && nix flake show --json >/dev/null 2>&1; then
+        systems=$(nix flake show --json | jq -r '.nixosConfigurations? // {} | keys[]' 2>/dev/null || true)
+        for sys in $systems; do
+            # Check PasswordAuthentication
+            val=$(nix eval --raw ".#nixosConfigurations.\"$sys\".config.services.openssh.settings.PasswordAuthentication" 2>/dev/null || echo "unset")
+            if [ "$val" = "true" ]; then
+                log_error "SSH PasswordAuthentication is enabled for $sys"
+                SECURITY_ISSUES=1
+            fi
+            # Check PermitRootLogin
+            val2=$(nix eval --raw ".#nixosConfigurations.\"$sys\".config.services.openssh.settings.PermitRootLogin" 2>/dev/null || echo "unset")
+            if [ "$val2" = "yes" ]; then
+                log_error "SSH PermitRootLogin is enabled for $sys"
+                SECURITY_ISSUES=1
+            fi
+        done
     fi
     if [ $SECURITY_ISSUES -eq 0 ]; then
         log_success "No obvious security issues found"
