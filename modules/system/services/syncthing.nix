@@ -28,12 +28,25 @@ in
     services = {
       syncthing = {
         enable = true;
-        openDefaultPorts = true;
+        openDefaultPorts = false; # Don't auto-open ports to internet
         settings.gui = {
           user = "${cfg.username}";
           password = "${cfg.password}";
         };
       };
+    };
+
+    # Open Syncthing ports only for LAN interfaces
+    networking.firewall.interfaces = {
+      "eth0" = {
+        allowedTCPPorts = [ 22000 ]; # Syncthing transfer protocol
+        allowedUDPPorts = [ 22000 21027 ]; # Syncthing transfer and discovery
+      };
+      "wlp1s0" = {
+        allowedTCPPorts = [ 22000 ]; # Syncthing transfer protocol  
+        allowedUDPPorts = [ 22000 21027 ]; # Syncthing transfer and discovery
+      };
+      # Not exposed to internet - LAN interfaces only
     };
   };
 }

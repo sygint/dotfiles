@@ -29,14 +29,28 @@ in
       # noProxy = "127.0.0.1,localhost,internal.domain";
       # };
 
-      # Enable firewall (optional)
+      # Enable firewall
       firewall = {
         enable = true;
-        allowedTCPPorts = [ 22 80 443 ]; # Allow SSH and HTTP/HTTPS ports
+        allowedTCPPorts = [ ]; # No TCP ports open to internet
+        # SSH access via interfaces configuration for LAN-only access
+        # interfaces = {
+        #   # Allow SSH only on LAN interfaces
+        #   "eth0".allowedTCPPorts = [ 22 ];
+        #   "wlp1s0".allowedTCPPorts = [ 22 ];
+        #   # No internet-facing SSH access
+        # };
       };
     };
 
-    # Configure SSH server (optional)
-    # services.openssh.enable = true;
+    # Configure SSH server with security settings
+    # services.openssh = {
+    #   enable = true;
+    #   settings = {
+    #     PasswordAuthentication = true; # Change to false after setting up key auth
+    #     PermitRootLogin = "no";
+    #     X11Forwarding = false;
+    #   };
+    # };
   };
 }
