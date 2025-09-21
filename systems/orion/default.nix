@@ -39,6 +39,15 @@ in
     SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", GROUP="plugdev", MODE="0664"
   '';
 
+  # User is now defined directly below
+  users.users.syg = {
+    isNormalUser = true;
+    description = "syg";
+    extraGroups = [ "networkmanager" "wheel" "dialout" "plugdev" ];
+    shell = pkgs.zsh;
+  };
+  environment.shells = with pkgs; [ zsh ];
+
   modules = {
     hardware = {
       bluetooth.enable = true;
