@@ -41,6 +41,7 @@ in
           clipboard = true;
         };
       };
+      users.users."${cfg.username}".extraGroups = [ "vboxsf" ];
       users.extraGroups.vboxusers.members = [ cfg.username ];
     })
     (mkIf (cfg.service == "qemu") {
