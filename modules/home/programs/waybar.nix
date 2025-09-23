@@ -26,9 +26,14 @@ in
       pavucontrol
       wlogout
 
-      # Network and Bluetooth GUI tools
-      blueman # Bluetooth manager for waybar click handler
-      networkmanagerapplet # nm-connection-editor for network click handler
+      # Network and Bluetooth TUI tools
+      networkmanager # For nmtui terminal interface
+      bluetuith # Modern TUI Bluetooth manager with mouse support
+      bluez-tools # For bluetoothctl and bluetooth TUI
+      
+      # Keep minimal GUI options for fallback
+      networkmanagerapplet # nm-connection-editor for advanced network settings
+      blueman # For advanced Bluetooth settings
 
       # Cursor theme
       adwaita-icon-theme

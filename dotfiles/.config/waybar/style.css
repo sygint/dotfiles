@@ -13,6 +13,21 @@ window#waybar {
     border-radius: 0;
 }
 
+/* Enhanced tooltips */
+tooltip {
+    background: rgba(30, 30, 46, 0.95);
+    border: 2px solid #45475a;
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+tooltip label {
+    color: #cdd6f4;
+    font-weight: 500;
+    font-size: 13px;
+}
+
 window#waybar.hidden {
     opacity: 0.2;
 }
@@ -126,6 +141,12 @@ button:hover {
     padding: 0 10px;
     border-radius: 8px;
     font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#bluetooth:hover {
+    background: #89dceb;
+    box-shadow: 0 2px 8px rgba(116, 199, 236, 0.3);
 }
 
 #bluetooth.disabled {
@@ -133,9 +154,19 @@ button:hover {
     color: #a6adc8;
 }
 
+#bluetooth.disabled:hover {
+    background: #6c7086;
+    box-shadow: none;
+}
+
 #bluetooth.off {
     background: #585b70;
     color: #a6adc8;
+}
+
+#bluetooth.off:hover {
+    background: #6c7086;
+    box-shadow: none;
 }
 
 /* Network */
@@ -146,11 +177,22 @@ button:hover {
     padding: 0 10px;
     border-radius: 8px;
     font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#network:hover {
+    background: #a6f3f0;
+    box-shadow: 0 2px 8px rgba(148, 226, 213, 0.3);
 }
 
 #network.disconnected {
     background: #f38ba8;
     color: #1e1e2e;
+}
+
+#network.disconnected:hover {
+    background: #f5a5c1;
+    box-shadow: 0 2px 8px rgba(243, 139, 168, 0.3);
 }
 
 /* Audio */
