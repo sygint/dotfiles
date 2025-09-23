@@ -60,7 +60,7 @@
     "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
     "tooltip-format": "{timeTo}, {capacity}%",
     "interval": 30,
-    "bat": "BAT0"
+    "bat": "BAT1"
   },
   "bluetooth": {
     "format": "󰂯 {status}",
@@ -68,20 +68,31 @@
     "format-connected-battery": "󰂯 {device_alias} {device_battery_percentage}%",
     "format-disabled": "󰂲",
     "format-off": "󰂲",
-    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
-    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
-    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
-    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
-    "on-click": "blueman-manager"
+    "tooltip-format": "{controller_alias}\n{num_connections} connected\n\nRight click to open bluetuith (modern TUI)\nMiddle click to toggle power",
+    "tooltip-format-connected": "{controller_alias}\n{num_connections} connected\n{device_enumerate}\n\nRight click to open bluetuith (modern TUI)\nMiddle click to toggle power",
+    "tooltip-format-enumerate-connected": "{device_alias} ({device_address})",
+    "tooltip-format-enumerate-connected-battery": "{device_alias} ({device_address}) - {device_battery_percentage}%",
+    "on-click": "/home/syg/.config/nixos/scripts/bluetooth-tui.sh left",
+    "on-click-right": "/home/syg/.config/nixos/scripts/bluetooth-tui.sh right",
+    "on-click-middle": "/home/syg/.config/nixos/scripts/bluetooth-tui.sh middle"
   },
   "network": {
-    "format-wifi": "{essid} ({signalStrength}%) 󰖩",
-    "format-ethernet": "Connected 󰈀",
-    "tooltip-format": "{ifname} via {gwaddr}\nIP: {ipaddr}/{cidr}\nStrength: {signalStrength}% ({signaldBm} dBm)",
-    "format-linked": "{ifname} (No IP) 󰈀",
-    "format-disconnected": "Disconnected 󰖪",
+    "format-wifi": "{icon} {essid}",
+    "format-ethernet": "󰈀 {ifname}",
+    "tooltip-format": "{ifname} via {gwaddr}\nIP: {ipaddr}/{cidr}\nStrength: {signalStrength}% ({signaldBm} dBm)\n\nRight click to open Network TUI",
+    "tooltip-format-wifi": "WiFi: {essid}\nIP: {ipaddr}/{cidr}\nStrength: {signalStrength}% ({signaldBm} dBm)\nFrequency: {frequency} GHz\n\nRight click to open Network TUI",
+    "tooltip-format-ethernet": "Ethernet: {ifname}\nIP: {ipaddr}/{cidr}\nGateway: {gwaddr}\n\nClick to open Network TUI",
+    "tooltip-format-disconnected": "Disconnected\n\nRight click to open Network TUI",
+    "format-linked": "󰈀 {ifname} (No IP)",
+    "format-disconnected": "󰖪 Disconnected",
     "format-alt": "{ifname}: {ipaddr}/{cidr}",
-    "on-click-right": "nm-connection-editor",
+    "format-icons": {
+      "wifi": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+      "ethernet": "󰈀",
+      "disconnected": "󰖪"
+    },
+    "on-click-right": "/home/syg/.config/nixos/scripts/network-tui.sh right",
+    "signal": 4,
     "interval": 5
   },
   "pulseaudio": {
