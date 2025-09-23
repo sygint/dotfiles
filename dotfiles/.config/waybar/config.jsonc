@@ -5,8 +5,8 @@
   "height": 32,
   "spacing": 4,
   "modules-left": ["hyprland/workspaces", "hyprland/window"],
-  "modules-center": ["clock"],
-  "modules-right": ["tray", "bluetooth", "network", "pulseaudio", "battery", "custom/power"],
+  "modules-center": [],
+  "modules-right": ["tray", "bluetooth", "network", "pulseaudio", "clock", "battery", "custom/power"],
   "hyprland/workspaces": {
     "disable-scroll": true,
     "all-outputs": true,
@@ -42,7 +42,7 @@
   "clock": {
     "timezone": "America/Los_Angeles",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-    "format-alt": "{:%Y-%m-%d}",
+    "format-alt": "{:%I:%M %p}",
     "format": "{:%a %d %b %I:%M %p}",
     "interval": 60,
     "locale": "C"
