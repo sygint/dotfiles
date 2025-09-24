@@ -14,10 +14,12 @@
     hyprland = {
       enable = true;
       packages.enable = true;
+      systemBar = "hyprpanel";  # Switch to HyprPanel
     };
 
-    waybar.enable = true;      # Enable Waybar
-    hypridle.enable = true;    # Enable Hypridle idle daemon
+    hyprpanel.enable = true;        # Enable HyprPanel
+    waybar.enable = false;          # Disable Waybar
+    hypridle.enable = true;         # Enable Hypridle idle daemon
 
     screenshots.enable = true;
     brave.enable = true;
