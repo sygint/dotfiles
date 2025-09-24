@@ -11,7 +11,7 @@ let
   inherit (config.lib.file) mkOutOfStoreSymlink;
 
   configRoot = "/home/${userVars.username}/.config/nixos";
-  configHyprpanelDir = "${configRoot}/dotfiles/dotfiles/.config/dotfiles/.config/hyprpanel";
+  configHyprpanelDir = "${configRoot}/dotfiles/.config/hyprpanel";
   cfg = config.modules.programs.hyprpanel;
 in
 {

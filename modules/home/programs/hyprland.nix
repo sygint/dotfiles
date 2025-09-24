@@ -11,21 +11,21 @@ let
   configRoot = "/home/${userVars.username}/.config/nixos";
   configDotfilesDir = "${configRoot}/dotfiles/.config";
   cfg = config.modules.programs.hyprland;
-  barCfg = config.modules.programs.desktopBar;
+  barCfg = cfg.systemBar;
   hyprland = userVars.hyprland;
 
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
     lib.replaceStrings
-      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@desktopBarScript@" ]
+      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@systemBarScript@" ]
       [
         (hyprland.terminal or "ghostty")
         (hyprland.fileManager or "nemo")
         (hyprland.webBrowser or "brave")
         (hyprland.menu or "rofi")
         (
-          if barCfg.type == "waybar" then "/home/${userVars.username}/.config/nixos/scripts/start-waybar.sh"
-          else if barCfg.type == "hyprpanel" then "/home/${userVars.username}/.config/nixos/scripts/start-hyprpanel.sh"
+          if barCfg == "waybar" then "/home/${userVars.username}/.config/nixos/scripts/start-waybar.sh"
+          else if barCfg == "hyprpanel" then "/home/${userVars.username}/.config/nixos/scripts/start-hyprpanel.sh"
           else ""
         )
       ]
@@ -44,7 +44,7 @@ let
     pkgs.brightnessctl  # For screen brightness control
   ] ++ lib.filter (x: x != null) [defaultTerminalPkg defaultBrowserPkg defaultFileMgrPkg] ++ cfg.packages.extra
     # Only include mako when using waybar (hyprpanel has its own notification system)
-    ++ lib.optionals (barCfg.type == "waybar") [ pkgs.mako ];
+    ++ lib.optionals (barCfg == "waybar") [ pkgs.mako ];
 
 in
 {
@@ -66,13 +66,12 @@ in
       browser = mkOption { type = types.str; default = "brave"; };
       fileManager = mkOption { type = types.str; default = "nemo"; };
     };
-  };
 
-  # Desktop bar type option (shared)
-  options.modules.programs.desktopBar.type = mkOption {
-    type = types.enum [ "waybar" "hyprpanel" "none" ];
-    default = "waybar";
-    description = "Which desktop bar to start (waybar, hyprpanel, none)";
+    systemBar = mkOption {
+      type = types.enum [ "waybar" "hyprpanel" "none" ];
+      default = "waybar";
+      description = "Which system bar to start (waybar, hyprpanel, none)";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -102,7 +101,7 @@ in
 
     # Start mako notification daemon only when using waybar
     # (HyprPanel has its own notification system)
-    services.mako = mkIf (barCfg.type == "waybar") {
+    services.mako = mkIf (barCfg == "waybar") {
       enable = true;
       settings = lib.mkForce {
         default-timeout = 3000;
