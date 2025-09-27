@@ -4,6 +4,8 @@ let
   inherit (lib) mkEnableOption mkIf;
 
   cfg = config.modules.programs.hypridle;
+  hyprlandCfg = config.modules.programs.hyprland;
+  barSystem = hyprlandCfg.systemBar or "hyprpanel";
   configRoot = "/home/${userVars.username}/.config/nixos";
   configscriptsDir = "${configRoot}/scripts";
 in
@@ -18,7 +20,7 @@ in
         general = {
           lock_cmd = "pidof hyprlock || hyprlock"; # avoid starting multiple hyprlock instances.
           before_sleep_cmd = "loginctl lock-session"; # lock before suspend.
-          after_sleep_cmd = "hyprctl dispatch dpms on && ${configscriptsDir}/monitor-handler.sh"; # restore display and monitors after suspend.
+          after_sleep_cmd = "hyprctl dispatch dpms on && ${configscriptsDir}/monitor-handler.sh --fast --bar=${barSystem}"; # restore display and monitors after suspend.
           ignore_dbus_inhibit = true; # ignore applications trying to inhibit idle (like browsers with video content)
         };
 

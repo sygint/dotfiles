@@ -123,7 +123,7 @@ if [[ -n "${SELECTED_ID:-}" ]]; then
     # Send success notification
     notify-send -t 2000 -i audio-card "Audio Device Changed" "Switched to: $CLEAN_NAME"
 
-    # Update waybar
+    # Update waybar if it's running (hyprpanel updates automatically)
     pkill -RTMIN+8 waybar 2>/dev/null || true
 else
     notify-send -t 2000 -i dialog-error "Audio Error" "Failed to switch audio device"

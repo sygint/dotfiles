@@ -161,7 +161,7 @@ Each system is self-contained with:
 **Usage in Modules:**
 ```nix
 # Example: Hyprland module referencing scripts
-after_sleep_cmd = "hyprctl dispatch dpms on && ${configscriptsDir}/monitor-handler.sh";
+after_sleep_cmd = "hyprctl dispatch dpms on && ${configscriptsDir}/monitor-handler.sh --fast --bar=hyprpanel";
 ```
 
 **Environment Setup:**
