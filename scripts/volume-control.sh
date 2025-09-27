@@ -136,5 +136,5 @@ esac
 # Send notification with progress bar
 notify-send -t 1500 -i "$ICON" -h "int:value:$PROGRESS" -a "volume-control" "$DISPLAY_NAME" "$MESSAGE"
 
-# Update waybar if it's running
+# Update waybar if it's running (hyprpanel updates automatically)
 pkill -RTMIN+8 waybar 2>/dev/null || true

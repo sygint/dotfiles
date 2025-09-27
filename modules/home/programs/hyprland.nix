@@ -17,7 +17,7 @@ let
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
     lib.replaceStrings
-      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@systemBarScript@" ]
+      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@systemBarScript@" "@monitorHandler@" ]
       [
         (hyprland.terminal or "ghostty")
         (hyprland.fileManager or "nemo")
@@ -27,6 +27,9 @@ let
           if barCfg == "waybar" then "/home/${userVars.username}/.config/nixos/scripts/start-waybar.sh"
           else if barCfg == "hyprpanel" then "/home/${userVars.username}/.config/nixos/scripts/start-hyprpanel.sh"
           else ""
+        )
+        (
+          "/home/${userVars.username}/.config/nixos/scripts/monitor-handler.sh --fast --bar=" + barCfg
         )
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)

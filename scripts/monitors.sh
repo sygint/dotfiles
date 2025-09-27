@@ -1,18 +1,41 @@
 #!/usr/bin/env bash
 # Dynamic monitor configuration for Hyprland
 # Reads monitor configurations from monitors.json and applies them
-# Usage: monitors.sh [--fast|--no-delay]
+# Usage: monitors.sh [--fast|--no-delay] [--bar=waybar|hyprpanel]
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MONITORS_JSON="${SCRIPT_DIR}/../monitors.json"
 
-# Check if fast mode is requested (skip delays)
+# Parse arguments
 FAST_MODE=false
-if [[ "${1:-}" == "--fast" || "${1:-}" == "--no-delay" ]]; then
-    FAST_MODE=true
+BAR_SYSTEM=""
+
+for arg in "$@"; do
+    case $arg in
+        --fast|--no-delay)
+            FAST_MODE=true
+            ;;
+        --bar=*)
+            BAR_SYSTEM="${arg#*=}"
+            ;;
+    esac
+done
+
+# Auto-detect bar system if not specified
+if [[ -z "$BAR_SYSTEM" ]]; then
+    if pgrep -f "hyprpanel\|HyprPanel" >/dev/null 2>&1; then
+        BAR_SYSTEM="hyprpanel"
+    elif pgrep -x waybar >/dev/null 2>&1; then
+        BAR_SYSTEM="waybar"
+    else
+        # Default to hyprpanel if neither is running
+        BAR_SYSTEM="hyprpanel"
+    fi
 fi
+
+echo "🔧 Configuring monitors for $BAR_SYSTEM bar system..."
 
 if [[ ! -f "$MONITORS_JSON" ]]; then
     echo "❌ monitors.json not found at $MONITORS_JSON"
@@ -86,4 +109,21 @@ if [[ "$current_workspace" != "1" ]]; then
     hyprctl dispatch workspace "$current_workspace" >/dev/null 2>&1
 fi
 
-echo "✅ Monitor configuration complete"
+# Notify bar system of monitor changes
+case "$BAR_SYSTEM" in
+    "hyprpanel")
+        echo "📡 Notifying HyprPanel of monitor changes..."
+        # HyprPanel automatically detects monitor changes via Hyprland events
+        # No additional action needed
+        ;;
+    "waybar")
+        echo "📡 Notifying Waybar of monitor changes..."
+        # Send reload signal to waybar if it's running
+        pkill -SIGUSR2 waybar 2>/dev/null || true
+        ;;
+    *)
+        echo "⚠️ Unknown bar system: $BAR_SYSTEM"
+        ;;
+esac
+
+echo "✅ Monitor configuration complete for $BAR_SYSTEM"
