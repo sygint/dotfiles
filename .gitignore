@@ -3,3 +3,10 @@ disabled/
 notes.txt
 scripts/antidote/
 .specstory/
+
+# Build artifacts
+result
+result-*
+
+# Secrets repository (has its own git)
+secrets
