@@ -123,8 +123,15 @@ if [[ -n "${SELECTED_ID:-}" ]]; then
     # Send success notification
     notify-send -t 2000 -i audio-card "Audio Device Changed" "Switched to: $CLEAN_NAME"
 
-    # Update waybar if it's running (hyprpanel updates automatically)
-    pkill -RTMIN+8 waybar 2>/dev/null || true
+    # Update waybar if systemBar is waybar
+    SYSTEM_BAR_FILE="$HOME/.config/nixos/systemBar"
+    SYSTEM_BAR="waybar"
+    if [[ -f "$SYSTEM_BAR_FILE" ]]; then
+        SYSTEM_BAR="$(cat "$SYSTEM_BAR_FILE" | tr -d '\n')"
+    fi
+    if [[ "$SYSTEM_BAR" == "waybar" ]]; then
+        pkill -RTMIN+8 waybar 2>/dev/null || true
+    fi
 else
     notify-send -t 2000 -i dialog-error "Audio Error" "Failed to switch audio device"
 fi

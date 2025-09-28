@@ -136,5 +136,13 @@ esac
 # Send notification with progress bar
 notify-send -t 1500 -i "$ICON" -h "int:value:$PROGRESS" -a "volume-control" "$DISPLAY_NAME" "$MESSAGE"
 
-# Update waybar if it's running (hyprpanel updates automatically)
-pkill -RTMIN+8 waybar 2>/dev/null || true
+
+# Update waybar if it's running, but only if systemBar is waybar
+SYSTEM_BAR_FILE="$HOME/.config/nixos/systemBar"
+SYSTEM_BAR="waybar"
+if [[ -f "$SYSTEM_BAR_FILE" ]]; then
+    SYSTEM_BAR="$(cat "$SYSTEM_BAR_FILE" | tr -d '\n')"
+fi
+if [[ "$SYSTEM_BAR" == "waybar" ]]; then
+    pkill -RTMIN+8 waybar 2>/dev/null || true
+fi
