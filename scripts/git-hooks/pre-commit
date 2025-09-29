@@ -115,8 +115,6 @@ check_secrets() {
         "api.*key.*=.*\".*[A-Za-z0-9]{16,}\""
     )
 
-    # Check each staged file individually to avoid complex pipelines that can
-    # trigger 'set -e' on non-zero exits.
     staged_files=$(git diff --cached --name-only --diff-filter=ACM | \
         grep -v -E '\.(example|template|sample)$' | \
         grep -v '^scripts/git-hooks/' || true)
@@ -126,20 +124,16 @@ check_secrets() {
         return
     fi
 
+    # 1. Pattern-based scan (existing logic)
     while IFS= read -r file; do
-        # skip empty names
         if [ -z "$file" ]; then
             continue
         fi
-
-        # If 'file' is available, use it to skip non-text files. Otherwise
-        # rely on grep -I which ignores binary files on most systems.
         if command -v file >/dev/null 2>&1; then
             if file --mime-type -b "$file" | grep -qv text; then
                 continue
             fi
         fi
-
         for pattern in "${SECRET_PATTERNS[@]}"; do
             if grep -I -n -i -E "$pattern" "$file" >/dev/null 2>&1; then
                 log_warning "Potential secret in $file matching pattern: $pattern"
@@ -147,6 +141,35 @@ check_secrets() {
             fi
         done
     done <<< "$staged_files"
+
+    # 2. git-secrets scan (if available)
+    if command -v git-secrets >/dev/null 2>&1; then
+        echo -e "${BLUE}Running git-secrets...${NC}"
+        if ! git-secrets --scan -r $staged_files; then
+            log_error "git-secrets found potential secrets in staged files"
+            SECRETS_FOUND=1
+        else
+            log_success "git-secrets found no issues"
+        fi
+    else
+        log_warn "git-secrets not installed; skipping git-secrets scan"
+    fi
+
+    # 3. trufflehog scan (if available)
+    if command -v trufflehog >/dev/null 2>&1; then
+        echo -e "${BLUE}Running trufflehog...${NC}"
+        for file in $staged_files; do
+            if trufflehog filesystem --no-update --fail-verified false --json "$file" | grep -q '"reason"'; then
+                log_error "trufflehog found potential secrets in $file"
+                SECRETS_FOUND=1
+            fi
+        done
+        if [ $SECRETS_FOUND -eq 0 ]; then
+            log_success "trufflehog found no issues"
+        fi
+    else
+        log_warn "trufflehog not installed; skipping trufflehog scan"
+    fi
 
     if [ $SECRETS_FOUND -eq 0 ]; then
         log_success "No obvious secrets found"
