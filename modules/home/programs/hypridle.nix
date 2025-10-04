@@ -21,13 +21,13 @@ in
           lock_cmd = "pidof hyprlock || hyprlock"; # avoid starting multiple hyprlock instances.
           before_sleep_cmd = "loginctl lock-session"; # lock before suspend.
           after_sleep_cmd = "hyprctl dispatch dpms on && ${configscriptsDir}/monitor-handler.sh --fast --bar=${barSystem}"; # restore display and monitors after suspend.
-          ignore_dbus_inhibit = true; # ignore applications trying to inhibit idle (like browsers with video content)
+          ignore_dbus_inhibit = false; # allow applications to inhibit idle (e.g., browsers with video content)
         };
 
-        listeners = [
+        listener = [
           # Dim the screen
           {
-            timeout = 150; # 2.5min.
+            timeout = 150; # 2.5min
             on-timeout = "brightnessctl -s set 10"; # set monitor backlight to minimum, avoid 0 on OLED monitor.
             on-resume = "brightnessctl -r"; # monitor backlight restore.
           }
