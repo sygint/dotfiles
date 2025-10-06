@@ -115,6 +115,8 @@ check_secrets() {
         "api.*key.*=.*\".*[A-Za-z0-9]{16,}\""
     )
 
+    # Exclude example/template files and git-hooks themselves from secret scanning
+    # (git-hooks may contain patterns used for matching secrets)
     staged_files=$(git diff --cached --name-only --diff-filter=ACM | \
         grep -v -E '\.(example|template|sample)$' | \
         grep -v '^scripts/git-hooks/' || true)
@@ -159,7 +161,7 @@ check_secrets() {
     if command -v trufflehog >/dev/null 2>&1; then
         echo -e "${BLUE}Running trufflehog...${NC}"
         for file in $staged_files; do
-            if trufflehog filesystem --no-update --fail-verified false --json "$file" | grep -q '"reason"'; then
+            if trufflehog file "$file" | grep -q '"reason"'; then
                 log_error "trufflehog found potential secrets in $file"
                 SECRETS_FOUND=1
             fi
@@ -192,7 +194,7 @@ check_nixos_config() {
                 missing=1
             fi
         done
-        if [ ${#systems} -eq 0 ] || [ -z "$systems" ]; then
+        if [ -z "$systems" ]; then
             log_warn "No nixosConfigurations found in the flake"
         elif [ $missing -eq 0 ]; then
             log_success "All nixosConfigurations include system.stateVersion"
