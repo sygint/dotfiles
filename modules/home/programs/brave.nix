@@ -24,7 +24,7 @@ in
         "hmgpakheknboplhmlicfkkgjipfabmhp" # Privacy | Private Debit Cards
         "pkehgijcmpdhfbdbbnkijodmdjhbjlgp" # Privacy Badger        
         "fmkadmapgofadopljbjfkapdkoienihi" # React Developer Tools
-        # "hjdoplcnndgiblooccencgcggcoihigg" # Terms of Service; Didn’t Read
+        # "hjdoplcnndgiblooccencgcggcoihigg" # Terms of Service; Didn't Read
       ];
     };
   };
