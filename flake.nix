@@ -14,23 +14,53 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz";
+  disko.url = "github:nix-community/disko";
+  };
+
+  nixConfig = {
+  # NOTE: To use Cachix for binary caching, set up a personal cache at https://cachix.org and add your cache URL and public key here.
+  # Example:
+  # extra-substituters = [ "https://your-cachix.cachix.org" ];
+  # extra-trusted-public-keys = [ "your-cachix.cachix.org-1:..." ];
+  # See https://docs.cachix.org for setup instructions.
+  # We'll revisit this later.
+    # builders = [ ]; # No remote builders configured
   };
 
   outputs = { self, nixpkgs, nixos-hardware, home-manager, fh, nix-snapd, ... } @ inputs:
     let
       inherit (nixpkgs) lib;
-      system = "x86_64-linux"; # Make sure to specify the system architecture
+      system = "x86_64-linux";
 
+      # List all systems here for easy extensibility
+      systems = {
+        orion = {
+          path = ./systems/orion;
+          modules = [
+            inputs.stylix.nixosModules.stylix
+            nix-snapd.nixosModules.default
+            nixos-hardware.nixosModules.framework-13-7040-amd
+            home-manager.nixosModules.home-manager
+          ];
+        };
+        aida = {
+          path = ./systems/aida;
+          modules = [
+            inputs.disko.nixosModules.disko
+            home-manager.nixosModules.home-manager
+          ];
+        };
+        # Add new systems here!
+      };
+
+      # Import variables for home-manager (unchanged)
       variables = import ./systems/orion/variables.nix;
       inherit (variables.user) username;
-
       userVars = variables.user;
       systemVars = variables.system;
 
-      # Common pkgs configuration
       inherit (nixpkgs.legacyPackages.${system}) pkgs;
 
-      # Function to create home configuration for any user
       mkHomeConfiguration = variables:
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
@@ -46,40 +76,20 @@
         };
     in
     {
-      nixosConfigurations = {
-        orion = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = {
-            inherit self system inputs fh userVars;
-          };
+      nixosConfigurations = lib.mapAttrs (
+        name: cfg:
+          nixpkgs.lib.nixosSystem {
+            system = system;
+            modules = [ cfg.path ] ++ cfg.modules;
+            specialArgs = {
+              inherit self system inputs fh userVars;
+              hasSecrets = false; # Set to true if you use sops-nix or similar
+            };
+          }
+      ) systems;
 
-          modules = [
-            inputs.stylix.nixosModules.stylix
-            nix-snapd.nixosModules.default
-            ./systems/orion
-            nixos-hardware.nixosModules.framework-13-7040-amd
-
-            home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                extraSpecialArgs = {
-                  inherit self inputs userVars;
-                };
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "backup";
-                users.${username} = import ./systems/orion/homes/syg.nix;
-              };
-            }
-          ];
-        };
-      };
-
-      # Standalone Home Manager configuration
       homeConfigurations = {
-        # Standard username configuration
         ${username} = mkHomeConfiguration userVars;
-        # Also provide hostname@user format for nh compatibility
         "${username}@${systemVars.hostName}" = mkHomeConfiguration userVars;
       };
     };
