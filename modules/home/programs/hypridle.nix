@@ -5,7 +5,6 @@ let
 
   cfg = config.modules.programs.hypridle;
   hyprlandCfg = config.modules.programs.hyprland;
-  barSystem = hyprlandCfg.systemBar or "hyprpanel";
   configRoot = "/home/${userVars.username}/.config/nixos";
   configscriptsDir = "${configRoot}/scripts";
 in
