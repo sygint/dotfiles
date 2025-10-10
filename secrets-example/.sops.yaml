@@ -1,0 +1,30 @@
+# SOPS configuration for age-based encryption
+keys:
+  # Your personal age key (generated from SSH key or dedicated)
+  - &user_syg age1234567890abcdef...
+  
+  # Host keys for each machine
+  - &orion_host age0987654321fedcba...
+  - &aida_host age1111222233334444...
+
+creation_rules:
+  # Default rule for all secrets
+  - path_regex: .*\.(yaml|json)$
+    key_groups:
+    - age:
+      - *user_syg
+      - *orion_host
+      - *aida_host
+  
+  # Host-specific secrets
+  - path_regex: secrets/orion/.*
+    key_groups:
+    - age:
+      - *user_syg
+      - *orion_host
+      
+  - path_regex: secrets/aida/.*  
+    key_groups:
+    - age:
+      - *user_syg
+      - *aida_host
