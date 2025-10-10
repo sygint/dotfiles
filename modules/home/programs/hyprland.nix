@@ -11,13 +11,12 @@ let
   configRoot = "/home/${userVars.username}/.config/nixos";
   configDotfilesDir = "${configRoot}/dotfiles/.config";
   cfg = config.modules.programs.hyprland;
-  barCfg = cfg.systemBar;
   hyprland = userVars.hyprland;
 
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
     lib.replaceStrings
-      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@systemBarScript@" "@monitorHandler@" ]
+      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@monitorHandler@" ]
       [
         (hyprland.terminal or "ghostty")
         (hyprland.fileManager or "nemo")
@@ -70,11 +69,6 @@ in
       fileManager = mkOption { type = types.str; default = "nemo"; };
     };
 
-    systemBar = mkOption {
-      type = types.enum [ "waybar" "hyprpanel" "none" ];
-      default = "waybar";
-      description = "Which system bar to start (waybar, hyprpanel, none)";
-    };
   };
 
   config = mkIf cfg.enable {

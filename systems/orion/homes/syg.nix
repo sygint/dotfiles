@@ -14,7 +14,6 @@
     hyprland = {
       enable = true;
       packages.enable = true;
-      systemBar = "hyprpanel";  # Switch to HyprPanel
     };
 
     hyprpanel.enable = true;        # Enable HyprPanel
