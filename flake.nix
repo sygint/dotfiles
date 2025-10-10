@@ -14,7 +14,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz";
-  disko.url = "github:nix-community/disko";
+    disko.url = "github:nix-community/disko";
   };
 
   nixConfig = {
