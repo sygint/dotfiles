@@ -2,33 +2,47 @@
 
 pkgs.mkShell {
   name = "nixos-dotfiles-dev";
-  buildInputs = [
-    pkgs.git
-    pkgs.jq
-    pkgs.gnugrep
-    pkgs.gawk
-    pkgs.gnumake
-    pkgs.bashInteractive
-    pkgs.openssh
-    pkgs.gitAndTools.git-secrets
-    pkgs.python3
-    pkgs.python3Packages.pip
+  
+  buildInputs = with pkgs; [
+    # Core development tools
+    git
+    git-secrets
+    trufflehog
+    
+    # Utilities for scripts
+    jq
+    gnugrep
+    gawk
+    gnumake
+    bashInteractive
+    openssh
+    
+    # NixOS-specific tools
+    nixos-rebuild
+    nixfmt
+    nix-tree
+    
+    # Deployment tools
+    # deploy-rs  # Uncomment when you set up deploy-rs
   ];
+  
   shellHook = ''
-    echo "\033[1;32m[devenv] Development environment loaded.\033[0m"
-    echo "- git, git-secrets, jq, trufflehog (via venv), and more are available."
-    echo "- Use 'devenv shell' or 'nix develop' to enter this environment."
-    if [ ! -d .venv ]; then
-      echo "[devenv] Creating Python venv in .venv..."
-      python3 -m venv .venv
+    echo "🔧 NixOS Dotfiles Development Environment"
+    echo "=========================================="
+    echo
+    echo "Security Tools:"
+    echo "  • git-secrets: $(command -v git-secrets >/dev/null && echo 'available' || echo 'not found')"
+    echo "  • trufflehog: $(trufflehog --version 2>&1 | head -1)"
+    echo
+    echo "Available Commands:"
+    echo "  • ./scripts/fleet.sh - Fleet management"
+    echo "  • ./scripts/setup-security-tools.sh - Configure git hooks"
+    echo "  • nixos-rebuild - Build/test configurations"
+    echo
+    
+    # Configure git-secrets if not already done
+    if [ -d .git ] && ! git config --local --get secrets.providers >/dev/null 2>&1; then
+      echo "⚠️  git-secrets not configured. Run ./scripts/setup-security-tools.sh"
     fi
-    # shellcheck disable=SC1091
-    source .venv/bin/activate
-    if ! .venv/bin/trufflehog --version >/dev/null 2>&1; then
-      echo "[devenv] Installing trufflehog in .venv..."
-      pip install --quiet trufflehog
-    fi
-    hash -r
-    echo "[devenv] Python venv activated. trufflehog is available."
   '';
 }
