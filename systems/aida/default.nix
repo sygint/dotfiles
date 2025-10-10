@@ -25,7 +25,8 @@
       # Use secrets for password if available, otherwise leave passwordless
       hashedPasswordFile = if hasSecrets then config.sops.secrets."jarvis/password_hash".path else null;
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILsWEyD494ywoGYgk82jPjpqMzWZT8ukPv5vzzDEr1Se jarvis@aida"
+        # syg's primary key from orion
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMSdxXvx7Df+/2cPMe7C2TUSqRkYee5slatv7t3MG593 syg@nixos"
       ];
     };
 
