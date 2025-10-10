@@ -10,3 +10,7 @@ result-*
 
 # Secrets repository (has its own git)
 secrets
+
+# Development environment
+.direnv/
+.venv/
