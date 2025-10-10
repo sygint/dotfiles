@@ -4,6 +4,16 @@
 
 This repository implements a modular, composable NixOS configuration designed for easy maintenance and multi-system/multi-user support.
 
+## 🚀 Fleet Management
+
+This repository includes powerful tools for managing multiple NixOS systems:
+
+- **nixos-fleet.sh**: Universal deployment and update tool
+- **deploy-rs**: Automated deployment with rollback capabilities
+- **nixos-anywhere**: Initial system deployment
+
+See [FLEET-MANAGEMENT.md](./FLEET-MANAGEMENT.md) for comprehensive guide on deploying and managing your NixOS infrastructure.
+
 ### 📁 Directory Structure
 
 ```
