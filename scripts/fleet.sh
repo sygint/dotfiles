@@ -23,20 +23,18 @@ get_systems() {
 }
 
 usage() {
-    cat <<EOF
-${GREEN}Fleet Management Tool${NC}
-Usage: $0 <command> <system> [options]
-Commands:
-  list                List all systems
-  build <system>      Build system config locally
-  check <system>      Check connection and health
-  deploy <system> <ip> [user]  Initial deployment (nixos-anywhere)
-  update <system>     Update system (deploy-rs or nh)
-Options:
-  --remote-build      Build on target (if supported)
-  --local             Force local deployment (nh)
-  --skip-checks       Skip health checks
-EOF
+    echo -e "${GREEN}Fleet Management Tool${NC}"
+    echo "Usage: $0 <command> <system> [options]"
+    echo "Commands:"
+    echo "  list                List all systems"
+    echo "  build <system>      Build system config locally"
+    echo "  check <system> <hostname> [user]  Check connection and health"
+    echo "  deploy <system> <ip> [user]       Initial deployment (nixos-anywhere)"
+    echo "  update <system>     Update system (deploy-rs)"
+    echo "Options:"
+    echo "  --remote-build      Build on target (if supported)"
+    echo "  --local             Force local deployment (nh)"
+    echo "  --skip-checks       Skip health checks"
 }
 
 list_systems() {
@@ -45,16 +43,24 @@ list_systems() {
 }
 
 build_system() {
-    local system="$1"
+    local system="${1:-}"
+    if [ -z "$system" ]; then
+        error "Usage: $0 build <system>"
+    fi
     info "Building $system configuration..."
     nix build "$FLAKE_DIR#nixosConfigurations.$system.config.system.build.toplevel" --show-trace && success "Build successful for $system"
 }
 
 check_system() {
-    local system="$1"
-    local hostname="$2"
+    local system="${1:-}"
+    local hostname="${2:-}"
     local ssh_user="${3:-jarvis}"
     local timeout=10
+    
+    if [ -z "$system" ] || [ -z "$hostname" ]; then
+        error "Usage: $0 check <system> <hostname> [user]"
+    fi
+    
     info "Checking $system ($hostname) as $ssh_user..."
 
     # Step 1: SSH key check
@@ -163,9 +169,14 @@ check_system() {
 }
 
 deploy_system() {
-    local system="$1"
-    local ip="$2"
+    local system="${1:-}"
+    local ip="${2:-}"
     local user="${3:-root}"
+    
+    if [ -z "$system" ] || [ -z "$ip" ]; then
+        error "Usage: $0 deploy <system> <ip> [user]"
+    fi
+    
     warn "DESTRUCTIVE OPERATION - THIS WILL WIPE THE DISK!"
     read -p "Type 'yes' to continue: " confirm
     [[ "$confirm" == "yes" ]] || { info "Cancelled"; exit 0; }
@@ -175,21 +186,45 @@ deploy_system() {
 }
 
 update_system() {
-    local system="$1"
+    local system="${1:-}"
+    
+    if [ -z "$system" ]; then
+        error "Usage: $0 update <system>"
+    fi
+    
     info "Updating $system using deploy-rs..."
     nix run github:serokell/deploy-rs -- ".#$system" --skip-checks && success "Update complete!"
 }
 
 main() {
-    if [ $# -eq 0 ]; then usage; exit 1; fi
-    local cmd="$1"; shift
+    if [ $# -eq 0 ]; then 
+        usage
+        exit 1
+    fi
+    
+    local cmd="$1"
+    shift
+    
     case "$cmd" in
-        list) list_systems ;;
-        build) build_system "$1" ;;
-        check) check_system "$1" "$2" ;;
-        deploy) deploy_system "$1" "$2" "${3:-root}" ;;
-        update) update_system "$1" ;;
-        *) usage ;;
+        list) 
+            list_systems 
+            ;;
+        build) 
+            build_system "${1:-}" 
+            ;;
+        check) 
+            check_system "${1:-}" "${2:-}" "${3:-jarvis}"
+            ;;
+        deploy) 
+            deploy_system "${1:-}" "${2:-}" "${3:-root}" 
+            ;;
+        update) 
+            update_system "${1:-}" 
+            ;;
+        *) 
+            error "Unknown command: $cmd"
+            usage
+            ;;
     esac
 }
 
