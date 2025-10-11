@@ -1,12 +1,12 @@
-# AIDA - Secure AI Server System
+# Cortex - Secure AI Server System
 
-AIDA is a hardened NixOS system designed for secure AI/ML workloads and remote deployments. It features comprehensive security hardening, automated secret scanning, and deployment automation.
+Cortex is a hardened NixOS system designed for secure AI/ML workloads and remote deployments. It features comprehensive security hardening, automated secret scanning, and deployment automation.
 
-**📍 Network Configuration**: The IP address and system variables for AIDA are configured in `systems/aida/variables.nix`. Update that file if network settings change.
+**📍 Network Configuration**: The IP address and system variables for Cortex are configured in `systems/cortex/variables.nix`. Update that file if network settings change.
 
 ## 🎯 Overview
 
-**AIDA** is a security-focused NixOS configuration designed for:
+**Cortex** is a security-focused NixOS configuration designed for:
 - Remote AI/ML server deployments
 - Secure infrastructure management
 - Automated deployments with nixos-anywhere
@@ -61,22 +61,22 @@ Network security via sysctl parameters:
 ## 📁 File Structure
 
 ```
-systems/aida/
+systems/cortex/
 ├── default.nix           # Main system configuration with security hardening
 ├── disk-config.nix       # Disko disk partitioning configuration
 └── README.md            # This file
 
 Documentation/
-├── AIDA-SECURITY.md            # Detailed security implementation guide
+├── Cortex-SECURITY.md            # Detailed security implementation guide
 ├── SECRETS-SETUP.md              # Optional secrets management setup
 └── examples/
     └── deploy-rs-integration.md  # Deploy-rs setup guide
 
 Deployment Scripts/
-├── scripts/deploy-aida.sh            # Deploy aida system
-├── scripts/deploy-aida.sh             # Enhanced deployment with health checks
-├── scripts/verify-aida-security.sh   # Verify security services
-├── scripts/troubleshoot-aida.sh      # Troubleshooting utilities
+├── scripts/deploy-cortex.sh            # Deploy cortex system
+├── scripts/deploy-cortex.sh             # Enhanced deployment with health checks
+├── scripts/verify-cortex-security.sh   # Verify security services
+├── scripts/troubleshoot-cortex.sh      # Troubleshooting utilities
 └── scripts/setup-security-tools.sh     # Install git-secrets and trufflehog
 ```
 
@@ -89,14 +89,14 @@ Deployment Scripts/
 ./scripts/setup-security-tools.sh
 
 # Review the configuration
-cat systems/aida/default.nix
+cat systems/cortex/default.nix
 ```
 
 ### 2. Build Configuration Locally
 
 ```bash
 # Test build without deploying
-nix build .#nixosConfigurations.aida.config.system.build.toplevel
+nix build .#nixosConfigurations.cortex.config.system.build.toplevel
 
 # Check flake validity
 nix flake check --no-build
@@ -108,8 +108,8 @@ nix flake check --no-build
 
 ```bash
 # Deploy to a fresh system (will partition and install)
-# Check systems/aida/variables.nix for the current IP address
-./scripts/deploy-aida.sh <AIDA_IP> nixos
+# Check systems/cortex/variables.nix for the current IP address
+./scripts/deploy-cortex.sh <CORTEX_IP> nixos
 
 # The script will:
 # - Test the configuration builds
@@ -124,27 +124,27 @@ First, set up deploy-rs (see `examples/deploy-rs-integration.md`):
 
 ```bash
 # Deploy updates to an existing system
-nix run github:serokell/deploy-rs -- .#aida
+nix run github:serokell/deploy-rs -- .#cortex
 ```
 
 #### Option C: Manual Deployment
 
 ```bash
 # Build locally and deploy manually
-nixos-rebuild switch --flake .#aida --target-host jarvis@aida.local --use-remote-sudo
+nixos-rebuild switch --flake .#cortex --target-host jarvis@cortex.local --use-remote-sudo
 ```
 
 ### 4. Verify Deployment
 
 ```bash
 # Run security verification
-# Check systems/aida/variables.nix for the current IP address
-./scripts/verify-aida-security.sh <AIDA_IP> jarvis
+# Check systems/cortex/variables.nix for the current IP address
+./scripts/verify-cortex-security.sh <CORTEX_IP> jarvis
 
 # SSH into the system
-ssh jarvis@aida.local
+ssh jarvis@cortex.local
 # or
-ssh jarvis@<AIDA_IP>
+ssh jarvis@<CORTEX_IP>
 
 # Check security services
 sudo systemctl status fail2ban auditd sshd
@@ -168,7 +168,7 @@ sudo systemctl status fail2ban auditd sshd
 
 ### Customizing Security Settings
 
-Edit `systems/aida/default.nix`:
+Edit `systems/cortex/default.nix`:
 
 ```nix
 # Adjust firewall rules
@@ -203,8 +203,8 @@ See `SECRETS-SETUP.md` for setting up sops-nix with age encryption.
 ### Check Security Services
 
 ```bash
-# SSH into aida
-ssh jarvis@aida.local
+# SSH into cortex
+ssh jarvis@cortex.local
 
 # Check fail2ban status
 sudo fail2ban-client status
@@ -234,19 +234,19 @@ sudo fail2ban-client set sshd unbanip <IP_ADDRESS>
 ### Update System
 
 ```bash
-# SSH into aida
-ssh jarvis@aida.local
+# SSH into cortex
+ssh jarvis@cortex.local
 
 # Pull latest configuration (if managed via git)
 cd /etc/nixos
 git pull
 
 # Rebuild system
-sudo nixos-rebuild switch --flake .#aida
+sudo nixos-rebuild switch --flake .#cortex
 
 # Or deploy from your local machine
-# Check systems/aida/variables.nix for the current IP address
-./scripts/deploy-aida.sh <AIDA_IP>
+# Check systems/cortex/variables.nix for the current IP address
+./scripts/deploy-cortex.sh <CORTEX_IP>
 ```
 
 ## 🛠️ Troubleshooting
@@ -262,11 +262,11 @@ sudo nixos-rebuild switch --flake .#aida
 
 ```bash
 # Use the troubleshooting script
-# Check systems/aida/variables.nix for the current IP address
-./scripts/troubleshoot-aida.sh <AIDA_IP>
+# Check systems/cortex/variables.nix for the current IP address
+./scripts/troubleshoot-cortex.sh <CORTEX_IP>
 
 # Or manually check and restart
-ssh jarvis@aida.local
+ssh jarvis@cortex.local
 sudo systemctl status fail2ban auditd
 sudo systemctl restart fail2ban auditd
 ```
@@ -278,19 +278,19 @@ sudo systemctl restart fail2ban auditd
 nix flake check
 
 # Build with more verbose output
-nix build --show-trace .#nixosConfigurations.aida.config.system.build.toplevel
+nix build --show-trace .#nixosConfigurations.cortex.config.system.build.toplevel
 ```
 
 ## 📚 Additional Documentation
 
-- **[AIDA-SECURITY.md](../../AIDA-SECURITY.md)** - Comprehensive security implementation guide
+- **[Cortex-SECURITY.md](../../Cortex-SECURITY.md)** - Comprehensive security implementation guide
 - **[SECRETS-SETUP.md](../../SECRETS-SETUP.md)** - Optional secrets management with sops-nix
 - **[SECURITY-COMPARISON.md](../../SECURITY-COMPARISON.md)** - Security features comparison
 - **[examples/deploy-rs-integration.md](../../examples/deploy-rs-integration.md)** - Deploy-rs setup
 
 ## 🤝 Contributing
 
-When working on AIDA:
+When working on Cortex:
 
 1. **Security scanning is automatic** - Pre-commit hooks will scan for secrets
 2. **Test builds before committing** - Run `nix flake check --no-build`
@@ -299,7 +299,7 @@ When working on AIDA:
 
 ## 📝 Notes
 
-- The system hostname is `aida` (originally had "aida" references, now unified)
+- The system hostname is `cortex` (originally had "cortex" references, now unified)
 - Default disk device is `/dev/nvme0n1` (customize in `disk-config.nix`)
 - SSH keys need to be added to `jarvis` user's `authorizedKeys`
 - Secrets management via sops-nix is optional but recommended for production

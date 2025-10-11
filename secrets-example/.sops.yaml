@@ -5,7 +5,7 @@ keys:
   
   # Host keys for each machine
   - &orion_host age0987654321fedcba...
-  - &aida_host age1111222233334444...
+  - &cortex_host age1111222233334444...
 
 creation_rules:
   # Default rule for all secrets
@@ -14,7 +14,7 @@ creation_rules:
     - age:
       - *user_syg
       - *orion_host
-      - *aida_host
+      - *cortex_host
   
   # Host-specific secrets
   - path_regex: secrets/orion/.*
@@ -23,8 +23,8 @@ creation_rules:
       - *user_syg
       - *orion_host
       
-  - path_regex: secrets/aida/.*  
+  - path_regex: secrets/cortex/.*  
     key_groups:
     - age:
       - *user_syg
-      - *aida_host
+      - *cortex_host

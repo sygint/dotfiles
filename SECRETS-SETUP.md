@@ -37,7 +37,7 @@ age-keygen -o secrets/keys/age-key.txt
 
 # Generate host-specific keys
 age-keygen -o secrets/keys/hosts/orion.txt
-age-keygen -o secrets/keys/hosts/aida.txt
+age-keygen -o secrets/keys/hosts/cortex.txt
 ```
 
 ### 4. Configure SOPS
@@ -48,7 +48,7 @@ Edit `secrets/.sops.yaml` with your actual age public keys:
 keys:
   - &syg age1your_personal_public_key_here
   - &orion age1orion_host_public_key_here
-  - &aida age1aida_host_public_key_here
+  - &cortex age1cortex_host_public_key_here
 
 creation_rules:
   - path_regex: secrets\.yaml$
@@ -56,7 +56,7 @@ creation_rules:
       - age:
           - *syg
           - *orion
-          - *aida
+          - *cortex
 ```
 
 ### 5. Create and Encrypt Secrets

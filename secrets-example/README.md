@@ -22,7 +22,7 @@ secrets/
 │   ├── age-key.txt         # Age private key
 │   └── hosts/
 │       ├── orion.txt       # Host-specific age key
-│       └── aida.txt        # Host-specific age key
+│       └── cortex.txt        # Host-specific age key
 ├── default.nix             # Nix module to import
 └── README.md               # This file
 ```

@@ -43,8 +43,8 @@
             home-manager.nixosModules.home-manager
           ];
         };
-        aida = {
-          path = ./systems/aida;
+        cortex = {
+          path = ./systems/cortex;
           modules = [
             inputs.disko.nixosModules.disko
             home-manager.nixosModules.home-manager

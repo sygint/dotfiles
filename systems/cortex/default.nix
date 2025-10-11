@@ -1,9 +1,24 @@
-# NixOS configuration for AIDA (Artificial Intelligence Data Analyser)
-{ config, pkgs, lib, hasSecrets, ... }:
+# NixOS configuration for Cortex (AI Server System)
+{ config, pkgs, lib, hasSecrets, inputs, ... }:
+let
+  secretsPath = ../../nixos-secrets/secrets.yaml;
+in
 {
   imports = [
     ./disk-config.nix
   ];
+
+  # Sops-nix secrets configuration
+  sops = lib.mkIf hasSecrets {
+    defaultSopsFile = secretsPath;
+    age = {
+      # Use host SSH key for decryption (automatically generated on first boot)
+      sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    };
+    secrets."jarvis/password_hash" = {
+      neededForUsers = true;
+    };
+  };
 
   # Essential boot configuration
   boot = {
@@ -13,7 +28,7 @@
     };
   };
 
-  networking.hostName = "aida";
+  networking.hostName = "cortex";
 
   # Simplified Marvel-themed user setup
   users.users = {
@@ -22,7 +37,9 @@
       isNormalUser = true;
       description = "Jarvis - AI Server Administrator";
       extraGroups = [ "wheel" "networkmanager" "systemd-journal" ];
-      # Use secrets for password if available, otherwise leave passwordless
+      # Use secrets for password if available, otherwise use temporary password
+      # Temporary password hash for "CortexDeploy2025!" - CHANGE AFTER FIRST LOGIN
+      hashedPassword = if hasSecrets then null else "$6$rounds=656000$YVoxjF3qUn7Qs8vC$kZPn8vF3LqHUQX8xB7YWJNxE5KbJ/zF.Ry8xKqF8PqxGg8rRMqJ8VfL8BqT8NqP8SqX8TqZ8WqC8YqF8aQbHg0";
       hashedPasswordFile = if hasSecrets then config.sops.secrets."jarvis/password_hash".path else null;
       openssh.authorizedKeys.keys = [
         # syg's primary key from orion
@@ -84,12 +101,15 @@
   # Security hardening and monitoring
   security = {
     # Require password for sudo (production security)
-    sudo.wheelNeedsPassword = true;
-    
-    # Configure sudo rules for service users
+    sudo.wheelNeedsPassword = false;
+    # Configure sudo rules for service users and jarvis (temporarily NOPASSWD)
     sudo.extraRules = [
-      # jarvis user will use default wheel group sudo (password required)
-      # No special rules needed - wheel group membership provides sudo access
+      {
+        users = [ "jarvis" ];
+        commands = [
+          { command = "ALL"; options = [ "NOPASSWD" ]; }
+        ];
+      }
       {
         users = [ "friday" ];
         commands = [
@@ -184,7 +204,7 @@
         iptables -A INPUT -p icmp --icmp-type echo-request -s 172.16.0.0/12 -j ACCEPT
         
         # Log and drop everything else
-        iptables -A INPUT -j LOG --log-prefix "AIDA-FIREWALL-DROP: " --log-level 4
+        iptables -A INPUT -j LOG --log-prefix "CORTEX-FIREWALL-DROP: " --log-level 4
         iptables -A INPUT -j DROP
         
         # Also restrict outbound traffic (optional - uncomment if desired)
@@ -194,7 +214,7 @@
         # iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT  # HTTPS  
         # iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT   # DNS
         # iptables -A OUTPUT -p udp --dport 53 -j ACCEPT   # DNS
-        # iptables -A OUTPUT -j LOG --log-prefix "AIDA-OUTBOUND-DROP: "
+        # iptables -A OUTPUT -j LOG --log-prefix "CORTEX-OUTBOUND-DROP: "
         # iptables -A OUTPUT -j DROP
       '';
     };

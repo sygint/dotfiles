@@ -18,11 +18,11 @@ Systems are organized with tags for selective deployment:
 
 | Tag | Purpose | Systems |
 |-----|---------|---------|
-| `ai` | AI/ML systems | aida |
-| `server` | Server systems | aida |
+| `ai` | AI/ML systems | cortex |
+| `server` | Server systems | cortex |
 | `workstation` | Desktop/laptop systems | orion |
 | `local` | Local machine | orion |
-| `deployed` | Already deployed | aida |
+| `deployed` | Already deployed | cortex |
 
 Use tags to update groups of systems:
 ```bash
@@ -34,28 +34,28 @@ Use tags to update groups of systems:
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Your Workstation                          │
-│                      (Orion)                                 │
+┌────────────────────────────────────────────────────────────┐
+│                    Your Workstation                        │
+│                      (Orion)                               │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │  NixOS Configuration Repository                       │  │
+│  │  NixOS Configuration Repository                      │  │
 │  │  - flake.nix (defines all systems + Colmena)         │  │
-│  │  - systems/aida/default.nix                          │  │
+│  │  - systems/cortex/default.nix                        │  │
 │  │  - systems/orion/default.nix                         │  │
 │  │  - scripts/fleet-deploy.sh (deployment tool)         │  │
 │  └──────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────┘
                          │
                          │ Colmena (parallel deploy/update)
                          ↓
-┌─────────────────────────────────────────────────────────────┐
-│              Remote NixOS Systems (Fleet)                    │
+┌───────────────────────────────────────────────────────────┐
+│              Remote NixOS Systems (Fleet)                 │
 │  ┌────────────┐  ┌────────────┐  ┌────────────┐           │
-│  │    AIDA    │  │  Server 2  │  │  Server 3  │   ...     │
+│  │    Cortex  │  │  Server 2  │  │  Server 3  │   ...     │
 │  │  AI Server │  │ @server    │  │ @backup    │           │
 │  │ @ai @server│  │            │  │            │           │
 │  └────────────┘  └────────────┘  └────────────┘           │
-└─────────────────────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────────┘
 ```
 
 ## Quick Start
@@ -78,8 +78,8 @@ cd ~/.config/nixos
 ### Build Configuration Locally (Dry-Run)
 
 ```bash
-# Build AIDA config locally to validate before deploying
-./scripts/fleet-deploy.sh build aida
+# Build Cortex config locally to validate before deploying
+./scripts/fleet-deploy.sh build cortex
 
 # Build all systems
 ./scripts/fleet-deploy.sh build --all
@@ -95,8 +95,8 @@ Use this only for:
 - Disaster recovery
 
 ```bash
-# Deploy AIDA to 192.168.1.34 (wipes disk!)
-./scripts/fleet-deploy.sh fresh aida 192.168.1.34
+# Deploy Cortex to 192.168.1.34 (wipes disk!)
+./scripts/fleet-deploy.sh fresh cortex 192.168.1.34
 
 # Deploy new system
 ./scripts/fleet-deploy.sh fresh newsystem 192.168.1.50
@@ -108,7 +108,7 @@ Use this for routine configuration updates:
 
 ```bash
 # Update specific system
-./scripts/fleet-deploy.sh update aida
+./scripts/fleet-deploy.sh update cortex
 
 # Update all systems
 ./scripts/fleet-deploy.sh update --all
@@ -117,10 +117,10 @@ Use this for routine configuration updates:
 ./scripts/fleet-deploy.sh update --on @ai
 
 # Update multiple specific systems
-./scripts/fleet-deploy.sh update --on aida,orion
+./scripts/fleet-deploy.sh update --on cortex,orion
 
 # Direct Colmena usage
-colmena apply --on aida
+colmena apply --on cortex
 colmena apply --on @server
 colmena apply  # all systems
 ```
@@ -263,18 +263,18 @@ deploy.nodes = {
 # 1. Prepare target machine (boot from USB or use nixos-genesis ISO)
 # 2. Get target IP address
 # 3. Deploy using nixos-anywhere
-./scripts/fleet-deploy.sh fresh aida 192.168.1.34
+./scripts/fleet-deploy.sh fresh cortex 192.168.1.34
 ```
 
 ### Routine Updates (Daily/Weekly)
 
 ```bash
-# 1. Make configuration changes in systems/aida/
+# 1. Make configuration changes in systems/cortex/
 # 2. Build locally to validate
-./scripts/fleet-deploy.sh build aida
+./scripts/fleet-deploy.sh build cortex
 
 # 3. Deploy with Colmena
-./scripts/fleet-deploy.sh update aida
+./scripts/fleet-deploy.sh update cortex
 
 # Or update all AI systems
 ./scripts/fleet-deploy.sh update --on @ai
@@ -302,14 +302,14 @@ Colmena provides powerful fleet management capabilities:
 colmena apply
 
 # Deploy specific system
-colmena apply --on aida
+colmena apply --on cortex
 
 # Deploy by tag
 colmena apply --on @ai
 colmena apply --on @server
 
 # Deploy multiple systems
-colmena apply --on aida,orion
+colmena apply --on cortex,orion
 
 # Build without deploying
 colmena build
@@ -343,7 +343,7 @@ Deploy-rs is also configured but Colmena is recommended for fleet management:
 ./scripts/fleet-deploy.sh update --on @server
 
 # Update multiple specific systems
-./scripts/fleet-deploy.sh update --on aida,server2,server3
+./scripts/fleet-deploy.sh update --on cortex,server2,server3
 ```
 
 ## Tool Comparison
@@ -422,17 +422,17 @@ deploy.nodes.my-server = {
 
 ```bash
 # Check SSH connectivity
-./scripts/nixos-fleet.sh check aida
+./scripts/nixos-fleet.sh check cortex
 
 # Manual SSH test
-ssh jarvis@aida
+ssh jarvis@cortex
 ```
 
 ### Build Failures
 
 ```bash
 # Build locally with detailed output
-nix build .#nixosConfigurations.aida.config.system.build.toplevel --show-trace
+nix build .#nixosConfigurations.cortex.config.system.build.toplevel --show-trace
 
 # Check for syntax errors
 nix flake check
@@ -444,10 +444,10 @@ Deploy-rs automatically rolls back failed deployments. Check:
 
 ```bash
 # View system logs
-ssh jarvis@aida "journalctl -xe"
+ssh jarvis@cortex "journalctl -xe"
 
 # Check service status
-ssh jarvis@aida "systemctl status"
+ssh jarvis@cortex "systemctl status"
 ```
 
 ### GitHub Rate Limiting
@@ -466,23 +466,23 @@ nix flake lock --update-input deploy-rs
 
 ## Current Fleet
 
-### AIDA (AI Server)
+### Cortex (AI Server)
 
 - **Purpose**: Artificial Intelligence Data Analyser
-- **Hostname**: aida
+- **Hostname**: cortex
 - **IP**: 192.168.1.34 (DHCP reservation recommended)
 - **Admin User**: jarvis
 - **Services**: fail2ban, auditd, SSH hardening
-- **Marvel Theme**: Named after AIDA from Agents of S.H.I.E.L.D.
+- **Marvel Theme**: Named after Cortex from Agents of S.H.I.E.L.D.
 
-**Update AIDA**:
+**Update Cortex**:
 
 ```bash
 # Using fleet-deploy.sh wrapper
-./scripts/fleet-deploy.sh update aida
+./scripts/fleet-deploy.sh update cortex
 
 # Direct Colmena
-colmena apply --on aida
+colmena apply --on cortex
 
 # Update all AI systems
 ./scripts/fleet-deploy.sh update --on @ai
@@ -522,11 +522,11 @@ sudo nixos-rebuild switch --flake .#orion
 ```bash
 # Commit before deploying
 git add -A
-git commit -m "feat: update aida configuration"
+git commit -m "feat: update cortex configuration"
 git push
 
 # Deploy
-./scripts/nixos-fleet.sh update aida
+./scripts/nixos-fleet.sh update cortex
 ```
 
 ### 4. Monitor Deployments
@@ -543,10 +543,10 @@ Deploy-rs automatically keeps previous generations:
 
 ```bash
 # View available generations
-ssh jarvis@aida "sudo nix-env --list-generations --profile /nix/var/nix/profiles/system"
+ssh jarvis@cortex "sudo nix-env --list-generations --profile /nix/var/nix/profiles/system"
 
 # Rollback to previous generation
-ssh jarvis@aida "sudo nixos-rebuild switch --rollback"
+ssh jarvis@cortex "sudo nixos-rebuild switch --rollback"
 ```
 
 ## Security Considerations
@@ -592,8 +592,8 @@ networking.firewall = {
 
 ## See Also
 
-- [AIDA-COMPLETE.md](../AIDA-COMPLETE.md) - Complete AIDA documentation
-- [AIDA-SECURITY.md](../AIDA-SECURITY.md) - Security implementation details
+- [Cortex-COMPLETE.md](../Cortex-COMPLETE.md) - Complete Cortex documentation
+- [Cortex-SECURITY.md](../Cortex-SECURITY.md) - Security implementation details
 - [deploy-rs Documentation](https://github.com/serokell/deploy-rs)
 - [nixos-anywhere Documentation](https://github.com/nix-community/nixos-anywhere)
 - [NixOS Manual](https://nixos.org/manual/nixos/stable/)
