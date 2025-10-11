@@ -1,6 +1,6 @@
-# Deploy-rs Integration for AIDA
+# Deploy-rs Integration for Cortex
 
-This document explains how to integrate deploy-rs for automated NixOS deployments to AIDA.
+This document explains how to integrate deploy-rs for automated NixOS deployments to Cortex.
 
 ## Adding deploy-rs to flake.nix
 
@@ -35,12 +35,12 @@ Add this to your flake outputs:
 
     # Deploy-rs configuration for remote deployments
     deploy.nodes = {
-      aida = {
-        hostname = "aida.local";  # or IP address like "192.168.1.213"
+      cortex = {
+        hostname = "cortex.local";  # or IP address like "192.168.1.213"
         profiles.system = {
           user = "root";
           path = deploy-rs.lib.x86_64-linux.activate.nixos 
-                 self.nixosConfigurations.aida;
+                 self.nixosConfigurations.cortex;
         };
       };
     };
@@ -55,17 +55,17 @@ Add this to your flake outputs:
 
 ## Usage
 
-### Deploy to AIDA
+### Deploy to Cortex
 
 ```bash
-# Deploy the aida system configuration
-nix run github:serokell/deploy-rs -- .#aida
+# Deploy the cortex system configuration
+nix run github:serokell/deploy-rs -- .#cortex
 
 # Deploy with sudo password
-nix run github:serokell/deploy-rs -- .#aida --ssh-opts="-t" --sudo-opts="--preserve-env"
+nix run github:serokell/deploy-rs -- .#cortex --ssh-opts="-t" --sudo-opts="--preserve-env"
 
 # Deploy with custom options
-nix run github:serokell/deploy-rs -- .#aida --skip-checks --magic-rollback false
+nix run github:serokell/deploy-rs -- .#cortex --skip-checks --magic-rollback false
 ```
 
 ### Common Options
@@ -83,7 +83,7 @@ Ensure you have SSH access to the target system:
 
 ```bash
 # Test SSH connection
-ssh jarvis@aida.local
+ssh jarvis@cortex.local
 
 # Or with IP
 ssh jarvis@192.168.1.213
@@ -92,7 +92,7 @@ ssh jarvis@192.168.1.213
 For root deployments, configure sudo or SSH key for root:
 
 ```nix
-# In your aida configuration
+# In your cortex configuration
 users.users.root.openssh.authorizedKeys.keys = [
   "ssh-ed25519 AAAA... your-key"
 ];
@@ -131,24 +131,24 @@ If you prefer not to use deploy-rs, you can deploy manually:
 
 ```bash
 # Build configuration locally
-nixos-rebuild build --flake .#aida
+nixos-rebuild build --flake .#cortex
 
 # Copy to remote and activate
-nixos-rebuild switch --flake .#aida --target-host jarvis@aida.local --use-remote-sudo
+nixos-rebuild switch --flake .#cortex --target-host jarvis@cortex.local --use-remote-sudo
 ```
 
 Or use the provided scripts:
 
 ```bash
-# Deploy aida using nixos-anywhere (for initial setup)
-./scripts/deploy-aida.sh [target-ip] [target-user]
+# Deploy cortex using nixos-anywhere (for initial setup)
+./scripts/deploy-cortex.sh [target-ip] [target-user]
 
 # For updates after initial setup
-ssh jarvis@aida.local "cd /etc/nixos && git pull && sudo nixos-rebuild switch --flake .#aida"
+ssh jarvis@cortex.local "cd /etc/nixos && git pull && sudo nixos-rebuild switch --flake .#cortex"
 ```
 
 ## See Also
 
 - [deploy-rs Documentation](https://github.com/serokell/deploy-rs)
 - [NixOS Manual - Remote Builds](https://nixos.org/manual/nix/stable/advanced-topics/distributed-builds.html)
-- [AIDA-SECURITY.md](../AIDA-SECURITY.md) - Security implementation details
+- [Cortex-SECURITY.md](../Cortex-SECURITY.md) - Security implementation details
