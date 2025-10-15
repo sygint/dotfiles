@@ -12,6 +12,7 @@ let
   configDotfilesDir = "${configRoot}/dotfiles/.config";
   cfg = config.modules.programs.hyprland;
   hyprland = userVars.hyprland;
+  barCfg = hyprland.bar or "hyprpanel";  # Default to hyprpanel if not specified
 
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (

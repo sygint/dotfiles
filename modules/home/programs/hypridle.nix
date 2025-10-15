@@ -7,6 +7,7 @@ let
   hyprlandCfg = config.modules.programs.hyprland;
   configRoot = "/home/${userVars.username}/.config/nixos";
   configscriptsDir = "${configRoot}/scripts";
+  barCfg = userVars.hyprland.bar or "hyprpanel";  # Default to hyprpanel if not specified
 in
 {
   options.modules.programs.hypridle.enable = mkEnableOption "Hypridle idle daemon";
@@ -19,7 +20,7 @@ in
         general = {
           lock_cmd = "pidof hyprlock || hyprlock"; # avoid starting multiple hyprlock instances.
           before_sleep_cmd = "loginctl lock-session"; # lock before suspend.
-          after_sleep_cmd = "hyprctl dispatch dpms on && ${configscriptsDir}/monitor-handler.sh --fast --bar=${barSystem}"; # restore display and monitors after suspend.
+          after_sleep_cmd = "hyprctl dispatch dpms on && ${configscriptsDir}/monitor-handler.sh --fast --bar=${barCfg}"; # restore display and monitors after suspend.
           ignore_dbus_inhibit = false; # allow applications to inhibit idle (e.g., browsers with video content)
         };
 

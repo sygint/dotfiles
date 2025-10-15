@@ -17,6 +17,7 @@
       fileManager = "nemo";
       webBrowser = "brave";
       menu = "rofi -show drun";
+      bar = "hyprpanel";  # or "waybar"
     };
   };
 }
