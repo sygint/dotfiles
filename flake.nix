@@ -15,6 +15,9 @@
     };
     fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz";
     disko.url = "github:nix-community/disko";
+    deploy-rs.url = "github:serokell/deploy-rs";
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   nixConfig = {
@@ -48,6 +51,7 @@
           modules = [
             inputs.disko.nixosModules.disko
             home-manager.nixosModules.home-manager
+            inputs.sops-nix.nixosModules.sops
           ];
         };
         # Add new systems here!
@@ -83,7 +87,7 @@
             modules = [ cfg.path ] ++ cfg.modules;
             specialArgs = {
               inherit self system inputs fh userVars;
-              hasSecrets = false; # Set to true if you use sops-nix or similar
+              hasSecrets = false; # Temporarily disabled - will enable after age key setup
             };
           }
       ) systems;
@@ -92,5 +96,20 @@
         ${username} = mkHomeConfiguration userVars;
         "${username}@${systemVars.hostName}" = mkHomeConfiguration userVars;
       };
+
+        # Add deploy-rs output for fleet management
+        deploy = {
+          nodes = {
+            cortex = {
+              hostname = "192.168.1.7";  # Current DHCP IP - configure static reservation on UDM Pro for 192.168.1.34
+              user = "jarvis";
+              sshUser = "jarvis";
+              profiles.system = {
+                path = self.nixosConfigurations.cortex.config.system.build.toplevel;
+              };
+            };
+            # Add other systems here as needed
+          };
+        };
     };
 }

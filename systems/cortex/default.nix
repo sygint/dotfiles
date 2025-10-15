@@ -101,15 +101,9 @@ in
   # Security hardening and monitoring
   security = {
     # Require password for sudo (production security)
-    sudo.wheelNeedsPassword = false;
-    # Configure sudo rules for service users and jarvis (temporarily NOPASSWD)
+    sudo.wheelNeedsPassword = true;
+    # Configure sudo rules for service users only
     sudo.extraRules = [
-      {
-        users = [ "jarvis" ];
-        commands = [
-          { command = "ALL"; options = [ "NOPASSWD" ]; }
-        ];
-      }
       {
         users = [ "friday" ];
         commands = [
@@ -254,6 +248,12 @@ in
     "net.ipv4.tcp_max_syn_backlog" = 2048;
     "net.ipv4.tcp_synack_retries" = 2;
     "net.ipv4.tcp_syn_retries" = 5;
+    
+    # Additional hardening
+    "net.ipv4.conf.all.rp_filter" = 1;  # Reverse path filtering (anti-spoofing)
+    "net.ipv4.conf.default.rp_filter" = 1;
+    "net.ipv4.tcp_timestamps" = 0;  # Prevent TCP timestamp leaks
+    "net.ipv4.tcp_rfc1337" = 1;  # Protect against time-wait assassination
   };
 
   # Set state version
