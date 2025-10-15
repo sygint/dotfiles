@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# scripts/safe-deploy.sh
+# Usage: ./scripts/safe-deploy.sh cortex 192.168.1.7 jarvis
+
+set -euo pipefail
+
+HOST=$1
+IP=$2
+USER=$3
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "🚀 Safe deployment to $HOST"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Step 1: Pre-flight checks
+echo "Step 1: Pre-flight validation"
+if ! $SCRIPT_DIR/pre-flight.sh $HOST $IP $USER; then
+  echo ""
+  echo "❌ Pre-flight checks failed!"
+  echo "   Aborting deployment."
+  exit 1
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Step 2: Deploy
+echo "Step 2: Deploying with deploy-rs"
+echo ""
+
+# Record current generation before deploy
+BEFORE_GEN=$(ssh $USER@$IP "readlink /run/current-system | grep -oP 'system-\K[0-9]+'" 2>/dev/null || echo "unknown")
+echo "Current generation: $BEFORE_GEN"
+echo ""
+
+# Run deploy-rs
+if deploy --skip-checks .#$HOST -- --impure; then
+  echo ""
+  echo "✅ Deploy command completed"
+else
+  echo ""
+  echo "❌ Deploy command failed!"
+  echo "   System may be in inconsistent state"
+  echo "   Check manually: ssh $USER@$IP"
+  exit 1
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Step 3: Validate
+echo "Step 3: Post-deployment validation"
+if ! $SCRIPT_DIR/validate.sh $HOST $IP $USER; then
+  echo ""
+  echo "⚠️  Validation failed!"
+  echo ""
+  echo "Rollback instructions:"
+  echo "  1. SSH into host: ssh $USER@$IP"
+  echo "  2. Check current generation: readlink /run/current-system"
+  echo "  3. List available generations: sudo nix-env -p /nix/var/nix/profiles/system --list-generations"
+  echo "  4. Rollback: sudo nixos-rebuild switch --rollback"
+  echo "  5. Or switch to specific generation: sudo nix-env -p /nix/var/nix/profiles/system --switch-generation <number>"
+  exit 1
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+AFTER_GEN=$(ssh $USER@$IP "readlink /run/current-system | grep -oP 'system-\K[0-9]+'" 2>/dev/null || echo "unknown")
+echo "🎉 Deployment successful!"
+echo "   $HOST: generation $BEFORE_GEN → $AFTER_GEN"
+echo ""
