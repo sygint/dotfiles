@@ -18,6 +18,13 @@ in
     ../../modules/system.nix
   ];
 
+  # Home Manager configuration
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.syg = import ../../modules/home.nix;
+  };
+
   boot = {
     supportedFilesystems = [ "ntfs" ];
   };
@@ -71,7 +78,7 @@ in
 
       virtualization = {
         enable = true;
-        service = "virtualbox";
+        service = "qemu";  # Temporarily using QEMU (VirtualBox build failing)
         username = "${username}";
       };
 

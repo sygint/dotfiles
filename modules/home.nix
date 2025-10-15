@@ -17,4 +17,7 @@
     ./home/programs/mullvad.nix
     ./home/programs/screenshots.nix
   ];
+
+  # Home Manager state version (should match system.stateVersion)
+  home.stateVersion = "24.11";
 }
