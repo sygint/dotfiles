@@ -22,7 +22,11 @@ in
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    users.syg = import ../../modules/home.nix;
+    extraSpecialArgs = {
+      inherit inputs;
+      userVars = systemVars.user;
+    };
+    users.syg = import ./homes/syg.nix;
   };
 
   boot = {
