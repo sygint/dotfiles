@@ -53,6 +53,7 @@
     # Essential development tools
     git
     just  # Task automation for NixOS config management
+    deploy-rs  # Remote NixOS deployment tool
 
     # Essential system tools
     home-manager
