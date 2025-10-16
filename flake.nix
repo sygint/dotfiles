@@ -18,6 +18,8 @@
     deploy-rs.url = "github:serokell/deploy-rs";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-secrets.url = "path:/home/syg/.config/nixos-secrets";
+    nixos-secrets.flake = false;
   };
 
   nixConfig = {
@@ -87,7 +89,8 @@
             modules = [ cfg.path ] ++ cfg.modules;
             specialArgs = {
               inherit self system inputs fh userVars;
-              hasSecrets = false; # Temporarily disabled - will enable after age key setup
+              # Enable secrets for cortex (age key configured), disable for others
+              hasSecrets = if name == "cortex" then true else false;
             };
           }
       ) systems;
@@ -101,7 +104,7 @@
         deploy = {
           nodes = {
             cortex = {
-              hostname = "192.168.1.7";  # Current DHCP IP - configure static reservation on UDM Pro for 192.168.1.34
+              hostname = "cortex.home";  # Local DNS entry (192.168.1.7)
               user = "jarvis";
               sshUser = "jarvis";
               profiles.system = {

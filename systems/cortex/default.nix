@@ -1,24 +1,10 @@
 # NixOS configuration for Cortex (AI Server System)
 { config, pkgs, lib, hasSecrets, inputs, ... }:
-let
-  secretsPath = ../../nixos-secrets/secrets.yaml;
-in
 {
   imports = [
     ./disk-config.nix
+    (inputs.nixos-secrets + "/default.nix")
   ];
-
-  # Sops-nix secrets configuration
-  sops = lib.mkIf hasSecrets {
-    defaultSopsFile = secretsPath;
-    age = {
-      # Use host SSH key for decryption (automatically generated on first boot)
-      sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-    };
-    secrets."jarvis/password_hash" = {
-      neededForUsers = true;
-    };
-  };
 
   # Essential boot configuration
   boot = {
@@ -37,10 +23,8 @@ in
       isNormalUser = true;
       description = "Jarvis - AI Server Administrator";
       extraGroups = [ "wheel" "networkmanager" "systemd-journal" ];
-      # Use secrets for password if available, otherwise use temporary password
-      # Temporary password hash for "CortexDeploy2025!" - CHANGE AFTER FIRST LOGIN
-      hashedPassword = if hasSecrets then null else "$6$rounds=656000$YVoxjF3qUn7Qs8vC$kZPn8vF3LqHUQX8xB7YWJNxE5KbJ/zF.Ry8xKqF8PqxGg8rRMqJ8VfL8BqT8NqP8SqX8TqZ8WqC8YqF8aQbHg0";
-      hashedPasswordFile = if hasSecrets then config.sops.secrets."jarvis/password_hash".path else null;
+      # Password managed via sops-nix secrets (only if hasSecrets is enabled)
+      hashedPasswordFile = lib.mkIf hasSecrets config.sops.secrets."jarvis/password_hash".path;
       openssh.authorizedKeys.keys = [
         # syg's primary key from orion
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMSdxXvx7Df+/2cPMe7C2TUSqRkYee5slatv7t3MG593 syg@nixos"
