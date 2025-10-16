@@ -7,7 +7,7 @@
   ];
 
   home.packages = with pkgs; [
-    rofi-wayland
+    rofi
   ];
 
   modules.programs = {
@@ -20,6 +20,7 @@
     waybar.enable = false;          # Disable Waybar
     hypridle.enable = true;         # Enable Hypridle idle daemon
 
+    zsh.enable = true;              # Enable Zsh shell with starship
     screenshots.enable = true;
     brave.enable = true;
     librewolf.enable = true;

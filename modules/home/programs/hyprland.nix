@@ -17,7 +17,7 @@ let
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
     lib.replaceStrings
-      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@monitorHandler@" ]
+      [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@systemBarScript@" "@monitorHandler@" ]
       [
         (hyprland.terminal or "ghostty")
         (hyprland.fileManager or "nemo")
