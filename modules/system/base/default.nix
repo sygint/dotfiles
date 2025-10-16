@@ -52,6 +52,7 @@
 
     # Essential development tools
     git
+    just  # Task automation for NixOS config management
 
     # Essential system tools
     home-manager
