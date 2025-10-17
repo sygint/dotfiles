@@ -3,7 +3,8 @@
 {
   imports = [
     ./disk-config.nix
-    (inputs.nixos-secrets + "/default.nix")
+  ] ++ lib.optionals hasSecrets [
+    (import (inputs.nixos-secrets + "/default.nix") { inherit config lib pkgs inputs hasSecrets; })
   ];
 
   # Essential boot configuration
@@ -85,7 +86,8 @@
   # Security hardening and monitoring
   security = {
     # Require password for sudo (production security)
-    sudo.wheelNeedsPassword = true;
+    # TODO: Set to true after first successful deployment
+    sudo.wheelNeedsPassword = false;  # Temporarily disabled for initial deployment
     # Configure sudo rules for service users only
     sudo.extraRules = [
       {
@@ -145,8 +147,8 @@
     # Default SSH jail is automatically enabled - we can customize it further if needed
   };
 
-  # Enable flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # NOTE: Nix settings like experimental-features and trusted-users are now
+  # configured globally in modules/system/base/default.nix
 
   # Network configuration with strict firewall
   networking = {
