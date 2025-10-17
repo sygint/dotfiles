@@ -108,7 +108,7 @@
           
           nodes = {
             cortex = {
-              hostname = "cortex.home";  # Local DNS entry (192.168.1.7)
+              hostname = "192.168.1.7";  # Local DNS entry (TODO: set up cortex.home)
               profiles.system = {
                 path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.cortex;
               };
