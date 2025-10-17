@@ -3,6 +3,10 @@
 {
   imports = [
     ./disk-config.nix
+    # Import base system configuration
+    ../../modules/system/base
+    # Import all other system modules
+    ../../modules/system.nix
   ] ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") { inherit config lib pkgs inputs hasSecrets; })
   ];
@@ -87,7 +91,7 @@
   security = {
     # Require password for sudo (production security)
     # TODO: Set to true after first successful deployment
-    sudo.wheelNeedsPassword = false;  # Temporarily disabled for initial deployment
+    sudo.wheelNeedsPassword = lib.mkForce false;  # Temporarily disabled for initial deployment
     # Configure sudo rules for service users only
     sudo.extraRules = [
       {

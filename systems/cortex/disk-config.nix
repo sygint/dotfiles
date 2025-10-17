@@ -13,12 +13,13 @@ in
           type = "gpt";
           partitions = {
             ESP = {
-              size = "512M";
+              size = "1G";  # Larger for AI kernels
               type = "EF00";
               content = {
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
+                mountOptions = [ "umask=0077" ];  # Secure boot partition
               };
             };
             root = {
