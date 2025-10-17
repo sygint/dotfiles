@@ -60,7 +60,12 @@
   ];
 
   # Essential Nix configuration
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    # Allow all wheel group users to push unsigned paths to nix store
+    # This enables passwordless deploy-rs deployments via SSH authentication
+    trusted-users = [ "root" "@wheel" ];
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
