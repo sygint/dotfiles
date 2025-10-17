@@ -1,0 +1,340 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Bootstrap script for installing NixOS on a target machine
+# Based on EmergentMind's bootstrap pattern
+
+# Colors for output
+red() { echo -e "\033[0;31m$*\033[0m"; }
+green() { echo -e "\033[0;32m$*\033[0m"; }
+blue() { echo -e "\033[0;34m$*\033[0m"; }
+yellow() { echo -e "\033[0;33m$*\033[0m"; }
+
+# Default values
+target_hostname=""
+target_destination=""
+target_user="${BOOTSTRAP_USER:-jarvis}"
+ssh_port="${BOOTSTRAP_SSH_PORT:-22}"
+ssh_key="${BOOTSTRAP_SSH_KEY:-$HOME/.config/nixos-secrets/keys/liveiso}"
+persist_dir=""
+git_root=$(git rev-parse --show-toplevel)
+nix_secrets_dir="${git_root}/../nixos-secrets"
+
+# Create temp directory for generated files
+temp=$(mktemp -d)
+
+# Cleanup on exit
+function cleanup() {
+	rm -rf "$temp"
+}
+trap cleanup EXIT
+
+# Helper functions
+function yes_or_no() {
+	local prompt="$1"
+	local default="${2:-yes}"
+	local response
+	
+	if [ "$default" == "yes" ]; then
+		read -rp "$prompt [Y/n]: " response
+		response=${response:-y}
+	else
+		read -rp "$prompt [y/N]: " response
+		response=${response:-n}
+	fi
+	
+	case "$response" in
+		[yY][eE][sS]|[yY]) return 0 ;;
+		*) return 1 ;;
+	esac
+}
+
+function no_or_yes() {
+	yes_or_no "$1" "no"
+}
+
+function help_and_exit() {
+	cat <<EOF
+
+Remotely installs NixOS on a target machine using this nix-config.
+
+USAGE: $0 -n <hostname> -d <destination> [OPTIONS]
+
+REQUIRED ARGS:
+  -n <hostname>       Hostname of the target machine
+  -d <destination>    IP or domain of the target machine
+  
+OPTIONS:
+  -u <user>          Target user (default: jarvis)
+  -k <ssh_key>       SSH key for liveiso access (default: ~/.config/nixos-secrets/keys/liveiso)
+  --port <port>      SSH port (default: 22)
+  --impermanence     Use /persist for impermanence setup
+  --debug            Enable debug mode
+  -h | --help        Show this help
+
+EXAMPLES:
+  $0 -n cortex -d cortex.home
+  $0 -n cortex -d 192.168.1.7 --debug
+
+EOF
+	exit 0
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		-n)
+			shift
+			target_hostname=$1
+			;;
+		-d)
+			shift
+			target_destination=$1
+			;;
+		-u)
+			shift
+			target_user=$1
+			;;
+		-k)
+			shift
+			ssh_key=$1
+			;;
+		--port)
+			shift
+			ssh_port=$1
+			;;
+		--impermanence)
+			persist_dir="/persist"
+			;;
+		--debug)
+			set -x
+			;;
+		-h|--help)
+			help_and_exit
+			;;
+		*)
+			red "ERROR: Invalid option: $1"
+			help_and_exit
+			;;
+	esac
+	shift
+done
+
+# Validate required arguments
+if [ -z "$target_hostname" ] || [ -z "$target_destination" ]; then
+	red "ERROR: -n and -d are required"
+	help_and_exit
+fi
+
+if [ ! -f "$ssh_key" ]; then
+	red "ERROR: SSH key not found: $ssh_key"
+	exit 1
+fi
+
+# SSH command helpers
+ssh_root_cmd="ssh \
+	-oControlPath=none \
+	-oPort=${ssh_port} \
+	-oStrictHostKeyChecking=no \
+	-oUserKnownHostsFile=/dev/null \
+	-i $ssh_key \
+	-t root@$target_destination"
+
+# Main installation function
+function nixos_anywhere_install() {
+	green "═══════════════════════════════════════════════════════════"
+	green "  Installing NixOS on $target_hostname ($target_destination)"
+	green "═══════════════════════════════════════════════════════════"
+	echo
+	
+	# Clear known hosts for this target
+	green "Clearing known_hosts entries for $target_destination"
+	ssh-keygen -R "$target_destination" 2>/dev/null || true
+	ssh-keygen -R "$target_hostname" 2>/dev/null || true
+	
+	# Test SSH connectivity
+	blue "Testing SSH connectivity..."
+	if ! $ssh_root_cmd "echo 'SSH connection successful'"; then
+		red "ERROR: Cannot connect to $target_destination"
+		red "Please verify:"
+		red "  1. Target is booted into liveiso"
+		red "  2. Network connectivity is working"
+		red "  3. SSH key is correct: $ssh_key"
+		exit 1
+	fi
+	green "✓ SSH connection verified"
+	echo
+	
+	# Generate SSH host keys for target
+	green "Generating SSH host keys for $target_hostname"
+	install -d -m755 "$temp/$persist_dir/etc/ssh"
+	ssh-keygen -t ed25519 \
+		-f "$temp/$persist_dir/etc/ssh/ssh_host_ed25519_key" \
+		-C "$target_user@$target_hostname" \
+		-N ""
+	chmod 600 "$temp/$persist_dir/etc/ssh/ssh_host_ed25519_key"
+	green "✓ SSH host keys generated"
+	echo
+	
+	# Add new SSH host fingerprint
+	green "Adding SSH host fingerprint to known_hosts"
+	ssh-keyscan -p "$ssh_port" "$target_destination" 2>/dev/null | grep -v '^#' >> ~/.ssh/known_hosts || true
+	echo
+	
+	# Run nixos-anywhere
+	green "═══════════════════════════════════════════════════════════"
+	green "  Running nixos-anywhere (this will take several minutes)"
+	green "═══════════════════════════════════════════════════════════"
+	echo
+	
+	cd "$git_root"
+	SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- \
+		--ssh-port "$ssh_port" \
+		--ssh-option "IdentityFile=$ssh_key" \
+		--extra-files "$temp" \
+		--flake ".#$target_hostname" \
+		root@"$target_destination"
+	
+	local exit_code=$?
+	cd - >/dev/null
+	
+	if [ $exit_code -ne 0 ]; then
+		red "ERROR: nixos-anywhere failed with exit code $exit_code"
+		exit $exit_code
+	fi
+	
+	echo
+	green "═══════════════════════════════════════════════════════════"
+	green "  Installation complete! System is rebooting..."
+	green "═══════════════════════════════════════════════════════════"
+	echo
+}
+
+function post_install_setup() {
+	yellow "Waiting for system to reboot and become available..."
+	sleep 10
+	
+	# Wait for SSH to come back up (as the target user now, not root)
+	local max_attempts=30
+	local attempt=0
+	while [ $attempt -lt $max_attempts ]; do
+		if ssh -o ConnectTimeout=2 \
+		       -o StrictHostKeyChecking=no \
+		       -o UserKnownHostsFile=/dev/null \
+		       "$target_user@$target_destination" \
+		       "echo 'System ready'" 2>/dev/null; then
+			break
+		fi
+		attempt=$((attempt + 1))
+		echo -n "."
+		sleep 2
+	done
+	echo
+	
+	if [ $attempt -eq $max_attempts ]; then
+		yellow "WARNING: Could not connect to $target_user@$target_destination"
+		yellow "You may need to manually verify the system"
+		return 1
+	fi
+	
+	green "✓ System is online and accessible"
+	
+	# Add the new host key to known_hosts
+	green "Adding $target_destination's SSH host fingerprint to ~/.ssh/known_hosts"
+	ssh-keyscan -p "$ssh_port" "$target_destination" 2>/dev/null | grep -v '^#' >> ~/.ssh/known_hosts || true
+	
+	# Copy machine-id and ssh keys to persist if using impermanence
+	if [ -n "$persist_dir" ]; then
+		blue "Copying machine-id and SSH keys to $persist_dir"
+		ssh "$target_user@$target_destination" \
+			"sudo cp /etc/machine-id $persist_dir/etc/machine-id 2>/dev/null || true"
+		ssh "$target_user@$target_destination" \
+			"sudo cp -R /etc/ssh/ $persist_dir/etc/ssh/ 2>/dev/null || true"
+	fi
+}
+
+function generate_age_keys() {
+	green "═══════════════════════════════════════════════════════════"
+	green "  Generating age keys for secrets management"
+	green "═══════════════════════════════════════════════════════════"
+	echo
+	
+	if [ ! -d "$nix_secrets_dir" ]; then
+		yellow "WARNING: Secrets directory not found: $nix_secrets_dir"
+		yellow "Skipping age key generation"
+		return 0
+	fi
+	
+	# Generate host age key from SSH key
+	blue "Generating host age key from SSH host key..."
+	local ssh_host_key="$temp/$persist_dir/etc/ssh/ssh_host_ed25519_key"
+	if [ -f "$ssh_host_key.pub" ]; then
+		local age_key
+		age_key=$(nix shell nixpkgs#ssh-to-age -c sh -c "cat '$ssh_host_key.pub' | ssh-to-age")
+		echo "$age_key" > "$nix_secrets_dir/keys/hosts/${target_hostname}.txt"
+		green "✓ Host age key saved to: $nix_secrets_dir/keys/hosts/${target_hostname}.txt"
+		echo "  Key: $age_key"
+	else
+		red "ERROR: SSH host public key not found: $ssh_host_key.pub"
+		return 1
+	fi
+	
+	echo
+	blue "Next steps for secrets:"
+	echo "  1. Add the age key to your secrets.yaml recipients"
+	echo "  2. Rekey secrets: cd $nix_secrets_dir && sops updatekeys secrets.yaml"
+	echo "  3. Commit the new host key to nix-secrets"
+	echo
+}
+
+# Main execution
+function main() {
+	echo
+	green "╔═══════════════════════════════════════════════════════════╗"
+	green "║           NixOS Bootstrap Installation Script            ║"
+	green "╔═══════════════════════════════════════════════════════════╝"
+	echo
+	blue "Target hostname:    $target_hostname"
+	blue "Target destination: $target_destination"
+	blue "Target user:        $target_user"
+	blue "SSH key:            $ssh_key"
+	blue "SSH port:           $ssh_port"
+	[ -n "$persist_dir" ] && blue "Persist directory:  $persist_dir"
+	echo
+	
+	if ! yes_or_no "Proceed with installation?"; then
+		yellow "Installation cancelled"
+		exit 0
+	fi
+	
+	echo
+	
+	# Step 1: Run nixos-anywhere
+	if yes_or_no "Run nixos-anywhere installation?"; then
+		nixos_anywhere_install
+	fi
+	
+	# Step 2: Wait for reboot and verify
+	if yes_or_no "Has the system restarted? Ready to continue?"; then
+		post_install_setup
+	fi
+	
+	# Step 3: Generate age keys
+	if yes_or_no "Generate age keys for secrets management?"; then
+		generate_age_keys
+	fi
+	
+	echo
+	green "╔═══════════════════════════════════════════════════════════╗"
+	green "║                  Installation Complete!                  ║"
+	green "╚═══════════════════════════════════════════════════════════╝"
+	echo
+	green "Next steps:"
+	echo "  1. If you generated age keys, update secrets.yaml and rekey"
+	echo "  2. Test deployment: just deploy-$target_hostname"
+	echo "  3. Verify system: ssh $target_user@$target_destination"
+	echo
+}
+
+# Run main
+main
