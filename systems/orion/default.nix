@@ -249,6 +249,23 @@ in
 
   nix.settings.trusted-users = [ "root" "syg" ];
 
+  # WiFi undock fix - passwordless sudo for driver reload
+  security.sudo.extraRules = [
+    {
+      users = [ "syg" ];
+      commands = [
+        {
+          command = "${pkgs.kmod}/bin/modprobe";
+          options = [ "NOPASSWD" ];
+        }
+        {
+          command = "${pkgs.iproute2}/bin/ip";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
+
   # Base Nix settings, like flakes, are handled in base config
 
   # Some programs need SUID wrappers, can be configured further or are
