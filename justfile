@@ -59,19 +59,19 @@ update-cortex: update rebuild-pre
 
 # Deploy to Cortex (with safety checks + secrets sync)
 deploy-cortex: rebuild-pre
-  ./scripts/safe-deploy.sh cortex cortex.home jarvis
+  ./scripts/safe-deploy.sh cortex 192.168.1.7 jarvis
 
 # Pre-flight checks only (no deploy)
 check-cortex:
-  ./scripts/pre-flight.sh cortex cortex.home jarvis
+  ./scripts/pre-flight.sh cortex 192.168.1.7 jarvis
 
 # Validate Cortex (post-deploy check)
 validate-cortex:
-  ./scripts/validate.sh cortex cortex.home jarvis
+  ./scripts/validate.sh cortex 192.168.1.7 jarvis
 
 # SSH into Cortex
 ssh-cortex:
-  ssh jarvis@cortex.home
+  ssh jarvis@192.168.1.7
 
 # Sync configs to remote host (without building)
 sync-cortex:

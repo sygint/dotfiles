@@ -103,14 +103,13 @@
         # Add deploy-rs output for fleet management
         deploy = {
           sshUser = "jarvis";  # Global SSH user for all nodes
-          user = "root";       # Run activation as root (via sudo)
-          sudo = "sudo -S";    # Use sudo with password from stdin
           
           nodes = {
             cortex = {
-              hostname = "192.168.1.7";  # Local DNS entry (TODO: set up cortex.home)
+              hostname = "192.168.1.7";  # TODO: Switch to cortex.home when DNS is fixed
               profiles.system = {
                 path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.cortex;
+                user = "root";  # Activate as root (via sudo)
               };
             };
             # Add other systems here as needed

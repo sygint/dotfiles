@@ -59,6 +59,11 @@ in
   };
   environment.shells = with pkgs; [ zsh ];
 
+  # Add cortex to local hosts for DNS resolution (temporary until UDM DNS fixed)
+  networking.extraHosts = ''
+    192.168.1.7 cortex.home cortex
+  '';
+
   modules = {
     hardware = {
       bluetooth.enable = true;

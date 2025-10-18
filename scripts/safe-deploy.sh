@@ -32,7 +32,7 @@ echo "Step 2: Deploying with deploy-rs"
 echo ""
 
 # Record current generation before deploy
-BEFORE_GEN=$(ssh $USER@$IP "readlink /run/current-system | grep -oP 'system-\K[0-9]+'" 2>/dev/null || echo "unknown")
+BEFORE_GEN=$(ssh $USER@$IP "readlink /nix/var/nix/profiles/system" 2>/dev/null | sed -n 's/system-\([0-9]*\)-link/\1/p' || echo "unknown")
 echo "Current generation: $BEFORE_GEN"
 echo ""
 
@@ -71,7 +71,7 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-AFTER_GEN=$(ssh $USER@$IP "readlink /run/current-system | grep -oP 'system-\K[0-9]+'" 2>/dev/null || echo "unknown")
+AFTER_GEN=$(ssh $USER@$IP "readlink /nix/var/nix/profiles/system" 2>/dev/null | sed -n 's/system-\([0-9]*\)-link/\1/p' || echo "unknown")
 echo "🎉 Deployment successful!"
 echo "   $HOST: generation $BEFORE_GEN → $AFTER_GEN"
 echo ""
