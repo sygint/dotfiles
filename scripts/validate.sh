@@ -51,7 +51,7 @@ fi
 
 # Check 4: New generation activated
 echo -n "  [4/5] Boot generation... "
-CURRENT_GEN=$(ssh $USER@$IP "readlink /run/current-system | grep -oP 'system-\K[0-9]+'" 2>/dev/null || echo "unknown")
+CURRENT_GEN=$(ssh $USER@$IP "readlink /nix/var/nix/profiles/system" 2>/dev/null | sed -n 's/system-\([0-9]*\)-link/\1/p' || echo "unknown")
 echo "✅ (generation $CURRENT_GEN)"
 
 # Check 5: No failed units
