@@ -7,6 +7,8 @@
     ../../modules/system/base
     # Import all other system modules
     ../../modules/system.nix
+    # Import AI services (Ollama + Open WebUI)
+    ../../modules/system/ai-services
   ] ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") { inherit config lib pkgs inputs hasSecrets; })
   ];

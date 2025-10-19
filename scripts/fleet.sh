@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Unified NixOS Fleet Management Script
 # Auto-discovers systems from flake.nix, supports deploy/update/build/check/list
+
 set -euo pipefail
 
 # Colors
@@ -18,8 +19,27 @@ error() { echo -e "${RED}✗ $*${NC}"; exit 1; }
 FLAKE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Auto-discover systems from flake.nix
+
 get_systems() {
     nix eval "$FLAKE_DIR#nixosConfigurations" --apply 'builtins.attrNames' --json 2>/dev/null | jq -r '.[]'
+}
+
+# Load host variables from Nix config
+
+get_host_vars() {
+    local system="$1"
+    # Try to load from Nix config first, fallback to reading variables.nix directly
+    if nix eval --json "$FLAKE_DIR#nixosConfigurations.$system.config.variables" 2>/dev/null; then
+        return 0
+    fi
+    
+    # Fallback: read variables.nix directly and convert to JSON
+    local vars_file="$FLAKE_DIR/systems/$system/variables.nix"
+    if [[ -f "$vars_file" ]]; then
+        nix-instantiate --eval --strict --json -E "import $vars_file" 2>/dev/null || echo "{}"
+    else
+        echo "{}"
+    fi
 }
 
 usage() {
@@ -53,14 +73,24 @@ build_system() {
 
 check_system() {
     local system="${1:-}"
-    local hostname="${2:-}"
-    local ssh_user="${3:-jarvis}"
     local timeout=10
-    
-    if [ -z "$system" ] || [ -z "$hostname" ]; then
-        error "Usage: $0 check <system> <hostname> [user]"
+
+    if [ -z "$system" ]; then
+        error "Usage: $0 check <system>"
     fi
-    
+
+    # Load host variables
+    local VARS
+    VARS=$(get_host_vars "$system")
+    local hostname
+    local ssh_user
+    hostname=$(echo "$VARS" | jq -r '.network.ip // .network.hostname // ""')
+    ssh_user=$(echo "$VARS" | jq -r '.network.ssh.user // .user.username // "root"')
+
+    if [ -z "$hostname" ]; then
+        error "Could not determine hostname or IP for $system from config"
+    fi
+
     info "Checking $system ($hostname) as $ssh_user..."
 
     # Step 1: SSH key check
@@ -170,13 +200,23 @@ check_system() {
 
 deploy_system() {
     local system="${1:-}"
-    local ip="${2:-}"
-    local user="${3:-root}"
-    
-    if [ -z "$system" ] || [ -z "$ip" ]; then
-        error "Usage: $0 deploy <system> <ip> [user]"
+
+    if [ -z "$system" ]; then
+        error "Usage: $0 deploy <system>"
     fi
-    
+
+    # Load host variables
+    local VARS
+    VARS=$(get_host_vars "$system")
+    local ip
+    local user
+    ip=$(echo "$VARS" | jq -r '.network.ip // .network.hostname // ""')
+    user=$(echo "$VARS" | jq -r '.network.ssh.user // .user.username // "root"')
+
+    if [ -z "$ip" ]; then
+        error "Could not determine IP/hostname for $system from config"
+    fi
+
     warn "DESTRUCTIVE OPERATION - THIS WILL WIPE THE DISK!"
     read -p "Type 'yes' to continue: " confirm
     [[ "$confirm" == "yes" ]] || { info "Cancelled"; exit 0; }
@@ -187,11 +227,11 @@ deploy_system() {
 
 update_system() {
     local system="${1:-}"
-    
+
     if [ -z "$system" ]; then
         error "Usage: $0 update <system>"
     fi
-    
+
     info "Updating $system using deploy-rs..."
     nix run github:serokell/deploy-rs -- ".#$system" --skip-checks && success "Update complete!"
 }
@@ -201,10 +241,10 @@ main() {
         usage
         exit 1
     fi
-    
-    local cmd="$1"
+
+    cmd="$1"
     shift
-    
+
     case "$cmd" in
         list) 
             list_systems 
@@ -213,13 +253,13 @@ main() {
             build_system "${1:-}" 
             ;;
         check) 
-            check_system "${1:-}" "${2:-}" "${3:-jarvis}"
+            check_system "${1:-}"
             ;;
         deploy) 
-            deploy_system "${1:-}" "${2:-}" "${3:-root}" 
+            deploy_system "${1:-}"
             ;;
         update) 
-            update_system "${1:-}" 
+            update_system "${1:-}"
             ;;
         *) 
             error "Unknown command: $cmd"
