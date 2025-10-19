@@ -59,6 +59,9 @@
     home-manager
   ];
 
+  # Allow unfree packages (needed for NVIDIA drivers, etc.)
+  nixpkgs.config.allowUnfree = true;
+
   # Essential Nix configuration
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
