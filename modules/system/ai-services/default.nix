@@ -63,26 +63,29 @@
   };
 
   # Enable Open WebUI (formerly Ollama WebUI)
-  services.open-webui = {
-    enable = true;
-    # Port for web interface
-    port = 8080;
-    # Point to local Ollama instance
-    environment = {
-      OLLAMA_API_BASE_URL = "http://localhost:11434";
-      # Enable various features
-      WEBUI_AUTH = "true";  # Enable authentication
-      WEBUI_NAME = "Cortex AI - RTX 5090";  # Custom branding
-      # Allow file uploads for RAG (Retrieval Augmented Generation)
-      ENABLE_RAG_WEB_LOADER_SSL_VERIFICATION = "false";
-    };
-  };
+  # NOTE: Temporarily disabled due to ctranslate2 build issues on NixOS unstable
+  # See: https://github.com/NixOS/nixpkgs/issues (ctranslate2 CMake compatibility)
+  # TODO: Re-enable once upstream fixes the build
+  # services.open-webui = {
+  #   enable = true;
+  #   # Port for web interface
+  #   port = 8080;
+  #   # Point to local Ollama instance
+  #   environment = {
+  #     OLLAMA_API_BASE_URL = "http://localhost:11434";
+  #     # Enable various features
+  #     WEBUI_AUTH = "true";  # Enable authentication
+  #     WEBUI_NAME = "Cortex AI - RTX 5090";  # Custom branding
+  #     # Allow file uploads for RAG (Retrieval Augmented Generation)
+  #     ENABLE_RAG_WEB_LOADER_SSL_VERIFICATION = "false";
+  #   };
+  # };
 
   # Open firewall ports for AI services
   # Note: These are restricted by the main firewall config to local network only
   networking.firewall.allowedTCPPorts = [
     11434  # Ollama API
-    8080   # Open WebUI
+    # 8080   # Open WebUI (disabled temporarily)
   ];
 
   # Ensure sufficient resources for AI workloads
