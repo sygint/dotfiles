@@ -1,6 +1,20 @@
+# System-specific configuration for Orion
+# 
+# This file contains machine-specific settings like user preferences,
+# application choices, and local configuration.
+#
+# Network configuration (IPs, MACs, SSH) is centralized in network-config.nix
+let
+  # Import centralized network configuration
+  networkConfig = import ../../network-config.nix;
+  # Get this host's network settings
+  thisHost = networkConfig.hosts.orion;
+in
 {
   system = {
-    hostName = "orion";
+    hostName = thisHost.hostname;  # From network-config.nix
+    # Machine-specific settings
+    # Add other system-level configs here
   };
 
   user = {
@@ -20,4 +34,7 @@
       bar = "hyprpanel";  # or "waybar"
     };
   };
+
+  # Re-export network config for this host (optional, for convenience)
+  network = thisHost;
 }

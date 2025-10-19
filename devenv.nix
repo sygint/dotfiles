@@ -22,8 +22,12 @@ pkgs.mkShell {
     nixfmt
     nix-tree
     
-    # Deployment tools
-    # deploy-rs  # Uncomment when you set up deploy-rs
+    # Deployment and bootstrap tools
+    deploy-rs
+    nixos-anywhere
+    sops
+    ssh-to-age
+    yq-go  # YAML processor
   ];
   
   shellHook = ''

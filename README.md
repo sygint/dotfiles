@@ -6,18 +6,39 @@ This repository implements a modular, composable NixOS configuration designed fo
 
 ## 🚀 Fleet Management
 
-This repository includes powerful tools for managing multiple NixOS systems:
+This repository uses a **centralized configuration pattern** with automated bootstrap and deployment:
 
-- **nixos-fleet.sh**: Universal deployment and update tool
-- **deploy-rs**: Automated deployment with rollback capabilities
-- **nixos-anywhere**: Initial system deployment
+- **Centralized Network Config**: All host network settings in `network-config.nix`
+- **Automated Bootstrap**: Fully automated NixOS installation with secrets integration
+- **Generic Fleet Scripts**: Auto-load host config from Nix, no hardcoded values
+- **Integrated Secrets**: sops-nix with automatic age key management
 
-See [FLEET-MANAGEMENT.md](./FLEET-MANAGEMENT.md) for comprehensive guide on deploying and managing your NixOS infrastructure.
+### Quick Start
+
+**Bootstrap a new host:**
+```bash
+nix-shell devenv.nix
+./scripts/bootstrap-automated.sh <hostname> <ip-address>
+```
+
+**Manage existing hosts:**
+```bash
+./scripts/fleet.sh check orion    # Auto-loads IP and user from config
+./scripts/fleet.sh update cortex  # Deploy updates via deploy-rs
+just wake-orion                   # Wake-on-LAN support
+```
+
+### Documentation
+
+- **[BOOTSTRAP-GUIDE.md](./BOOTSTRAP-GUIDE.md)** - Complete guide to automated bootstrap, deployment, and secrets
+- **[FLEET-MANAGEMENT.md](./FLEET-MANAGEMENT.md)** - Fleet management tools and workflows
+- **[WAKE-ON-LAN.md](./WAKE-ON-LAN.md)** - Wake-on-LAN setup and usage
 
 ### 📁 Directory Structure
 
 ```
 ├── flake.nix              # Main flake entry point & system definitions
+├── network-config.nix     # Centralized network topology for all hosts
 ├── modules/               # Reusable configuration modules
 │   ├── home/             # Home Manager modules
 │   │   ├── base/         # Minimal user profile (zsh, git, btop)
@@ -25,16 +46,20 @@ See [FLEET-MANAGEMENT.md](./FLEET-MANAGEMENT.md) for comprehensive guide on depl
 │   │   └── programs/     # Individual program modules
 │   └── system/           # NixOS system modules
 │       ├── base/         # Essential NixOS foundation
-│       ├── hardware/     # Audio, bluetooth, networking
+│       ├── hardware/     # Audio, bluetooth, networking, wake-on-lan
 │       ├── services/     # System services (syncthing, mullvad)
 │       └── windowManagers/ # Desktop environments
 ├── systems/              # System-specific configurations
-│   └── orion/           # Example system configuration
-│       ├── variables.nix # System & user variables
-│       ├── hardware.nix  # Hardware-specific config
-│       ├── default.nix   # System configuration
-│       └── homes/        # User home configurations
+│   ├── orion/           # Example system configuration
+│   │   ├── variables.nix # System & user variables (imports network-config.nix)
+│   │   ├── hardware.nix  # Hardware-specific config
+│   │   ├── default.nix   # System configuration
+│   │   └── homes/        # User home configurations
+│   └── cortex/          # Another system
 ├── scripts/              # Utility scripts
+│   ├── bootstrap-automated.sh  # Fully automated NixOS bootstrap
+│   ├── fleet.sh         # Generic fleet management
+│   └── wake-*.sh        # Wake-on-LAN utilities
 ├── dotfiles/             # Configuration files (symlinked)
 └── wallpapers/           # Desktop wallpapers
 ```
