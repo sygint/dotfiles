@@ -1,338 +1,166 @@
 # NixOS Configuration
 
+Personal NixOS configuration with modular, composable design for multi-system/multi-user support.
+
+## � Documentation
+
+**New here?** See [DOCS.md](DOCS.md) for complete navigation.
+
+**Quick links:**
+- [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) - Deploy and manage systems
+- [AI-SERVICES.md](AI-SERVICES.md) - AI/LLM infrastructure on Cortex
+- [SYSTEM-SECURITY.md](SYSTEM-SECURITY.md) - Security configuration
+- [SECRETS-SETUP.md](SECRETS-SETUP.md) - Secrets management
+
+## 🚀 Quick Start
+
+**Deploy to existing system:**
+```bash
+./scripts/fleet.sh deploy cortex
+```
+
+**Update all systems:**
+```bash
+./scripts/fleet-deploy.sh update --all
+```
+
+**Local rebuild:**
+```bash
+sudo nixos-rebuild switch --flake .#orion
+```
+
+See [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) for complete deployment guide.
+
 ## 🏗️ Architecture Overview
 
-This repository implements a modular, composable NixOS configuration designed for easy maintenance and multi-system/multi-user support.
-
-## 🚀 Fleet Management
-
-This repository uses a **centralized configuration pattern** with automated bootstrap and deployment:
-
-- **Centralized Network Config**: All host network settings in `network-config.nix`
-- **Automated Bootstrap**: Fully automated NixOS installation with secrets integration
-- **Generic Fleet Scripts**: Auto-load host config from Nix, no hardcoded values
-- **Integrated Secrets**: sops-nix with automatic age key management
-
-### Quick Start
-
-**Bootstrap a new host:**
-```bash
-nix-shell devenv.nix
-./scripts/bootstrap-automated.sh <hostname> <ip-address>
-```
-
-**Manage existing hosts:**
-```bash
-./scripts/fleet.sh check orion    # Auto-loads IP and user from config
-./scripts/fleet.sh update cortex  # Deploy updates via deploy-rs
-just wake-orion                   # Wake-on-LAN support
-```
-
-### Documentation
-
-- **[BOOTSTRAP-GUIDE.md](./BOOTSTRAP-GUIDE.md)** - Complete guide to automated bootstrap, deployment, and secrets
-- **[FLEET-MANAGEMENT.md](./FLEET-MANAGEMENT.md)** - Fleet management tools and workflows
-- **[WAKE-ON-LAN.md](./WAKE-ON-LAN.md)** - Wake-on-LAN setup and usage
+Modular, composable NixOS configuration with centralized management:
+- **Centralized Config**: All network settings in `network-config.nix`
+- **Modular Design**: Mix-and-match system and home modules
+- **Fleet Management**: Deploy to multiple systems with Colmena/deploy-rs
+- **Secrets Integration**: sops-nix with automatic age key management
 
 ### 📁 Directory Structure
 
 ```
-├── flake.nix              # Main flake entry point & system definitions
-├── network-config.nix     # Centralized network topology for all hosts
+├── flake.nix              # Main flake configuration
+├── DOCS.md                # Documentation index (start here!)
 ├── modules/               # Reusable configuration modules
-│   ├── home/             # Home Manager modules
-│   │   ├── base/         # Minimal user profile (zsh, git, btop)
-│   │   ├── base-desktop/ # Desktop user profile (kitty, wallpapers)
-│   │   └── programs/     # Individual program modules
+│   ├── home/             # Home Manager modules (user configs)
 │   └── system/           # NixOS system modules
-│       ├── base/         # Essential NixOS foundation
-│       ├── hardware/     # Audio, bluetooth, networking, wake-on-lan
-│       ├── services/     # System services (syncthing, mullvad)
-│       └── windowManagers/ # Desktop environments
 ├── systems/              # System-specific configurations
-│   ├── orion/           # Example system configuration
-│   │   ├── variables.nix # System & user variables (imports network-config.nix)
-│   │   ├── hardware.nix  # Hardware-specific config
-│   │   ├── default.nix   # System configuration
-│   │   └── homes/        # User home configurations
-│   └── cortex/          # Another system
-├── scripts/              # Utility scripts
-│   ├── bootstrap-automated.sh  # Fully automated NixOS bootstrap
-│   ├── fleet.sh         # Generic fleet management
-│   └── wake-*.sh        # Wake-on-LAN utilities
-├── dotfiles/             # Configuration files (symlinked)
-└── wallpapers/           # Desktop wallpapers
+│   ├── orion/           # Workstation (Framework 13)
+│   └── cortex/          # AI Server (RTX 5090)
+├── scripts/              # Deployment and utility scripts
+├── dotfiles/             # Dotfiles (symlinked by Home Manager)
+└── docs/                 # Additional documentation
+    ├── troubleshooting/  # Issue-specific guides
+    └── blog/             # Learning journey posts
 ```
 
-## 🧩 How Modules Work
+## 🧩 Module System
+
+**Design Philosophy:** Composition over inheritance - mix and match modules as needed.
 
 ### System Modules (`modules/system/`)
+- **base/** - Essential NixOS foundation (boot, packages, services)
+- **hardware/** - Audio, bluetooth, networking
+- **services/** - System services (syncthing, mullvad)
+- **windowManagers/** - Desktop environments (Hyprland)
 
-**Base Foundation:**
-- `base/default.nix` - Essential NixOS configuration for any system
-- Provides: Boot loader, core packages, basic services, Nix settings
+### Home Modules (`modules/home/`)
+- **base/** - Essential user tools (zsh, git, btop)
+- **base-desktop/** - Desktop tools (terminal, wallpapers)
+- **programs/** - Individual applications (modular)
 
-**Modular Components:**
-- `hardware/audio.nix` - Audio support via PipeWire
-- `hardware/networking.nix` - Network configuration
-- `services/syncthing.nix` - File synchronization
-- `windowManagers/hyprland.nix` - Wayland compositor
-
-**Usage Pattern:**
+**Usage:**
 ```nix
-# In systems/mysystem/default.nix
+# Enable modules in system configuration
 modules = {
   hardware.audio.enable = true;
-  services.mullvad.enable = true;
   wayland.hyprland.enable = true;
 };
 ```
 
-### Home Manager Modules (`modules/home/`)
+### System Structure
 
-**Layered Profile System:**
-1. **Base** (`base/default.nix`) - Essential tools for any user
-2. **Desktop** (`base-desktop/default.nix`) - Adds desktop environment tools
-3. **User-specific** (`systems/*/homes/user.nix`) - Personal preferences
+Each system in `systems/` contains:
+- `variables.nix` - System/user configuration
+- `default.nix` - NixOS system config
+- `hardware.nix` - Hardware-specific settings
+- `homes/` - User home configurations
 
-**Program Modules:**
-Each program has its own module with:
-- Options for enabling/configuring the program
-- Package installation
-- Configuration file management
-- Service setup (if needed)
-
-**Example Module Structure:**
-```nix
-# modules/home/programs/myapp.nix
-{ config, lib, pkgs, userVars, ... }:
-let
-  inherit (lib) mkEnableOption mkIf;
-  cfg = config.modules.programs.myapp;
-in
-{
-  options.modules.programs.myapp.enable = mkEnableOption "MyApp";
-
-  config = mkIf cfg.enable {
-    home.packages = [ pkgs.myapp ];
-    # Configuration files, services, etc.
-  };
-}
-```
-
-## 🏠 How Systems & Homes Work
-
-### System Configuration (`systems/systemname/`)
-
-Each system is self-contained with:
-
-1. **`variables.nix`** - Configuration data:
-   ```nix
-   {
-     system = { hostName = "mysystem"; };
-     user = {
-       username = "myuser";
-       git = { username = "Git User"; email = "user@example.com"; };
-       hyprland = { terminal = "kitty"; fileManager = "nemo"; };
-     };
-   }
-   ```
-
-2. **`default.nix`** - System configuration:
-   ```nix
-   {
-     imports = [
-       ./hardware.nix
-       ../../modules/system/base    # Essential foundation
-       ../../modules/system.nix     # All available modules
-     ];
-
-     modules = {
-       hardware.audio.enable = true;
-       services.syncthing.enable = true;
-       # Mix and match as needed
-     };
-   }
-   ```
-
-3. **`homes/user.nix`** - User configuration:
-   ```nix
-   {
-     imports = [ ../../../modules/home/base-desktop ];
-
-     modules.programs = {
-       hyprland.enable = true;
-       vscode.enable = true;
-       # User-specific applications
-     };
-   }
-   ```
-
-### Variable System
-
-**Two-tier structure passed to all modules:**
-
-- **`userVars`** - User-specific settings (`variables.user`)
-  - `userVars.username` - System username
-  - `userVars.git.*` - Git configuration  
-  - `userVars.hyprland.*` - Desktop preferences
-
-- **`systemVars`** - System-specific settings (`variables.system`)
-  - `systemVars.hostName` - System hostname
-
-## 🔧 How Scripts Work
-
-### Script Integration
-
-**Location:** `scripts/` directory
-**Access:** Available in modules via `${configRoot}/scripts/`
-
-**Key Scripts:**
-- `monitor-handler.sh` - Display management for Hyprland
-- `start-waybar.sh` - Launch waybar with proper environment
-- `start-hyprpanel.sh` - Launch hyprpanel alternative
-- `screenshot.sh` - Screenshot utilities with upload
-
-**Usage in Modules:**
-```nix
-# Example: Hyprland module referencing scripts
-after_sleep_cmd = "hyprctl dispatch dpms on && ${configscriptsDir}/monitor-handler.sh --fast --bar=hyprpanel";
-```
-
-**Environment Setup:**
-Scripts have access to `$NIXOS_CONFIG_DIR` pointing to the configuration root.
+Variables (`userVars`, `systemVars`) are passed to all modules for parameterization.
 
 ## 🎯 Design Principles
 
-1. **Composition over Inheritance** - Mix and match modules as needed
-2. **Parameterization** - All modules accept configuration via `userVars`/`systemVars`
-3. **Reusability** - Modules work across different systems and users
-4. **Self-Documentation** - Clear structure makes patterns obvious
-5. **Minimal Abstraction** - Only add complexity when it provides clear value
+1. **Composition over Inheritance** - Mix and match modules
+2. **Parameterization** - Configure via `userVars`/`systemVars`
+3. **Reusability** - Modules work across systems and users
+4. **Minimal Abstraction** - Only add complexity when valuable
 
-## ➕ Adding New Components
+## ➕ Adding Components
 
-### Adding a New System
-
-1. **Copy existing system:**
-   ```bash
-   cp -r systems/orion systems/newsystem
-   ```
-
-2. **Update variables:**
-   ```nix
-   # systems/newsystem/variables.nix
-   { system.hostName = "newsystem"; user.username = "newuser"; }
-   ```
-
-3. **Generate hardware config:**
-   ```bash
-   nixos-generate-config --dir systems/newsystem
-   ```
-
-4. **Add to flake.nix:**
-   ```nix
-   nixosConfigurations.newsystem = nixpkgs.lib.nixosSystem { ... };
-   ```
-
-### Adding a New User
-
-1. **Update variables:** Add user to `systems/systemname/variables.nix`
-2. **Create home config:** `systems/systemname/homes/newuser.nix`
-3. **Choose base layer:** Import appropriate base (minimal/desktop)
-4. **Add programs:** Enable desired applications
-
-### Adding a New Module
-
-1. **Create module file** in appropriate directory
-2. **Follow module pattern** with options and config
-3. **Add to imports** (auto-imported for system modules)
-4. **Use in systems** by enabling the module
-
-## 🔧 Namespace Strategy
-
-This configuration uses a custom namespace for all user-defined modules to avoid collisions with upstream Home Manager modules and keep things modular and future-proof.
-
-- **Custom modules:** Options and config are defined under `modules.programs.<name>` (e.g., `modules.programs.protonmail-bridge`).
-- **Upstream modules:** Configuration uses the standard `programs.<name>` namespace (e.g., `programs.kitty`).
-- **Why:** This avoids any risk of collision if Home Manager adds support for a program you already manage, and keeps your config organized.
-- **If a collision occurs:** Refactor your custom module to a new namespace or migrate to the upstream module as needed.
-
-## 📁 Structure
-
-```
-├── flake.nix              # Main flake configuration
-├── flake.lock            # Flake lock file
-├── variables.nix         # Global variables
-├── home/                 # User-specific configurations
-├── modules/              # Modular configurations
-│   ├── home/            # Home Manager modules
-│   └── nixos/           # NixOS system modules
-├── systems/             # System configurations
-├── dotfiles/            # Dotfiles managed by Home Manager
-├── scripts/             # Utility scripts
-└── wallpapers/          # Desktop wallpapers
-```
-
-## 🚀 Quick Start
-
-### Rebuild System (NixOS)
+**New System:**
 ```bash
-# Using nh (recommended)
-nh os switch
-
-# Or using the standard command (requires sudo)
-sudo nixos-rebuild switch --flake .
+cp -r systems/orion systems/newsystem
+# Edit variables.nix, hardware.nix, add to flake.nix
 ```
 
-### Rebuild Home Manager
+**New Module:**
+Create file in `modules/home/programs/` or `modules/system/`, follow existing patterns.
 
-#### As NixOS Module (Default)
-This is handled automatically when you rebuild the system with `nh os switch` or `nixos-rebuild switch`.
+See [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) for detailed system setup instructions.
 
-#### As Standalone Home Manager
+## � Rebuild Commands
+
+**System (requires sudo):**
 ```bash
-# Using nh (recommended)
-nh home switch
+sudo nixos-rebuild switch --flake .#orion
+```
 
-# Or using the standard command (no sudo required)
+**Home Manager (as NixOS module - default):**
+```bash
+# Rebuilt automatically with system
+sudo nixos-rebuild switch --flake .#orion
+```
+
+**Home Manager (standalone):**
+```bash
 home-manager switch --flake .#syg
-
-# First time setup on a new machine (if home-manager is not yet installed)
-nix run home-manager -- switch --flake .#syg
 ```
 
-## 🔄 Dual-Mode Configuration
+**Using nh (alternative):**
+```bash
+nh os switch    # System rebuild
+nh home switch  # Home Manager rebuild
+```
 
-This configuration supports two modes of operation:
+## � Current Systems
 
-### 1. NixOS Module Mode (Default)
-- Home Manager runs as a NixOS module
-- Configuration: `home/syg.nix`
-- Requires `sudo` for rebuilds
-- System and home configuration rebuilt together
+| System | Type | Hardware | Purpose |
+|--------|------|----------|---------|
+| **Orion** | Workstation | Framework 13 (AMD 7040) | Development, daily driver |
+| **Cortex** | Server | RTX 5090 (32GB VRAM) | AI/LLM inference, compute |
 
-### 2. Standalone Home Manager Mode
-- Home Manager runs independently 
-- Configuration: `home-standalone.nix`
-- No `sudo` required for home rebuilds
-- Faster iteration for home-only changes
-- Works on non-NixOS systems
+## 🔧 Configuration Files
 
-### When to Use Each Mode
+- **Hyprland**: `dotfiles/.config/hypr/`
+- **VS Code**: `dotfiles/.config/Code/User/`
+- **Git**: `dotfiles/.config/git/`
+- **Wallpapers**: `wallpapers/`
 
-**Use NixOS Module Mode when:**
-- Making system-wide changes
-- You want everything rebuilt together
-- First-time setup
+## 📚 Learn More
 
-**Use Standalone Mode when:**
-- Testing home configuration changes
-- You don't have sudo access
-- Working on a non-NixOS system
-- Faster development iteration
+- **[DOCS.md](DOCS.md)** - Complete documentation index
+- **[FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md)** - Deployment guide
+- **[AI-SERVICES.md](AI-SERVICES.md)** - AI infrastructure on Cortex
+- **Community**: [NixOS Discourse](https://discourse.nixos.org/), [r/NixOS](https://reddit.com/r/NixOS)
 
-## 🌐 LibreWolf Extensions
+---
+
+*Configuration managed with [Nix Flakes](https://nixos.wiki/wiki/Flakes). Dotfiles symlinked by [Home Manager](https://github.com/nix-community/home-manager).*
+
+## �🌐 LibreWolf Extensions (Reference)
 
 ### Adding Extensions
 

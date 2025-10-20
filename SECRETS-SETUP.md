@@ -1,125 +1,334 @@
-# Secrets Management Setup Guide
+# Secrets Management Guide
 
-This NixOS configuration now supports optional secrets management using sops-nix with age encryption via git submodules.
+This configuration uses **sops-nix** with **age encryption** for secure secrets management. Secrets are stored in a private git submodule (`nixos-secrets/`) that is **optionally imported** - the system builds successfully whether secrets are present or not.
 
 ## Architecture
 
-- **Public Repository**: This main dotfiles repo contains all your public NixOS configurations
-- **Private Repository**: A separate private repo containing encrypted secrets (added as git submodule)
-- **Optional Import**: System builds successfully whether secrets are present or not
-
-## Quick Setup
-
-### 1. Create Private Secrets Repository
-
-```bash
-# Create a new private repository on GitHub/GitLab (e.g., "nixos-secrets")
-# Clone the template structure
-git clone <your-private-repo> /tmp/nixos-secrets
-cd /tmp/nixos-secrets
-
-# Copy the example structure
-cp -r /home/syg/.config/nixos/secrets-example/* .
+```
+dotfiles/ (public repo)
+└── nixos-secrets/ (private git submodule)
+    ├── .sops.yaml           # SOPS configuration (age keys)
+    ├── secrets.yaml         # Encrypted secrets file
+    ├── default.nix          # Nix module (imported by flake)
+    └── keys/
+        ├── age-key.txt      # Personal age key (backup)
+        ├── liveiso/         # Live ISO SSH keys
+        └── hosts/           # Per-host age keys
+            ├── orion.txt
+            └── cortex.txt
 ```
 
-### 2. Add as Git Submodule
+**Key Features:**
+- ✅ Optional: System builds without secrets
+- ✅ Encrypted: All secrets encrypted with age keys
+- ✅ Per-host: Each system has its own decryption key
+- ✅ Version controlled: Private git submodule tracks changes
 
-```bash
-cd /home/syg/.config/nixos
-git submodule add git@github.com:yourusername/nixos-secrets.git secrets
+## Current Usage
+
+Secrets are currently used in this configuration for:
+
+### Cortex (AI Server)
+```nix
+# systems/cortex/default.nix
+users.users.jarvis = {
+  hashedPasswordFile = config.sops.secrets."jarvis/password_hash".path;
+};
 ```
 
-### 3. Generate Age Keys
+**Secret path**: `jarvis/password_hash`  
+**Purpose**: Admin user password hash for Cortex
 
-```bash
-# Generate your personal age key
-age-keygen -o secrets/keys/age-key.txt
+## How It Works
 
-# Generate host-specific keys
-age-keygen -o secrets/keys/hosts/orion.txt
-age-keygen -o secrets/keys/hosts/cortex.txt
+### 1. Encryption Keys
+
+Each system uses its **SSH host key** for decryption:
+```nix
+# nixos-secrets/default.nix
+sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 ```
 
-### 4. Configure SOPS
+On first boot, the system automatically:
+1. Reads encrypted `secrets.yaml`
+2. Decrypts using `/etc/ssh/ssh_host_ed25519_key`
+3. Makes secrets available at `/run/secrets/*`
 
-Edit `secrets/.sops.yaml` with your actual age public keys:
+### 2. Secret Definition
+
+In `nixos-secrets/default.nix`:
+```nix
+sops.secrets = {
+  "jarvis/password_hash" = {
+    neededForUsers = true;  # Available before user creation
+  };
+};
+```
+
+### 3. Secret Usage
+
+In system configs:
+```nix
+users.users.jarvis = {
+  hashedPasswordFile = config.sops.secrets."jarvis/password_hash".path;
+  # Expands to: /run/secrets/jarvis/password_hash
+};
+```
+
+## Adding New Secrets
+
+### Step 1: Edit Encrypted File
+
+```bash
+cd nixos-secrets
+sops secrets.yaml
+```
+
+This opens your editor with decrypted content. Add your secret:
+```yaml
+# Example structure
+jarvis:
+  password_hash: "$6$rounds=656000$..."
+
+# Add new secrets
+wifi:
+  home_password: "your-wifi-password"
+
+api_keys:
+  openai: "sk-..."
+  github: "ghp_..."
+```
+
+Save and close - sops automatically re-encrypts.
+
+### Step 2: Define in default.nix
+
+```nix
+# nixos-secrets/default.nix
+sops.secrets = {
+  "jarvis/password_hash" = {
+    neededForUsers = true;
+  };
+  
+  # Add new secret definitions
+  "wifi/home_password" = {
+    owner = "root";
+    mode = "0440";
+  };
+  
+  "api_keys/openai" = {
+    owner = "syg";
+    mode = "0400";
+  };
+};
+```
+
+### Step 3: Use in Configuration
+
+```nix
+# systems/orion/default.nix
+networking.wireless.networks."HomeWiFi" = {
+  pskRaw = config.sops.secrets."wifi/home_password".path;
+};
+
+# Or in home configuration
+home.file.".openai_key" = {
+  source = config.sops.secrets."api_keys/openai".path;
+};
+```
+
+### Step 4: Commit and Deploy
+
+```bash
+cd nixos-secrets
+git add secrets.yaml default.nix
+git commit -m "add: WiFi and API key secrets"
+git push
+
+cd ..
+git add nixos-secrets  # Update submodule reference
+git commit -m "chore: update secrets submodule"
+
+# Deploy
+./scripts/fleet.sh deploy cortex
+```
+
+## Managing Keys
+
+### Get Host SSH Public Key
+
+When adding a new system, get its SSH public key for encryption:
+
+```bash
+# On the target system
+ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
+
+# Or remotely
+ssh root@newsystem "cat /etc/ssh/ssh_host_ed25519_key.pub" | ssh-to-age
+```
+
+This outputs an age public key like: `age1abc...xyz`
+
+### Update .sops.yaml
+
+Add the new key to `.sops.yaml`:
 
 ```yaml
 keys:
-  - &syg age1your_personal_public_key_here
-  - &orion age1orion_host_public_key_here
-  - &cortex age1cortex_host_public_key_here
+  - &syg age1your_personal_key
+  - &cortex age1cortex_host_key
+  - &newsystem age1newsystem_host_key  # Add new system
 
 creation_rules:
   - path_regex: secrets\.yaml$
     key_groups:
       - age:
           - *syg
-          - *orion
           - *cortex
+          - *newsystem  # Add here too
 ```
 
-### 5. Create and Encrypt Secrets
+### Re-encrypt for New Key
 
 ```bash
-cd secrets
-# Create your secrets file
-sops secrets.yaml
+cd nixos-secrets
+sops updatekeys secrets.yaml
 ```
 
-Example secrets structure:
+This re-encrypts the file so the new system can decrypt it.
+
+## Common Patterns
+
+### User Passwords
+
+Generate password hash:
+```bash
+mkpasswd -m sha-512
+```
+
+Add to secrets:
 ```yaml
-wifi:
-  password: "your-wifi-password"
-user:
-  password_hash: "$6$your_password_hash"
+username:
+  password_hash: "$6$..."
+```
+
+Use in config:
+```nix
+users.users.username = {
+  hashedPasswordFile = config.sops.secrets."username/password_hash".path;
+};
+```
+
+### API Keys / Tokens
+
+```yaml
+api_keys:
+  github: "ghp_..."
+  openai: "sk-..."
+  anthropic: "sk-ant-..."
+```
+
+```nix
+sops.secrets."api_keys/github" = {
+  owner = "syg";
+  mode = "0400";  # Read-only for owner
+};
+```
+
+### SSH Keys
+
+```yaml
 ssh:
-  private_key: |
+  deploy_key: |
     -----BEGIN OPENSSH PRIVATE KEY-----
-    your_private_key_here
+    ...
     -----END OPENSSH PRIVATE KEY-----
 ```
 
-## Usage in NixOS Configurations
-
-Once set up, secrets are available at `config.sops.secrets.*`:
-
 ```nix
-# In any system configuration
-{ config, ... }:
-{
-  # Secrets are automatically available
-  networking.wireless.networks."YourWiFi".psk = config.sops.secrets.wifi-password.path;
-  
-  users.users.syg.hashedPassword = config.sops.secrets.user-password-hash.path;
-}
+sops.secrets."ssh/deploy_key" = {
+  owner = "syg";
+  mode = "0600";
+  path = "/home/syg/.ssh/deploy_key";
+};
 ```
 
-## Commands
+## Troubleshooting
+
+### Secret not found
+
+**Error**: `error: attribute 'secrets' missing`
+
+**Solution**: Secrets submodule not initialized:
+```bash
+git submodule update --init --recursive
+```
+
+### Permission denied
+
+**Error**: `error: cannot read '/run/secrets/...'`
+
+**Solution**: Check owner/mode in secret definition:
+```nix
+sops.secrets."mykey" = {
+  owner = "syg";     # User who needs access
+  mode = "0400";     # Read-only
+};
+```
+
+### Decryption failed
+
+**Error**: `error: no age identities found`
+
+**Solution**: Check SSH host key exists:
+```bash
+ls -la /etc/ssh/ssh_host_ed25519_key*
+```
+
+If missing, regenerate:
+```bash
+sudo ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
+```
+
+Then update `.sops.yaml` with new public key and re-encrypt.
+
+## Security Best Practices
+
+1. **Separate Repositories**: Keep secrets in private repo, main config in public repo
+2. **Key Backup**: Backup age keys securely (encrypted backup drive, password manager)
+3. **Key Rotation**: Rotate secrets and keys periodically
+4. **Least Privilege**: Set appropriate owner/mode for each secret
+5. **Audit**: Review `git log` in secrets repo to track changes
+6. **No Plaintext**: Never commit plaintext secrets (use `sops` editor only)
+
+## Commands Reference
 
 ```bash
-# Test builds work without secrets
-nix build .#nixosConfigurations.orion.config.system.build.toplevel --dry-run
+# Edit secrets (decrypts, opens editor, re-encrypts on save)
+cd nixos-secrets && sops secrets.yaml
 
-# Update submodule
-git submodule update --remote secrets
+# Update keys after adding new system
+sops updatekeys secrets.yaml
 
-# Edit encrypted secrets
-cd secrets && sops secrets.yaml
+# View decrypted content (without editing)
+sops -d secrets.yaml
+
+# Check which keys can decrypt
+sops -d --extract '["sops"]["age"]' secrets.yaml
+
+# Update submodule to latest
+git submodule update --remote nixos-secrets
+
+# Initialize submodule on new machine
+git submodule update --init --recursive
 ```
 
-## Security Notes
+## Learn More
 
-- Keep the main repo public for easy sharing
-- Private secrets repo should have restricted access
-- Age keys should be backed up securely
-- Host keys should be generated on their respective systems for production
-- Use different age keys for different environments (dev/staging/prod)
+- [sops-nix Documentation](https://github.com/Mic92/sops-nix)
+- [age Encryption Tool](https://github.com/FiloSottile/age)
+- [SOPS Documentation](https://github.com/mozilla/sops)
 
-## Production Deployment
+---
 
-For production use with nixos-anywhere:
-1. Generate age keys on the target systems
-2. Use environment-specific secrets repositories
-3. Implement proper key rotation policies
-4. Set up audit logging for secrets access
+*Last Updated: October 20, 2025*
