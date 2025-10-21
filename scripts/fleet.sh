@@ -209,9 +209,11 @@ deploy_system() {
     local VARS
     VARS=$(get_host_vars "$system")
     local ip
-    local user
     ip=$(echo "$VARS" | jq -r '.network.ip // .network.hostname // ""')
-    user=$(echo "$VARS" | jq -r '.network.ssh.user // .user.username // "root"')
+    
+    # IMPORTANT: nixos-anywhere ALWAYS uses root for initial deployment
+    # The configured user (jarvis, syg, etc) doesn't exist yet!
+    local user="root"
 
     if [ -z "$ip" ]; then
         error "Could not determine IP/hostname for $system from config"
@@ -221,7 +223,7 @@ deploy_system() {
     read -p "Type 'yes' to continue: " confirm
     [[ "$confirm" == "yes" ]] || { info "Cancelled"; exit 0; }
     build_system "$system"
-    info "Deploying $system to $ip..."
+    info "Deploying $system to $ip as $user (nixos-anywhere initial install)..."
     nix run github:nix-community/nixos-anywhere -- --flake "$FLAKE_DIR#$system" "$user@$ip" && success "Deployment complete!"
 }
 
