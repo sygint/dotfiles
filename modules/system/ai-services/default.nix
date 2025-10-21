@@ -4,62 +4,64 @@
 { config, lib, pkgs, ... }:
 
 {
-  # Enable NVIDIA drivers for RTX 5090
-  services.xserver.videoDrivers = [ "nvidia" ];
+
+    # Enable NVIDIA drivers for RTX 5090
+    services.xserver.videoDrivers = [ "nvidia" ];
   
-  hardware.nvidia = {
-    # CRITICAL: RTX 5090 (Blackwell) REQUIRES open kernel modules
-    # Proprietary driver will fail with "requires use of the NVIDIA open kernel modules"
-    open = true;  # MUST be true for RTX 5090/Blackwell architecture
+    hardware.nvidia = {
+      # CRITICAL: RTX 5090 (Blackwell) REQUIRES open kernel modules
+      # Proprietary driver will fail with "requires use of the NVIDIA open kernel modules"
+      open = true;  # MUST be true for RTX 5090/Blackwell architecture
     
-    # Enable modesetting (required for Wayland, useful even on headless)
-    modesetting.enable = true;
+      # Enable modesetting (required for Wayland, useful even on headless)
+      modesetting.enable = true;
     
-    # Power management (important for high-end GPUs)
-    powerManagement.enable = true;
+      # Power management (important for high-end GPUs)
+      powerManagement.enable = true;
     
-    # Use the latest stable driver
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
-  };
+      # Use the latest stable driver
+      package = config.boot.kernelPackages.nvidiaPackages.stable;
+    };
 
-  # Enable NVIDIA persistence daemon for better performance
-  hardware.nvidia.nvidiaPersistenced = true;
+    # Enable NVIDIA persistence daemon for better performance
+    hardware.nvidia.nvidiaPersistenced = true;
 
-  # CRITICAL: Workaround for RTX 5090 (Blackwell architecture) driver bug
-  # Without this, CUDA will fail to initialize with "init failure: 3"
-  # See: https://github.com/ollama/ollama/issues/11593
-  # See: https://forums.developer.nvidia.com/t/solved-cuda-driver-initialization-failed-2x-rtx-5090/334578/4
-  boot.extraModprobeConfig = ''
-    options nvidia_uvm uvm_disable_hmm=1
-  '';
+    # CRITICAL: Workaround for RTX 5090 (Blackwell architecture) driver bug
+    # Without this, CUDA will fail to initialize with "init failure: 3"
+    # See: https://github.com/ollama/ollama/issues/11593
+    # See: https://forums.developer.nvidia.com/t/solved-cuda-driver-initialization-failed-2x-rtx-5090/334578/4
+    boot.extraModprobeConfig = ''
+      options nvidia_uvm uvm_disable_hmm=1
+    '';
 
   # Enable Ollama LLM service with CUDA acceleration
   services.ollama = {
     enable = true;
-    # Enable CUDA acceleration for RTX 5090
-    acceleration = "cuda";
+  # Enable CUDA acceleration for RTX 5090
+  acceleration = "cuda";
     # Listen on all interfaces so we can access from other machines on the network
     host = "0.0.0.0";
     port = 11434;
     
     # Environment variables for optimal GPU performance
     environmentVariables = {
-      # Allow Ollama to use all available VRAM (RTX 5090 has 32GB)
-      OLLAMA_MAX_VRAM = "30000000000";  # 30GB, leave 2GB for system
+      # Allow Ollama to use most available VRAM (RTX 5090 has 32GB)
+      # Leave ~2GB for display/system overhead
+      OLLAMA_MAX_VRAM = "30000000000";  # 30GB
       # Enable CUDA graphs for better performance
       CUDA_LAUNCH_BLOCKING = "0";
     };
     
     # Preload models optimized for RTX 5090 (32GB VRAM)
+    # NOTE: Only models that fit entirely in VRAM for best performance
+    # Avoided 70B+ models which require RAM offloading (too slow)
     loadModels = [
-      "llama3.2:3b"        # Llama 3.2 3B - Fast baseline for quick tasks
-      "qwen2.5:7b"         # Qwen 2.5 7B - Excellent general purpose
-      "deepseek-r1:14b"    # DeepSeek R1 14B - Strong reasoning capabilities
-      "llama3.1:70b"       # Llama 3.1 70B - State-of-the-art quality (uses ~40GB with quantization, fits in VRAM+RAM)
-      # Additional models to consider:
-      # "qwen2.5-coder:32b" # Specialized coding model
-      # "command-r:35b"     # Excellent for RAG and long context
-      # "deepseek-r1:70b"   # Best-in-class reasoning (requires more memory)
+      "llama3.2:3b"        # Llama 3.2 3B - Ultra-fast baseline (~2GB VRAM)
+      "qwen2.5:7b"         # Qwen 2.5 7B - Excellent general purpose (~4GB VRAM)
+      "deepseek-r1:14b"    # DeepSeek R1 14B - Strong reasoning (~8GB VRAM)
+      "qwen2.5-coder:32b"  # Qwen 2.5 Coder 32B - Best coding model (~17GB VRAM)
+      "command-r:35b"      # Command-R 35B - Excellent for RAG/long context (~19GB VRAM)
+      "mixtral:8x7b"       # Mixtral 8x7B - MoE architecture, great performance (~26GB VRAM)
     ];
   };
 
