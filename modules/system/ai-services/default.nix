@@ -35,13 +35,13 @@
   # Enable Ollama LLM service with CUDA acceleration
   services.ollama = {
     enable = true;
-    # Enable CUDA acceleration for NVIDIA RTX 5090
+    # Enable CUDA acceleration for RTX 5090
     acceleration = "cuda";
     # Listen on all interfaces so we can access from other machines on the network
     host = "0.0.0.0";
     port = 11434;
     
-    # Environment variables for CUDA optimization
+    # Environment variables for optimal GPU performance
     environmentVariables = {
       # Allow Ollama to use all available VRAM (RTX 5090 has 32GB)
       OLLAMA_MAX_VRAM = "30000000000";  # 30GB, leave 2GB for system
@@ -49,7 +49,7 @@
       CUDA_LAUNCH_BLOCKING = "0";
     };
     
-    # Preload models - with RTX 5090's 32GB VRAM, we can run large models!
+    # Preload models optimized for RTX 5090 (32GB VRAM)
     loadModels = [
       "llama3.2:3b"        # Llama 3.2 3B - Fast baseline for quick tasks
       "qwen2.5:7b"         # Qwen 2.5 7B - Excellent general purpose
@@ -100,9 +100,9 @@
 
   # Add useful packages for AI/ML administration
   environment.systemPackages = with pkgs; [
-    ollama           # CLI for managing models
-    nvtopPackages.full  # NVIDIA GPU monitoring (like htop for GPU)
-    cudaPackages.cudatoolkit  # CUDA toolkit for diagnostics
+    ollama                        # CLI for managing models
+    nvtopPackages.full            # NVIDIA GPU monitoring (like htop for GPU)
+    cudaPackages.cudatoolkit      # CUDA toolkit for diagnostics
   ];
 
   # Systemd service overrides for better resource management
