@@ -8,8 +8,9 @@
   services.xserver.videoDrivers = [ "nvidia" ];
   
   hardware.nvidia = {
-    # Enable the proprietary NVIDIA driver
-    open = false;  # Use proprietary driver for best compatibility with RTX 5090
+    # CRITICAL: RTX 5090 (Blackwell) REQUIRES open kernel modules
+    # Proprietary driver will fail with "requires use of the NVIDIA open kernel modules"
+    open = true;  # MUST be true for RTX 5090/Blackwell architecture
     
     # Enable modesetting (required for Wayland, useful even on headless)
     modesetting.enable = true;
