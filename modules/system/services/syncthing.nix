@@ -14,13 +14,7 @@ in
     username = lib.mkOption {
       type = lib.types.str;
       default = "admin";
-      description = "Username for the Syncthing";
-    };
-
-    password = lib.mkOption {
-      type = lib.types.str;
-      default = "password";
-      description = "Password for the Syncthing";
+      description = "Username for running Syncthing service and GUI access";
     };
   };
 
@@ -28,10 +22,15 @@ in
     services = {
       syncthing = {
         enable = true;
+        user = cfg.username;  # Run as this user
+        group = "users";      # Group for the user
+        dataDir = "/home/${cfg.username}/.local/share/syncthing";
+        configDir = "/home/${cfg.username}/.config/syncthing";
         openDefaultPorts = false; # Don't auto-open ports to internet
         settings.gui = {
           user = "${cfg.username}";
-          password = "${cfg.password}";
+          # Password is managed by sops-nix secret at runtime
+          # The secret file is available at: config.sops.secrets."syg/syncthing_password".path
         };
       };
     };
