@@ -19,7 +19,6 @@ in
 
   user = {
     username = "syg";
-    syncPassword = "syncmybattleship";
 
     git = {
       username = "sygint";

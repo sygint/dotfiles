@@ -2,11 +2,11 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, fh, lib, ... }:
+{ config, pkgs, inputs, fh, lib, hasSecrets, ... }:
 let
   systemVars = import ./variables.nix;
   inherit (systemVars.system) hostName;
-  inherit (systemVars.user) username syncPassword;
+  inherit (systemVars.user) username;
 in
 {
   imports = [
@@ -16,6 +16,8 @@ in
     ../../modules/system/base
     # Import all other system modules
     ../../modules/system.nix
+  ] ++ lib.optionals hasSecrets [
+    (import (inputs.nixos-secrets + "/default.nix") { inherit config lib pkgs inputs hasSecrets; })
   ];
 
   # Home Manager configuration
@@ -82,7 +84,7 @@ in
       syncthing = {
         enable = true;
         username = "${username}";
-        password = "${syncPassword}";
+        # Password now managed by sops-nix secrets
       };
 
       virtualization = {

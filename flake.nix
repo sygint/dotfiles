@@ -46,6 +46,7 @@
             nix-snapd.nixosModules.default
             nixos-hardware.nixosModules.framework-13-7040-amd
             home-manager.nixosModules.home-manager
+            inputs.sops-nix.nixosModules.sops
           ];
         };
         cortex = {
@@ -54,6 +55,12 @@
             inputs.disko.nixosModules.disko
             home-manager.nixosModules.home-manager
             inputs.sops-nix.nixosModules.sops
+          ];
+        };
+        nexus = {
+          path = ./systems/nexus;
+          modules = [
+            home-manager.nixosModules.home-manager
           ];
         };
         # Add new systems here!
@@ -89,8 +96,8 @@
             modules = [ cfg.path ] ++ cfg.modules;
             specialArgs = {
               inherit self system inputs fh userVars;
-              # Enable secrets for cortex (age key configured), disable for others
-              hasSecrets = if name == "cortex" then true else false;
+              # Enable secrets for cortex and orion (age key configured)
+              hasSecrets = if (name == "cortex" || name == "orion") then true else false;
             };
           }
       ) systems;
@@ -109,6 +116,14 @@
               hostname = "192.168.1.7";  # TODO: Switch to cortex.home when DNS is fixed
               profiles.system = {
                 path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.cortex;
+                user = "root";  # Activate as root (via sudo)
+              };
+            };
+            nexus = {
+              hostname = "192.168.1.10";  # TODO: Update with actual Nexus IP
+              sshUser = "admin";  # Override global SSH user for Nexus
+              profiles.system = {
+                path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nexus;
                 user = "root";  # Activate as root (via sudo)
               };
             };
