@@ -11,9 +11,9 @@
         system = system;
         modules = [
           "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
-          ({ pkgs, modulesPath, ... }: {
+          ({ pkgs, modulesPath, lib, ... }: {
             # ISO configuration
-            isoImage.isoName = "nixos-anywhere-installer.iso";
+            isoImage.isoName = lib.mkForce "nixos-homelab-installer.iso";
             
             # Enable SSH by default
             services.openssh = {
