@@ -185,8 +185,27 @@ check_system() {
         fi
     done
 
-    # Step 10: Recommendations
-    info "Step 10: Recommendations"
+    # Step 10: NixOS generation check
+    info "Step 10: Checking NixOS configuration generation..."
+    CURRENT_GEN=$(ssh "$ssh_user@$hostname" "sudo readlink /nix/var/nix/profiles/system" 2>/dev/null || echo "unknown")
+    if [ "$CURRENT_GEN" != "unknown" ]; then
+        success "Current generation: $CURRENT_GEN"
+    else
+        warn "Could not determine NixOS generation"
+    fi
+
+    # Step 11: Systemd service configuration check
+    info "Step 11: Checking systemd service links..."
+    for service in fail2ban auditd sshd; do
+        if ssh "$ssh_user@$hostname" "test -L /etc/systemd/system/multi-user.target.wants/$service.service" 2>/dev/null; then
+            success "$service.service is linked in systemd target"
+        else
+            warn "$service.service not found in systemd multi-user.target.wants"
+        fi
+    done
+
+    # Step 12: Recommendations
+    info "Step 12: Recommendations"
     if ssh "$ssh_user@$hostname" "sudo systemctl is-active fail2ban auditd" &>/dev/null; then
         success "All security services appear to be running correctly!"
     else
