@@ -691,7 +691,7 @@
     "nixos-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1761583579,
+        "lastModified": 1761812052,
         "narHash": "sha256-XUlj6DXXZbRqJOK6MQGY1or4fxaM8Oqt36j+rBO1peI=",
         "path": "/home/syg/.config/nixos-secrets",
         "type": "path"
