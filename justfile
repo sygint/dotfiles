@@ -9,7 +9,18 @@ default:
 
 # Run BEFORE every rebuild/deploy - syncs secrets automatically
 rebuild-pre: update-secrets
-  @git add --intent-to-add .
+ # Show system information
+info:
+  @echo "📦 NixOS Configuration Info"
+  @echo ""
+  @echo "🖥️  Hostname: $(hostname)"
+  @echo "🔢 Current Generation: $(nixos-rebuild list-generations 2>&1 | grep current | head -1 | cut -d' ' -f1 || echo 'N/A')"
+  @echo "📁 Config: $(pwd)"
+  @echo ""
+  @echo "🌐 Known Hosts:"
+  @nix-instantiate --eval --strict --json -E "builtins.attrNames (import ./network-config.nix).hosts" 2>/dev/null | jq -r '.[]' | sed 's/^/  - /' || echo "  (Unable to load)"
+  @echo ""
+  @echo "🔐 Secrets: $(test -d ../nixos-secrets && echo '✅ Available' || echo '❌ Not found')"
 
 # Run AFTER rebuild - validate sops is working
 rebuild-post:
@@ -19,23 +30,124 @@ rebuild-post:
 # Sync secrets from separate repo (HYBRID APPROACH)
 update-secrets:
   @echo "🔄 Syncing secrets..."
-  @(cd ../nixos-secrets && git pull) || true
+  @cd ../nixos-secrets && git pull || true
   @nix flake update nixos-secrets --timeout 5
   @echo "✅ Secrets synced"
 
+# ====== GENERIC BUILD/DEPLOY COMMANDS ======
+
+# Build any host configuration locally (no deploy)
+build HOST: rebuild-pre
+  @echo "🔨 Building {{HOST}}..."
+  nix build .#nixosConfigurations.{{HOST}}.config.system.build.toplevel --show-trace
+  @echo "✅ Build successful for {{HOST}}"
+
+# Deploy to ANY remote host (with safety checks)
+deploy HOST: rebuild-pre
+  #!/usr/bin/env bash
+  set -euo pipefail
+  
+  # Auto-detect IP and user from network-config.nix
+  IP=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
+  USER=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
+  
+  if [ -z "$IP" ] || [ "$IP" = "unknown" ]; then
+    echo "❌ Could not determine IP for {{HOST}}"
+    echo "💡 Tip: Check network-config.nix or use: just deploy-manual {{HOST}} <IP> <USER>"
+    exit 1
+  fi
+  
+  echo "🚀 Deploying to {{HOST}} ($USER@$IP)"
+  ./scripts/safe-deploy.sh {{HOST}} "$IP" "$USER"
+
+# Deploy with manual IP/user (for new hosts or overrides)
+deploy-manual HOST IP USER: rebuild-pre
+  @echo "🚀 Deploying to {{HOST}} ({{USER}}@{{IP}})"
+  ./scripts/safe-deploy.sh {{HOST}} {{IP}} {{USER}}
+
+# Rollback a remote host to previous generation
+rollback HOST:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  IP=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
+  USER=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
+  
+  if [ -z "$IP" ]; then
+    echo "❌ Could not determine IP for {{HOST}}"
+    exit 1
+  fi
+  
+  echo "⏮️  Rolling back {{HOST}} to previous generation..."
+  ssh "$USER@$IP" 'sudo nixos-rebuild --rollback switch'
+  echo "✅ Rollback complete"
+
+# Pre-flight checks only (no deploy)
+check HOST:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  IP=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
+  USER=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
+  
+  if [ -z "$IP" ]; then
+    echo "❌ Could not determine IP for {{HOST}}"
+    exit 1
+  fi
+  
+  ./scripts/pre-flight.sh {{HOST}} "$IP" "$USER"
+
+# Validate host (post-deploy check)
+validate HOST:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  IP=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
+  USER=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
+  
+  if [ -z "$IP" ]; then
+    echo "❌ Could not determine IP for {{HOST}}"
+    exit 1
+  fi
+  
+  ./scripts/validate.sh {{HOST}} "$IP" "$USER"
+
+# SSH into any host
+ssh HOST:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  IP=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
+  USER=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
+  
+  if [ -z "$IP" ]; then
+    echo "❌ Could not determine IP for {{HOST}}"
+    exit 1
+  fi
+  
+  ssh "$USER@$IP"
+
 # ====== LOCAL OPERATIONS ======
 
-# Rebuild Orion (laptop) with pre/post hooks
-rebuild-orion: rebuild-pre && rebuild-post
-  sudo nixos-rebuild --flake .#orion switch
+# Rebuild current host with pre/post hooks
+rebuild: rebuild-pre && rebuild-post
+  #!/usr/bin/env bash
+  HOSTNAME=$(hostname)
+  echo "🔨 Rebuilding $HOSTNAME..."
+  sudo nixos-rebuild --flake .#"$HOSTNAME" switch
 
-# Rebuild Cortex (AI rig) - if running locally on Cortex
-rebuild-cortex: rebuild-pre && rebuild-post
-  sudo nixos-rebuild --flake .#cortex switch
+# Rebuild specific host locally (useful for testing configs)
+rebuild-host HOST: rebuild-pre && rebuild-post
+  sudo nixos-rebuild --flake .#{{HOST}} switch
 
 # Rebuild with trace for debugging
 rebuild-trace HOST: rebuild-pre && rebuild-post
   sudo nixos-rebuild --flake .#{{HOST}} --show-trace switch
+
+# ====== NAMED HOST SHORTCUTS (for frequently used hosts) ======
+
+# Quick shortcuts for your main systems
+rebuild-orion: (rebuild-host "orion")
+rebuild-cortex: (rebuild-host "cortex")
+deploy-cortex: (deploy "cortex")
+check-cortex: (check "cortex")
+ssh-cortex: (ssh "cortex")
 
 # ====== UPDATE COMMANDS ======
 
@@ -47,36 +159,33 @@ update:
 update-input INPUT:
   nix flake update {{INPUT}}
 
-# Update + rebuild Orion
-update-orion: update
-  just rebuild-orion
+# Update + rebuild current host
+update-rebuild: update rebuild
 
-# Update + deploy to Cortex
-update-cortex: update rebuild-pre
-  just deploy-cortex
+# Update + deploy to remote host
+update-deploy HOST: update (deploy HOST)
 
-# ====== REMOTE OPERATIONS ======
+# ====== FLEET MANAGEMENT ======
 
-# Deploy to Cortex (with safety checks + secrets sync)
-deploy-cortex: rebuild-pre
-  ./scripts/safe-deploy.sh cortex 192.168.1.7 jarvis
+# List all systems discovered from flake
+fleet-list:
+  @./scripts/fleet.sh list
 
-# Pre-flight checks only (no deploy)
-check-cortex:
-  ./scripts/pre-flight.sh cortex 192.168.1.7 jarvis
+# Fleet status (check all systems)
+fleet-status:
+  @./scripts/fleet.sh status
 
-# Validate Cortex (post-deploy check)
-validate-cortex:
-  ./scripts/validate.sh cortex 192.168.1.7 jarvis
+# Deploy to multiple hosts (comma-separated: orion,cortex)
+fleet-deploy HOSTS:
+  @./scripts/fleet.sh deploy {{HOSTS}}
 
-# SSH into Cortex
-ssh-cortex:
-  ssh jarvis@192.168.1.7
-
-# Sync configs to remote host (without building)
-sync-cortex:
-  rsync -av --exclude='.git' --exclude='result' --exclude='*.md' \
-    . jarvis@cortex.home:~/.config/nixos
+# Check all hosts in fleet
+fleet-check:
+  #!/usr/bin/env bash
+  for host in $(./scripts/fleet.sh list 2>/dev/null | grep -v "Available" || echo "cortex"); do
+    echo "🔍 Checking $host..."
+    just check "$host" || true
+  done
 
 # ====== SECRETS MANAGEMENT ======
 
@@ -86,23 +195,18 @@ edit-secrets:
 
 # Rekey all secrets (after adding new host/user keys)
 rekey:
-  cd ../nixos-secrets && \
-  for file in $(ls *.yaml); do sops updatekeys -y $$file; done
-
-# ====== FLEET MANAGEMENT ======
-
-# Fleet status (your custom script)
-fleet-status:
-  ./scripts/fleet.sh status
-
-# Fleet deploy (when you have multiple systems)
-fleet-deploy HOSTS:
-  ./scripts/fleet.sh deploy {{HOSTS}}
+  #!/usr/bin/env bash
+  cd ../nixos-secrets
+  for file in *.yaml; do
+    echo "🔑 Rekeying $file..."
+    sops updatekeys -y "$file"
+  done
+  echo "✅ All secrets rekeyed"
 
 # ====== UTILITIES ======
 
 # Check flake (validate all configs)
-check:
+check-all:
   nix flake check --show-trace
 
 # Format all Nix files
@@ -114,10 +218,10 @@ status:
   @git status
   @echo ""
   @echo "📦 Current Generation:"
-  @readlink /run/current-system | grep -oP 'system-\K[0-9]+'
+  @readlink /run/current-system | grep -oP 'system-\K[0-9]+' || echo "N/A"
   @echo ""
   @echo "📦 Flake Inputs:"
-  @nix flake metadata | grep -A 10 "Inputs:"
+  @nix flake metadata | grep -A 10 "Inputs:" || true
 
 # Show disk usage
 disk:
@@ -125,9 +229,73 @@ disk:
 
 # Show recent builds
 generations:
-  sudo nix-env --list-generations --profile /nix/var/nix/profiles/system | tail -10
+  @sudo nix-env --list-generations --profile /nix/var/nix/profiles/system | tail -10
 
-# Clean old generations (keep last 5)
+# Clean old generations (keep last 30 days)
 clean:
+  @echo "🧹 Cleaning old generations..."
   sudo nix-collect-garbage --delete-older-than 30d
+  @echo "🔄 Updating bootloader..."
   sudo nixos-rebuild boot --flake .#$(hostname)
+  @echo "✅ Cleanup complete"
+
+# Deep clean (keeps only current generation - use with caution!)
+clean-aggressive:
+  @echo "⚠️  This will delete ALL old generations!"
+  @read -p "Are you sure? (y/N) " -n 1 -r
+  @echo
+  @if [[ $REPLY =~ ^[Yy]$ ]]; then \
+    sudo nix-collect-garbage -d; \
+    sudo nixos-rebuild boot --flake .#$(hostname); \
+    echo "✅ Aggressive cleanup complete"; \
+  else \
+    echo "❌ Cancelled"; \
+  fi
+
+# Show what changed between current and previous generation
+diff-generations:
+  #!/usr/bin/env bash
+  CURRENT=$(readlink /run/current-system)
+  PREVIOUS=$(ls -d /nix/var/nix/profiles/system-*-link | sort -V | tail -2 | head -1)
+  echo "📦 Comparing:"
+  echo "  Previous: $PREVIOUS"
+  echo "  Current:  $CURRENT"
+  echo ""
+  nix store diff-closures "$PREVIOUS" "$CURRENT"
+
+# ====== HELP & INFO ======
+
+# Show detailed help for common tasks
+help:
+  @echo "🚀 NixOS Fleet Management - Common Tasks"
+  @echo ""
+  @echo "📍 Quick Start:"
+  @echo "  just rebuild           - Rebuild current host"
+  @echo "  just deploy cortex     - Deploy to Cortex with safety checks"
+  @echo "  just check cortex      - Pre-flight checks only"
+  @echo "  just ssh cortex        - SSH into Cortex"
+  @echo ""
+  @echo "🔨 Building:"
+  @echo "  just build <host>      - Build config locally (test)"
+  @echo "  just rebuild           - Rebuild current system"
+  @echo "  just rebuild-trace <h> - Debug build issues"
+  @echo ""
+  @echo "🚀 Deploying:"
+  @echo "  just deploy <host>     - Deploy with auto IP/user"
+  @echo "  just deploy-manual <host> <ip> <user> - Override IP/user"
+  @echo "  just rollback <host>   - Rollback to previous gen"
+  @echo ""
+  @echo "🔍 Fleet:"
+  @echo "  just fleet-list        - List all systems"
+  @echo "  just fleet-check       - Check all systems"
+  @echo "  just fleet-deploy <h>  - Deploy to multiple"
+  @echo ""
+  @echo "🔧 Maintenance:"
+  @echo "  just update            - Update all inputs"
+  @echo "  just clean             - Clean old generations"
+  @echo "  just generations       - Show recent builds"
+  @echo ""
+  @echo "📝 Run 'just' to see all commands"
+
+# Show system information
+
