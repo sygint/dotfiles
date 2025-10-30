@@ -68,7 +68,7 @@ systems/cortex/
 
 Documentation/
 ├── Cortex-SECURITY.md            # Detailed security implementation guide
-├── SECRETS-SETUP.md              # Optional secrets management setup
+├── SECRETS.md                    # Secrets management with sops-nix
 └── examples/
     └── deploy-rs-integration.md  # Deploy-rs setup guide
 
@@ -196,7 +196,7 @@ services.fail2ban = {
 
 ### Adding Secrets Management
 
-See `SECRETS-SETUP.md` for setting up sops-nix with age encryption.
+See `../../SECRETS.md` for complete secrets management guide with sops-nix and age encryption.
 
 ## 🔍 Monitoring and Maintenance
 
@@ -284,7 +284,7 @@ nix build --show-trace .#nixosConfigurations.cortex.config.system.build.toplevel
 ## 📚 Additional Documentation
 
 - **[Cortex-SECURITY.md](../../Cortex-SECURITY.md)** - Comprehensive security implementation guide
-- **[SECRETS-SETUP.md](../../SECRETS-SETUP.md)** - Optional secrets management with sops-nix
+- **[SECRETS.md](../../SECRETS.md)** - Complete secrets management guide with sops-nix
 - **[SECURITY-COMPARISON.md](../../SECURITY-COMPARISON.md)** - Security features comparison
 - **[examples/deploy-rs-integration.md](../../examples/deploy-rs-integration.md)** - Deploy-rs setup
 

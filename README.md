@@ -8,9 +8,10 @@ Personal NixOS configuration with modular, composable design for multi-system/mu
 
 **Quick links:**
 - [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) - Deploy and manage systems
-- [AI-SERVICES.md](AI-SERVICES.md) - AI/LLM infrastructure on Cortex
-- [SYSTEM-SECURITY.md](SYSTEM-SECURITY.md) - Security configuration
-- [SECRETS-SETUP.md](SECRETS-SETUP.md) - Secrets management
+- [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md) - Bootstrap new NixOS systems
+- [systems/cortex/AI-SERVICES.md](systems/cortex/AI-SERVICES.md) - AI/LLM infrastructure on Cortex
+- [docs/SECURITY.md](docs/SECURITY.md) - Security configuration
+- [SECRETS.md](SECRETS.md) - Secrets management (sops-nix + age)
 
 ## 🚀 Quick Start
 
@@ -153,7 +154,7 @@ nh home switch  # Home Manager rebuild
 
 - **[DOCS.md](DOCS.md)** - Complete documentation index
 - **[FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md)** - Deployment guide
-- **[AI-SERVICES.md](AI-SERVICES.md)** - AI infrastructure on Cortex
+- **[systems/cortex/AI-SERVICES.md](systems/cortex/AI-SERVICES.md)** - AI infrastructure on Cortex
 - **Community**: [NixOS Discourse](https://discourse.nixos.org/), [r/NixOS](https://reddit.com/r/NixOS)
 
 ---
