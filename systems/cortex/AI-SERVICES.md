@@ -336,8 +336,8 @@ After deployment, cortex will:
 ## Related Documentation
 
 - [Fleet Management](FLEET-MANAGEMENT.md) - Deployment and centralized management
-- [System Security](SYSTEM-SECURITY.md) - Security policies and configurations
-- [Secrets Setup](SECRETS-SETUP.md) - Secure credential management
+- [System Security](../../docs/SECURITY.md) - Security policies and configurations
+- [Secrets Management](../../SECRETS.md) - Secure credential management
 
 ## References
 

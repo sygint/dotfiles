@@ -7,7 +7,7 @@ Complete guide to this NixOS configuration. Start here for navigation.
 **New to this config?** Start here:
 1. Read [README.md](README.md) - Project overview and quick start
 2. Check [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) - How to deploy systems
-3. Review [SYSTEM-SECURITY.md](SYSTEM-SECURITY.md) - Security baseline
+3. Review [docs/SECURITY.md](docs/SECURITY.md) - Security baseline
 
 ## 📚 Core Documentation
 
@@ -17,11 +17,21 @@ Complete guide to this NixOS configuration. Start here for navigation.
 |----------|---------|-------------|
 | [README.md](README.md) | Project overview, architecture, quick start | First-time setup, understanding structure |
 | [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) | Deploy and manage multiple NixOS systems | Initial deployment, routine updates |
-| [AI-SERVICES.md](AI-SERVICES.md) | AI/LLM infrastructure on Cortex (Ollama, NVIDIA) | Using AI services, GPU troubleshooting |
-| [SYSTEM-SECURITY.md](SYSTEM-SECURITY.md) | Security configuration (fail2ban, auditd, SSH) | Hardening systems, security audit |
-| [SECRETS-SETUP.md](SECRETS-SETUP.md) | Secrets management with sops-nix | Managing passwords, API keys, certificates |
+| [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md) | Bootstrap new NixOS systems from scratch | Installing NixOS on new hardware |
+| [systems/cortex/AI-SERVICES.md](systems/cortex/AI-SERVICES.md) | AI/LLM infrastructure on Cortex (Ollama, NVIDIA) | Using AI services, GPU troubleshooting |
+| [docs/SECURITY.md](docs/SECURITY.md) | Security configuration (fail2ban, auditd, SSH) | Hardening systems, security audit |
+| [SECRETS.md](SECRETS.md) | Complete secrets management guide with sops-nix | Managing passwords, API keys, certificates |
 
-## 🛠️ Troubleshooting & Reference
+## � Planning & Implementation
+
+| Document | Purpose | When to Use |
+|----------|---------|-------------|
+| [docs/PROJECT-OVERVIEW.md](docs/PROJECT-OVERVIEW.md) | Architecture, philosophy, system details | Understanding design decisions |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Implementation roadmap and timeline | Planning next features |
+| [docs/IMPLEMENTATION-GUIDE.md](docs/IMPLEMENTATION-GUIDE.md) | Step-by-step implementation guides | Adding new features |
+| [docs/TODO-CHECKLIST.md](docs/TODO-CHECKLIST.md) | Progress tracking and status | Tracking what's done |
+
+## �🛠️ Troubleshooting & Reference
 
 ### Troubleshooting Guides
 
@@ -78,13 +88,23 @@ When updating documentation:
 ```
 ├── README.md              # Overview & quick start
 ├── DOCS.md                # This file - master index
+├── CONTRIBUTING.md        # How to contribute
 ├── FLEET-MANAGEMENT.md    # Deployment guide
-├── AI-SERVICES.md         # AI infrastructure
-├── SYSTEM-SECURITY.md     # Security configuration
-├── SECRETS-SETUP.md       # Secrets management
-└── docs/
-    ├── troubleshooting/   # Specific issue guides
-    └── blog/              # Learning journey posts
+├── SECRETS.md             # Secrets management
+├── docs/
+│   ├── PROJECT-OVERVIEW.md       # Architecture & philosophy
+│   ├── ROADMAP.md                # Implementation timeline
+│   ├── IMPLEMENTATION-GUIDE.md   # Step-by-step guides
+│   ├── TODO-CHECKLIST.md         # Progress tracking
+│   ├── ARCHITECTURE.md           # Module system docs
+│   ├── SECURITY.md               # Security configuration
+│   ├── BOOTSTRAP.md              # Bootstrap new systems
+│   ├── FLEET-FUTURE.md           # Future fleet tools (Colmena)
+│   ├── troubleshooting/          # Specific issue guides
+│   └── blog/                     # Learning journey posts
+└── systems/
+    └── cortex/
+        └── AI-SERVICES.md        # AI infrastructure (Cortex-specific)
 ```
 
 ## 🔗 External Resources
