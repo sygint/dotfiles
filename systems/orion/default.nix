@@ -44,6 +44,22 @@ in
     enableGraphical = true;
   };
 
+  # Enable hardware video acceleration for AMD graphics
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    extraPackages = with pkgs; [
+      # AMD video acceleration
+      mesa
+      libva
+      libva-utils
+      vaapiVdpau
+      libvdpau-va-gl
+      # AMD-specific drivers
+      mesa.drivers
+    ];
+  };
+
   # Additional udev rules for Logitech devices with plugdev group access
   services.udev.extraRules = ''
     # Enable plugdev group access for Logitech devices
@@ -211,7 +227,6 @@ in
       zoxide
 
       # Desktop applications
-      brave
       element-desktop
       ghostty
       gimp

@@ -35,10 +35,10 @@ let
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)
   );
 
-  # Only install package for the default if the user did NOT override it
-  defaultTerminalPkg = if cfg.defaults ? terminal && cfg.defaults.terminal != "ghostty" then null else pkgs.ghostty;
-  defaultBrowserPkg  = if cfg.defaults ? browser  && cfg.defaults.browser  != "brave"   then null else pkgs.brave;
-  defaultFileMgrPkg  = if cfg.defaults ? fileManager && cfg.defaults.fileManager != "nemo" then null else pkgs.nemo;
+  # Determine which packages to auto-install (can be disabled by setting to null)
+  defaultTerminalPkg = cfg.packages.terminal;
+  defaultBrowserPkg  = cfg.packages.browser;
+  defaultFileMgrPkg  = cfg.packages.fileManager;
 
   # Always include hyprland itself when enabled. Related utilities and extras are controlled by packages.
   hyprlandPkgs = [
@@ -57,6 +57,23 @@ in
     packages = {
       enable = mkEnableOption "Install Hyprland-related packages";
 
+      # Auto-install default applications (set to null to disable)
+      terminal = mkOption {
+        type = types.nullOr types.package;
+        default = pkgs.ghostty;
+        description = "Terminal package to install (null = don't install)";
+      };
+      browser = mkOption {
+        type = types.nullOr types.package;
+        default = null;  # Don't auto-install browser (usually managed elsewhere)
+        description = "Browser package to install (null = don't install)";
+      };
+      fileManager = mkOption {
+        type = types.nullOr types.package;
+        default = pkgs.nemo;
+        description = "File manager package to install (null = don't install)";
+      };
+
       extra = mkOption {
         type = types.listOf types.package;
         default = [];
@@ -64,6 +81,7 @@ in
       };
     };
 
+    # Command names used in hyprland config (independent of what's installed)
     defaults = {
       terminal = mkOption { type = types.str; default = "ghostty"; };
       browser = mkOption { type = types.str; default = "brave"; };
