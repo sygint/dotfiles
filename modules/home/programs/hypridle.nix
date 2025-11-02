@@ -38,11 +38,18 @@ in
             on-timeout = "loginctl lock-session"; # lock the session
           }
 
-          # DPMS
+          # DPMS - lock-aware monitor control
+          # This listener uses a smart script that only turns off monitors when the screen is locked.
+          # Benefits:
+          #  - Work/watch videos without interruption (monitors stay on while unlocked)
+          #  - Keep browsers open overnight (wake locks ignored for DPMS via ignore_inhibit)
+          #  - Auto-off when locked and away (monitors turn off after 10min when locked)
+          # See: scripts/dpms-off-if-locked.sh
           {
             timeout = 600; # 10 minutes
-            on-timeout = "hyprctl dispatch dpms off"; # turn off the display, set backlight to 0
+            on-timeout = "${configscriptsDir}/dpms-off-if-locked.sh"; # turn off displays only if session is locked
             on-resume = "hyprctl dispatch dpms on && brightnessctl -r"; # turn on the display, restore backlight
+            ignore_inhibit = true; # check lock state even when apps request wake locks
           }
 
           # Suspend
