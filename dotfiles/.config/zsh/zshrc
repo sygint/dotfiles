@@ -123,3 +123,6 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
 # --- nix helper
   alias nos="nh os switch"
   alias nhs="nh home switch"
+
+# --- devenv bootstrap
+  alias bootstrap-devenv="$NIXOS_CONFIG_DIR/scripts/bootstrap-devenv.sh"
