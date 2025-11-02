@@ -235,7 +235,7 @@ in
       kitty
       librewolf-unwrapped
       meld
-      nemo
+      nemo-with-extensions  # Nemo with file-roller and other extensions
       shiori
       signal-desktop
       inputs.zen-browser.packages."${system}".default
