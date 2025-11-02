@@ -99,45 +99,13 @@ in
     #   $DRY_RUN_CMD ln -sf /home/syg/.config/nixos/dotfiles/.config/Code/User/settings.json /home/syg/.config/Code/User/settings.json
     # '';
 
-    # Symlink curated VS Code Copilot prompts and instructions
+    # Symlink entire VS Code Copilot prompts and instructions directories
     home.file = mkIf cfg.copilotPrompts.enable {
-      # Instructions (language and framework-specific guidelines)
-      ".config/Code/User/instructions/conventional-commit.prompt.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/instructions/conventional-commit.prompt.md";
-      ".config/Code/User/instructions/markdown.instructions.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/instructions/markdown.instructions.md";
-      ".config/Code/User/instructions/reactjs.instructions.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/instructions/reactjs.instructions.md";
-      ".config/Code/User/instructions/nextjs.instructions.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/instructions/nextjs.instructions.md";
-      ".config/Code/User/instructions/nodejs-javascript-vitest.instructions.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/instructions/nodejs-javascript-vitest.instructions.md";
-
-      # Prompts (specific task-oriented prompts)
-      ".config/Code/User/prompts/documentation-writer.prompt.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts/documentation-writer.prompt.md";
-      ".config/Code/User/prompts/review-and-refactor.prompt.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts/review-and-refactor.prompt.md";
-      ".config/Code/User/prompts/create-readme.prompt.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts/create-readme.prompt.md";
-      ".config/Code/User/prompts/git-flow-branch-creator.prompt.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts/git-flow-branch-creator.prompt.md";
-      ".config/Code/User/prompts/architecture-blueprint-generator.prompt.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts/architecture-blueprint-generator.prompt.md";
-      ".config/Code/User/prompts/breakdown-plan.prompt.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts/breakdown-plan.prompt.md";
-      ".config/Code/User/prompts/create-implementation-plan.prompt.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts/create-implementation-plan.prompt.md";
-      ".config/Code/User/prompts/javascript-typescript-jest.prompt.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts/javascript-typescript-jest.prompt.md";
-
-      # Chat Modes (specialized AI assistant behaviors)
-      ".config/Code/User/prompts/critical-thinking.chatmode.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts/critical-thinking.chatmode.md";
-      ".config/Code/User/prompts/mentor.chatmode.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts/mentor.chatmode.md";
-      ".config/Code/User/prompts/debug.chatmode.md".source = 
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts/debug.chatmode.md";
+      # Symlink entire directories to access all chatmodes and prompts
+      ".config/Code/User/instructions".source = 
+        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/instructions";
+      ".config/Code/User/prompts".source = 
+        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts";
     };
   };
 }
