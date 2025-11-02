@@ -9,11 +9,12 @@
 
 ### System Stability
 
-- [ ] **Hyprlock keeps crashing**
+- [x] **Hyprlock keeps crashing**
   - Priority: 🔴 Critical
-  - Impact: Session lock failures, security risk
-  - Investigation: Check logs with `journalctl --user -xe | grep hyprlock`
-  - Related: Security, User Experience
+  - Status: ✅ FIXED (November 2, 2025)
+  - Solution: Added PAM service for hyprlock in Hyprland module
+  - Root Cause: Missing `/etc/pam.d/hyprlock` PAM module causing authentication failures
+  - Fix Location: `modules/system/windowManagers/hyprland.nix`
   - Tags: `hyprland`, `security`, `crash`
 
 ### Security
@@ -195,6 +196,12 @@
 
 ### November 2, 2025
 
+- [x] **Hyprlock keeps crashing**
+  - Fixed: Added missing PAM service for hyprlock
+  - Root Cause: Missing `/etc/pam.d/hyprlock` causing authentication failures
+  - Solution: Added PAM configuration in Hyprland module
+  - Impact: Screen lock now works reliably without crashes
+
 - [x] **Volume shows multiple notifications**
   - Fixed: Consolidated notification system
   - Impact: Clean single notification on volume change
@@ -202,7 +209,6 @@
 - [x] **Hypridle not turning off monitors overnight**
   - Fixed: Implemented lock-aware DPMS script
   - Solution: `scripts/dpms-off-if-locked.sh` with per-listener ignore_inhibit
-  - Documentation: `docs/HYPRIDLE-LOCK-AWARE-DPMS.md`
 
 ---
 

@@ -21,6 +21,13 @@ in
       };
     };
 
+    # PAM service for hyprlock authentication
+    security.pam.services.hyprlock = {
+      text = ''
+        auth include login
+      '';
+    };
+
     environment.systemPackages = with pkgs; [
       hyprlock
       hypridle
