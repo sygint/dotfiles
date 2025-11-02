@@ -25,6 +25,7 @@
     brave.enable = true;
     librewolf.enable = true;
     vscode.enable = true;
+    archiver.enable = true;         # Enable archive management with Nemo integration
 
     protonmail-bridge = {
       enable = true;

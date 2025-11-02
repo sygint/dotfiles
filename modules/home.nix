@@ -16,6 +16,7 @@
     ./home/programs/protonmail-bridge.nix
     ./home/programs/mullvad.nix
     ./home/programs/screenshots.nix
+    ./home/programs/archiver.nix
   ];
 
   # Home Manager state version (should match system.stateVersion)
