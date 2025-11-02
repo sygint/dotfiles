@@ -203,6 +203,27 @@ rekey:
   done
   echo "✅ All secrets rekeyed"
 
+# ====== DEVELOPMENT ENVIRONMENT ======
+
+# Start development environment in any directory
+dev *ARGS:
+  #!/usr/bin/env bash
+  # Get target directory (default to current directory)
+  TARGET_DIR="${1:-$(pwd)}"
+  
+  # Always run from nixos config directory for proper nix environment
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  CONFIG_DIR="$HOME/.config/nixos"
+  
+  # If we're not already in the nixos config directory, we need to find it
+  if [[ ! -f "$CONFIG_DIR/justfile" ]]; then
+    echo "❌ Could not find nixos config directory"
+    exit 1
+  fi
+  
+  echo "🚀 Starting dev environment..."
+  exec "$CONFIG_DIR/scripts/dev-shell.sh" "$TARGET_DIR"
+
 # ====== UTILITIES ======
 
 # Check flake (validate all configs)
