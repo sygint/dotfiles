@@ -24,7 +24,10 @@
     screenshots.enable = true;
     brave.enable = true;
     librewolf.enable = true;
-    vscode.enable = true;
+    vscode = {
+      enable = true;
+      copilotPrompts.enable = true; # Enable curated GitHub Copilot Chat prompts
+    };
     archiver.enable = true;         # Enable archive management with Nemo integration
 
     protonmail-bridge = {
