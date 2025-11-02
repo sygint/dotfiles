@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Global just wrapper - allows calling `just dev` from anywhere
+# This script ensures `just dev` always runs from the nixos config directory
+
+set -euo pipefail
+
+NIXOS_CONFIG_DIR="$HOME/.config/nixos"
+
+# Check if we're trying to run the 'dev' command
+if [[ "${1:-}" == "dev" ]]; then
+    # Special handling for 'just dev' - always run from nixos config dir
+    # but pass the current directory as the target
+    CURRENT_DIR="$(pwd)"
+    cd "$NIXOS_CONFIG_DIR"
+    exec just dev "$CURRENT_DIR"
+else
+    # For all other just commands, check if we're in a directory with a justfile
+    if [[ -f "justfile" ]] || [[ -f "Justfile" ]] || [[ -f ".justfile" ]]; then
+        # Local justfile exists, use it
+        exec just "$@"
+    else
+        # No local justfile, default to nixos config justfile
+        cd "$NIXOS_CONFIG_DIR"
+        exec just "$@"
+    fi
+fi
