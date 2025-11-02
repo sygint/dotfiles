@@ -17,3 +17,23 @@ secrets
 
 # Nohup output files
 nohup.out
+
+# VS Code Copilot prompts - keep only curated ones, ignore the rest
+dotfiles/.config/Code/User/instructions/
+dotfiles/.config/Code/User/prompts/
+!dotfiles/.config/Code/User/instructions/conventional-commit.prompt.md
+!dotfiles/.config/Code/User/instructions/markdown.instructions.md
+!dotfiles/.config/Code/User/instructions/reactjs.instructions.md
+!dotfiles/.config/Code/User/instructions/nextjs.instructions.md
+!dotfiles/.config/Code/User/instructions/nodejs-javascript-vitest.instructions.md
+!dotfiles/.config/Code/User/prompts/documentation-writer.prompt.md
+!dotfiles/.config/Code/User/prompts/review-and-refactor.prompt.md
+!dotfiles/.config/Code/User/prompts/create-readme.prompt.md
+!dotfiles/.config/Code/User/prompts/git-flow-branch-creator.prompt.md
+!dotfiles/.config/Code/User/prompts/architecture-blueprint-generator.prompt.md
+!dotfiles/.config/Code/User/prompts/breakdown-plan.prompt.md
+!dotfiles/.config/Code/User/prompts/create-implementation-plan.prompt.md
+!dotfiles/.config/Code/User/prompts/javascript-typescript-jest.prompt.md
+!dotfiles/.config/Code/User/prompts/critical-thinking.chatmode.md
+!dotfiles/.config/Code/User/prompts/mentor.chatmode.md
+!dotfiles/.config/Code/User/prompts/debug.chatmode.md
