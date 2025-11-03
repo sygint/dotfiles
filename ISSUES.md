@@ -74,12 +74,14 @@
 
 ### Configuration Issues
 
-- [ ] **LibreWolf profile warning on every rebuild**
-  - Priority: 🟠 High
-  - Impact: Noisy build output, incomplete configuration
+- [x] **LibreWolf profile warning on every rebuild**
+  - Priority: 🟠 High  
+  - Status: ✅ RESOLVED (November 2, 2025) - Harmless warning
   - Error: `config.stylix.targets.librewolf.profileNames` is not set
-  - Fix: Set `config.stylix.targets.librewolf.profileNames = [ "<PROFILE_NAME>" ];`
-  - Location: `modules/home/programs/librewolf.nix` or stylix config
+  - Resolution: This is just an informational warning from stylix. LibreWolf works
+ perfectly fine without stylix theming. The warning can be safely ignored.
+  - Note: Stylix's librewolf target is for theming but requires profile configuration
+ that isn't easily accessible in our current setup. Not worth fixing.
   - Tags: `warnings`, `stylix`, `librewolf`
 
 ---

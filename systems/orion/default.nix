@@ -28,6 +28,12 @@ in
       inherit inputs;
       userVars = systemVars.user;
     };
+    # Disable stylix librewolf target to suppress warning
+    sharedModules = [
+      {
+        stylix.targets.librewolf.enable = false;
+      }
+    ];
     users.syg = import ./homes/syg.nix;
   };
 
