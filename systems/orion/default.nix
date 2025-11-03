@@ -55,8 +55,6 @@ in
       libva-utils
       vaapiVdpau
       libvdpau-va-gl
-      # AMD-specific drivers
-      mesa.drivers
     ];
   };
 
