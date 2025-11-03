@@ -36,4 +36,13 @@
 - **setup-dev-environment.sh** - Set up development environment
 - **update_antidote_plugins.sh** - Update Zsh plugins
 
+## Security
+
+- **security-scan.sh** - Secret scanning with git-secrets and TruffleHog
+  - Usage: `./security-scan.sh [quick|full|history]`
+  - `quick` - Fast scan of current files (default)
+  - `full` - Comprehensive scan including git history
+  - `history` - Git history scan only
+  - See [docs/SECURITY-SCANNING.md](../docs/SECURITY-SCANNING.md) for details
+
 See individual scripts for usage or run with `--help` where available.
