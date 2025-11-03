@@ -27,17 +27,28 @@ in
         # no need to redefine it in your config for now)
         # media-session.enable = true;
 
-        # Auto-switch to Bluetooth audio when devices connect
+        # WirePlumber configuration for Bluetooth auto-switching
         wireplumber.extraConfig = {
           "51-bluetooth-priority" = {
+            # Set high priority for Bluetooth devices so they become default when connected
+            # This allows automatic switching to BT headphones when they connect,
+            # and back to built-in speakers when they disconnect
             "monitor.bluez.rules" = [
               {
                 matches = [
-                  { "node.name" = "~bluez_output.*"; }
-                  { "node.name" = "~bluez_input.*"; }
+                  # Match all Bluetooth audio sinks (output devices like headphones)
+                  {
+                    "node.name" = "~bluez_output.*";
+                  }
+                  # Match all Bluetooth audio sources (input devices like mics)
+                  {
+                    "node.name" = "~bluez_input.*";
+                  }
                 ];
                 actions = {
-                  update-props = {
+                  "update-props" = {
+                    # Set high session priority (default is 0)
+                    # Higher values mean this device will be preferred as default
                     "priority.session" = 1000;
                   };
                 };
