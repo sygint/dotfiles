@@ -26,6 +26,25 @@ in
         # use the example session manager (no others are packaged yet so this is enabled by default,
         # no need to redefine it in your config for now)
         # media-session.enable = true;
+
+        # Auto-switch to Bluetooth audio when devices connect
+        wireplumber.extraConfig = {
+          "51-bluetooth-priority" = {
+            "monitor.bluez.rules" = [
+              {
+                matches = [
+                  { "node.name" = "~bluez_output.*"; }
+                  { "node.name" = "~bluez_input.*"; }
+                ];
+                actions = {
+                  update-props = {
+                    "priority.session" = 1000;
+                  };
+                };
+              }
+            ];
+          };
+        };
       };
     };
   };
