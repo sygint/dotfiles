@@ -19,19 +19,23 @@
 
 ### Security
 
-- [ ] **fail2ban not running or not accessible**
+- [x] **fail2ban not running or not accessible**
   - Priority: 🔴 Critical
-  - Impact: No brute-force protection on exposed services
-  - Investigation: `systemctl status fail2ban`
-  - Related: Security hardening
-  - Tags: `security`, `services`
+  - Status: ✅ FIXED (November 2, 2025)
+  - Solution: Added fail2ban configuration in security module with hardening.enable option
+  - Impact: SSH brute-force protection now active on Cortex (server)
+  - Configuration: maxretry=3, local network whitelisted, SSH jail enabled
+  - Location: `modules/system/system/security.nix`, enabled in `systems/cortex/default.nix`
+  - Tags: `security`, `services`, `fail2ban`
 
-- [ ] **auditd not running or not accessible**
+- [x] **auditd not running or not accessible**
   - Priority: 🔴 Critical  
-  - Impact: No system call auditing for security events
-  - Investigation: `systemctl status auditd`
-  - Related: Security compliance
-  - Tags: `security`, `services`
+  - Status: ✅ FIXED (November 2, 2025)
+  - Solution: Added auditd configuration in security module with hardening.enable option
+  - Impact: System call auditing now active on Cortex for security monitoring
+  - Monitors: auth logs, SSH config, sudo usage, user/group changes
+  - Location: `modules/system/system/security.nix`, enabled in `systems/cortex/default.nix`
+  - Tags: `security`, `services`, `auditd`
 
 - [ ] **sshd appears not running (but connection works)**
   - Priority: 🟠 High
@@ -215,6 +219,11 @@
 - [x] **Hypridle not turning off monitors overnight**
   - Fixed: Implemented lock-aware DPMS script
   - Solution: `scripts/dpms-off-if-locked.sh` with per-listener ignore_inhibit
+
+- [x] **fail2ban and auditd security hardening** (November 2, 2025)
+  - Fixed: Added security.hardening module with fail2ban and auditd
+  - Impact: SSH brute-force protection and security event auditing on Cortex
+  - Solution: Modular hardening.enable option for server-specific security
 
 ---
 
