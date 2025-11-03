@@ -90,6 +90,11 @@
   };
 
   # Security hardening and monitoring
+  modules.system.security = {
+    enable = true;
+    hardening.enable = true;  # Enable fail2ban and auditd for SSH server
+  };
+
   security = {
     # Require password for sudo (production security)
     # TODO: Set to true after first successful deployment
