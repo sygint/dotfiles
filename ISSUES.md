@@ -46,14 +46,13 @@
 
 ### Hardware & Drivers
 
-- [ ] **Audio not switching channels when Bluetooth connected/disconnected**
+- [x] **Audio not switching channels when Bluetooth connected/disconnected**
   - Priority: 🟠 High
-  - Impact: Manual audio switching required, poor UX
-  - Expected: Auto-switch to Bluetooth when connected, back to speakers when disconnected
-  - Investigation: Check PipeWire/WirePlumber rules
-  - Related: Desktop usability
+  - Status: ✅ FIXED (November 2, 2025)
+  - Solution: Added WirePlumber config to prioritize Bluetooth devices
+  - Impact: Audio now auto-switches to BT headphones when connected
+  - Location: `modules/system/hardware/audio.nix`
   - Tags: `audio`, `bluetooth`, `pipewire`
-  - Potential Solution: WirePlumber device switching rules
 
 ### User Experience
 
@@ -197,6 +196,11 @@
 ## ✅ Recently Completed
 
 ### November 2, 2025
+
+- [x] **Audio not switching when Bluetooth connects/disconnects**
+  - Fixed: Added WirePlumber Bluetooth priority configuration
+  - Solution: Set `priority.session = 1000` for Bluetooth devices
+  - Impact: Auto-switches to BT headphones when connected, back to speakers when disconnected
 
 - [x] **Hyprlock keeps crashing**
   - Fixed: Added missing PAM service for hyprlock
