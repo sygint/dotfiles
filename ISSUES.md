@@ -55,7 +55,7 @@
   - Status: ✅ FIXED (November 2, 2025)
   - Solution: Added WirePlumber config to prioritize Bluetooth devices
   - Impact: Audio now auto-switches to BT headphones when connected
-  - Location: `modules/system/hardware/audio.nix`
+   - Location: `modules/system/hardware/audio.nix`
   - Tags: `audio`, `bluetooth`, `pipewire`
 
 ### User Experience
@@ -71,9 +71,20 @@
 - [ ] **Mullvad VPN not showing in system tray**
   - Priority: 🟠 High
   - Impact: Can't easily see VPN status or control connection
-  - Investigation: Check if mullvad-gui is in system tray programs
-  - Related: `modules/home/programs/`
-  - Tags: `vpn`, `gui`, `systray`
+  - Root Cause: Mullvad GUI (Electron app) uses temp file paths for system tray icons (e.g., `/tmp/.org.chromium.Chromium.*/logo.png`)
+  - Investigation Findings:
+    - Mullvad daemon IS running (`mullvad-daemon.service`)
+    - Mullvad GUI IS running (PID check shows GUI processes)
+    - StatusNotifier items ARE registered on D-Bus (confirmed via `org.kde.StatusNotifierWatcher`)
+    - HyprPanel receives the tray registration but can't load the icon
+    - Error: "cannot assign file:///tmp/.org.chromium.Chromium.LNaTE5/logo.png as icon, it is not a file nor a named icon"
+  - Workaround: Use `mullvad` CLI for VPN control (`mullvad status`, `mullvad connect`, `mullvad disconnect`)
+  - Potential Fixes (not yet implemented):
+    - Try alternative bar/systray (waybar, eww) that might handle Electron temp icons better
+    - Patch Mullvad to use named icons instead of temp files (upstream issue)
+    - Use `mullvad-exclude` wrapper to launch GUI with different tray implementation
+  - Related: Known Electron/Wayland systray limitation
+  - Tags: `vpn`, `gui`, `systray`, `wayland`, `electron`, `upstream`
 
 ### Configuration Issues
 
