@@ -147,18 +147,23 @@
 
 ### Security Tooling
 
-- [ ] **Integrate git-secrets for repo scanning**
+- [x] **Integrate git-secrets for repo scanning**
   - Priority: 🟡 Medium
-  - Status: Available in devenv but not enforced
-  - Impact: Prevent committing secrets to git
-  - Location: Add to pre-commit hooks
+  - Status: ✅ INTEGRATED (November 2, 2025)
+  - Impact: Prevents committing secrets to git
+  - Solution: Pre-commit hook active at `.git/hooks/pre-commit`, auto-configured patterns in devenv.nix
+  - Usage: Automatic on every commit, manual scan with `git secrets --scan`
+  - Location: `scripts/git-hooks/pre-commit`, `devenv.nix`
   - Tags: `security`, `git`, `secrets`
 
-- [ ] **Integrate TruffleHog for secret scanning**
+- [x] **Integrate TruffleHog for secret scanning**
   - Priority: 🟡 Medium
-  - Status: Available in devenv (version 3.90.9)
-  - Impact: Historical secret detection in git history
-  - Usage: `trufflehog git file://.`
+  - Status: ✅ INTEGRATED (November 2, 2025)
+  - Impact: Deep historical secret detection in git history
+  - Solution: Available in devenv (v3.90.9), convenience script created
+  - Usage: `./scripts/security-scan.sh [quick|full|history]`
+  - Documentation: `docs/SECURITY-SCANNING.md`
+  - Location: `devenv.nix`, `scripts/security-scan.sh`
   - Tags: `security`, `git`, `secrets`
 
 ---
@@ -244,6 +249,14 @@
   - Fixed: Added command-line flags to disable Brave Rewards
   - Solution: Added `--disable-brave-rewards` and `--disable-brave-rewards-extension` to brave.nix
   - Impact: Cleaner browsing experience without BAT ad notifications
+
+- [x] **git-secrets and TruffleHog integration** (November 2, 2025)
+  - Fixed: Integrated both secret scanning tools with automation
+  - Solution: Pre-commit hooks active, convenience script created, comprehensive documentation
+  - Tools: git-secrets (pre-commit) + TruffleHog v3.90.9 (manual/CI)
+  - Scripts: `scripts/security-scan.sh`, `scripts/git-hooks/pre-commit`
+  - Documentation: `docs/SECURITY-SCANNING.md`
+  - Impact: Prevents accidental secret commits and enables deep historical scanning
 
 ---
 
