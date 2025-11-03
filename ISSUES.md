@@ -50,13 +50,21 @@
 
 ### Hardware & Drivers
 
-- [x] **Audio not switching channels when Bluetooth connected/disconnected**
+- [ ] **Audio not switching channels when Bluetooth connected/disconnected**
   - Priority: 🟠 High
-  - Status: ✅ FIXED (November 2, 2025)
-  - Solution: Added WirePlumber config to prioritize Bluetooth devices
-  - Impact: Audio now auto-switches to BT headphones when connected
-   - Location: `modules/system/hardware/audio.nix`
-  - Tags: `audio`, `bluetooth`, `pipewire`
+  - Status: ⏳ IN PROGRESS (November 2, 2025)
+  - Investigation: Added WirePlumber priority config, but device won't reconnect after WirePlumber restart
+  - Symptoms:
+    - Bluetooth device (TOZO Open EarRing) paired but won't connect
+    - Connection timeout: `br-connection-page-timeout`
+    - WirePlumber logs show "invalid profile" errors
+    - Bluetooth daemon shows Hands-Free gateway profile issues
+  - Potential causes:
+    - Device needs to be in pairing mode after WirePlumber restart
+    - Profile compatibility issue (HFP/HSP vs A2DP)
+    - Auto-reconnect not working properly
+  - Location: `modules/system/hardware/audio.nix`
+  - Tags: `audio`, `bluetooth`, `pipewire`, `wireplumber`
 
 ### User Experience
 
@@ -168,11 +176,12 @@
 
 ### Applications
 
-- [ ] **Disable Brave BAT ads**
+- [x] **Disable Brave BAT ads**
   - Priority: 🟢 Low
+  - Status: ✅ FIXED (November 2, 2025)
   - Impact: Cleaner browsing experience
-  - Fix: Brave settings or declarative browser config
-  - Location: `modules/home/programs/brave.nix` if exists
+  - Solution: Added `--disable-brave-rewards` and `--disable-brave-rewards-extension` flags to commandLineArgs
+  - Location: `modules/home/programs/brave.nix`
   - Tags: `brave`, `browser`, `ux`
 
 ### CLI Enhancements
@@ -212,11 +221,6 @@
 
 ### November 2, 2025
 
-- [x] **Audio not switching when Bluetooth connects/disconnects**
-  - Fixed: Added WirePlumber Bluetooth priority configuration
-  - Solution: Set `priority.session = 1000` for Bluetooth devices
-  - Impact: Auto-switches to BT headphones when connected, back to speakers when disconnected
-
 - [x] **Hyprlock keeps crashing**
   - Fixed: Added missing PAM service for hyprlock
   - Root Cause: Missing `/etc/pam.d/hyprlock` causing authentication failures
@@ -235,6 +239,11 @@
   - Fixed: Added security.hardening module with fail2ban and auditd
   - Impact: SSH brute-force protection and security event auditing on Cortex
   - Solution: Modular hardening.enable option for server-specific security
+
+- [x] **Disable Brave BAT ads** (November 2, 2025)
+  - Fixed: Added command-line flags to disable Brave Rewards
+  - Solution: Added `--disable-brave-rewards` and `--disable-brave-rewards-extension` to brave.nix
+  - Impact: Cleaner browsing experience without BAT ad notifications
 
 ---
 
