@@ -57,15 +57,15 @@ fi
 case "$BAR_SYSTEM" in
     "hyprpanel")
         echo "🔄 Restarting hyprpanel..."
-        pkill -f "hyprpanel\|HyprPanel" 2>/dev/null || true
+        # Kill forcefully to ensure clean restart
+        pkill -9 -f "hyprpanel\|HyprPanel" 2>/dev/null || true
         if [[ "$FAST_MODE" == "false" ]]; then
-            sleep 2  # HyprPanel needs a bit more time to clean up
-            "$SCRIPT_DIR/start-hyprpanel.sh"
+            sleep 1.5  # HyprPanel needs time to clean up
         else
             # Fast mode - minimal delay
-            sleep 0.5
-            "$SCRIPT_DIR/start-hyprpanel.sh"
+            sleep 0.8
         fi
+        "$SCRIPT_DIR/start-hyprpanel.sh"
         ;;
     "waybar")
         echo "🔄 Restarting waybar..."
