@@ -28,6 +28,7 @@ in
           # syntax
           jnoortheen.nix-ide
           bbenoist.nix
+          astro-build.astro-vscode
           svelte.svelte-vscode
           bradlc.vscode-tailwindcss
           yzhang.markdown-all-in-one
