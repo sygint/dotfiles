@@ -20,7 +20,7 @@ in
         general = {
           lock_cmd = "pidof hyprlock || hyprlock"; # avoid starting multiple hyprlock instances.
           before_sleep_cmd = "loginctl lock-session"; # lock before suspend.
-          after_sleep_cmd = "hyprctl dispatch dpms on && ${configscriptsDir}/monitor-handler.sh --fast --bar=${barCfg}"; # restore display and monitors after suspend.
+          after_sleep_cmd = "hyprctl dispatch dpms on && ${configRoot}/systems/orion/scripts/monitor-handler.sh --fast --bar=${barCfg}"; # restore display and monitors after suspend.
           ignore_dbus_inhibit = false; # respect app inhibitors (e.g., video playback)
         };
 
