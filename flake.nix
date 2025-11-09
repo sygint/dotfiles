@@ -60,6 +60,14 @@
         nexus = {
           path = ./systems/nexus;
           modules = [
+            # Add any extra modules here, e.g. stylix, sops, etc. as needed
+            home-manager.nixosModules.home-manager
+          ];
+        };
+        axon = {
+          path = ./systems/axon;
+          modules = [
+            inputs.stylix.nixosModules.stylix
             home-manager.nixosModules.home-manager
           ];
         };
@@ -124,6 +132,13 @@
               sshUser = "admin";  # Override global SSH user for Nexus
               profiles.system = {
                 path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nexus;
+                user = "root";  # Activate as root (via sudo)
+              };
+            };
+            axon = {
+              hostname = "192.168.1.11";  # TODO: Update with actual Axon IP
+              profiles.system = {
+                path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.axon;
                 user = "root";  # Activate as root (via sudo)
               };
             };
