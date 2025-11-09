@@ -35,9 +35,15 @@ in
         # Use VA-API for video acceleration on AMD/Intel
         "--enable-features=UseOzonePlatform"
         "--ozone-platform=wayland"
-        # Disable Brave Rewards and BAT ads
+        # Disable Brave Rewards and BAT ads completely
         "--disable-brave-rewards"
         "--disable-brave-rewards-extension"
+        "--disable-brave-update"
+        # Disable all notifications (including Rewards notifications)
+        "--disable-features=BraveRewards"
+        # Additional privacy flags
+        "--disable-background-networking"
+        "--disable-breakpad"
       ];
     };
   };
