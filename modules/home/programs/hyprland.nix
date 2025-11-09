@@ -24,12 +24,12 @@ let
         (hyprland.webBrowser or "brave")
         (hyprland.menu or "rofi")
         (
-          if barCfg == "waybar" then "/home/${userVars.username}/.config/nixos/scripts/start-waybar.sh"
-          else if barCfg == "hyprpanel" then "/home/${userVars.username}/.config/nixos/scripts/start-hyprpanel.sh"
+          if barCfg == "waybar" then "${configRoot}/systems/orion/scripts/start-waybar.sh"
+          else if barCfg == "hyprpanel" then "${configRoot}/systems/orion/scripts/start-hyprpanel.sh"
           else ""
         )
         (
-          "/home/${userVars.username}/.config/nixos/scripts/monitor-handler.sh --fast --bar=" + barCfg
+          "${configRoot}/systems/orion/scripts/monitor-handler.sh --fast --bar=" + barCfg
         )
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)

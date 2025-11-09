@@ -37,6 +37,11 @@
     };
   };
 
+  # Automatically fix monitors after config switch (orion only)
+  home.activation.fixMonitors = config.lib.hm.dag.entryAfter ["writeBoundary"] ''
+    $DRY_RUN_CMD $HOME/.config/nixos/systems/orion/scripts/monitor-handler.sh --fast || true
+  '';
+
   # wayland.windowManager.sway.enable = true;
 
   # Enable XDG user directories
