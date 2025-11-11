@@ -295,7 +295,6 @@ if ! grep -q "^\.devenv" .gitignore; then
     echo "" >> .gitignore
     echo "# devenv" >> .gitignore
     echo ".devenv" >> .gitignore
-    echo ".direnv" >> .gitignore
 fi
 
 echo ""
