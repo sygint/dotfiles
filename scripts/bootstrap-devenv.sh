@@ -107,26 +107,26 @@ case "$PROJECT_TYPE" in
   languages.javascript = {
     enable = true;
     package = pkgs.$node_package;
-    npm = {
+    pnpm = {
       enable = true;
-      install.enable = true;  # Auto npm install on shell enter
+      install.enable = true;  # Auto pnpm install on shell enter
     };
   };
 
   languages.typescript.enable = true;
 
   # https://devenv.sh/scripts/
-  scripts.dev.exec = "npm run dev";
-  scripts.build.exec = "npm run build";
-  scripts.lint.exec = "npm run lint";
-  scripts.test.exec = "npm test";
+  scripts.dev.exec = "pnpm run dev";
+  scripts.build.exec = "pnpm run build";
+  scripts.lint.exec = "pnpm run lint";
+  scripts.test.exec = "pnpm test";
 
   enterShell = ''
     echo "🔧 Node.js Development Environment"
     echo "=================================="
     echo "📁 Project: \$(basename \$(pwd))"
     echo "📦 Node.js: \$(node --version) (nixpkgs: $node_package)"
-    echo "📦 npm: \$(npm --version)"
+    echo "📦 pnpm: \$(pnpm --version)"
     echo ""
     
     # Show version detection info
@@ -141,11 +141,12 @@ case "$PROJECT_TYPE" in
     echo ""
     
     echo "🚀 Available scripts:"
-    echo "  dev   - Start development server"
-    echo "  build - Build for production"  
-    echo "  lint  - Run linting"
-    echo "  test  - Run tests"
-    echo "  pnpm  - Use pnpm (available as package)"
+    echo "  dev   - Start development server (pnpm run dev)"
+    echo "  build - Build for production (pnpm run build)"
+    echo "  lint  - Run linting (pnpm run lint)"
+    echo "  test  - Run tests (pnpm test)"
+    echo ""
+    echo "💡 Using pnpm as package manager"
     echo ""
   '';
 
