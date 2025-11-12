@@ -154,8 +154,10 @@ case "$PROJECT_TYPE" in
   # services.postgres.enable = true;
 
   # https://devenv.sh/pre-commit-hooks/
-  git-hooks.hooks.shellcheck.enable = true;
-  git-hooks.hooks.nixpkgs-fmt.enable = true;
+  # Uncomment to enable additional pre-commit hooks:
+  # git-hooks.hooks.prettier.enable = true;
+  # git-hooks.hooks.eslint.enable = true;
+  # git-hooks.hooks.typos.enable = true;
 
   # See full reference at https://devenv.sh/reference/options/
 }
@@ -196,8 +198,13 @@ EOF
     echo ""
   '';
 
+  # https://devenv.sh/pre-commit-hooks/
   git-hooks.hooks.black.enable = true;
   git-hooks.hooks.flake8.enable = true;
+  # Uncomment to enable additional pre-commit hooks:
+  # git-hooks.hooks.isort.enable = true;
+  # git-hooks.hooks.mypy.enable = true;
+  # git-hooks.hooks.ruff.enable = true;
 }
 EOF
         ;;
@@ -235,8 +242,11 @@ EOF
     echo ""
   '';
 
+  # https://devenv.sh/pre-commit-hooks/
   git-hooks.hooks.rustfmt.enable = true;
   git-hooks.hooks.clippy.enable = true;
+  # Uncomment to enable additional pre-commit hooks:
+  # git-hooks.hooks.cargo-check.enable = true;
 }
 EOF
         ;;
@@ -265,7 +275,10 @@ EOF
     echo ""
   '';
 
+  # https://devenv.sh/pre-commit-hooks/
   git-hooks.hooks.shellcheck.enable = true;
+  # Uncomment to enable additional pre-commit hooks:
+  # git-hooks.hooks.shfmt.enable = true;
 }
 EOF
         ;;
