@@ -16,6 +16,7 @@ pkgs.mkShell {
     gnumake
     bashInteractive
     openssh
+    deno  # Deno for Kanboard API scripts
     
     # NixOS-specific tools
     nixos-rebuild
@@ -64,7 +65,7 @@ pkgs.mkShell {
     
     echo
     echo "Available Commands:"
-    echo "  • ./scripts/fleet.sh - Fleet management"
+    echo "  • ./scripts/deployment/fleet.sh - Fleet management"
     echo "  • nixos-rebuild - Build/test configurations"
     echo
   '';

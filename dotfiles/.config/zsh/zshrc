@@ -5,7 +5,7 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   eval "$(starship init zsh)"
 
 # --- ZSH
-  alias update_plugins="$NIXOS_CONFIG_DIR/scripts/update_antidote_plugins.sh"
+  alias update_plugins="$NIXOS_CONFIG_DIR/scripts/development/update_antidote_plugins.sh"
 
 # --- ZSH PLUGINS
   # Smart antidote loading: use antidote if available, fallback to pre-generated plugins
@@ -125,4 +125,12 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   alias nhs="nh home switch"
 
 # --- devenv bootstrap
-  alias bootstrap-devenv="$NIXOS_CONFIG_DIR/scripts/bootstrap-devenv.sh"
+  alias bootstrap-devenv="$NIXOS_CONFIG_DIR/scripts/bootstrap/bootstrap-devenv.sh"
+
+# pnpm
+export PNPM_HOME="/home/syg/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end

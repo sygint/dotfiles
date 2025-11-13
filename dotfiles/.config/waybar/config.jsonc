@@ -72,9 +72,9 @@
     "tooltip-format-connected": "{controller_alias}\n{num_connections} connected\n{device_enumerate}\n\nRight click to open bluetuith (modern TUI)\nMiddle click to toggle power",
     "tooltip-format-enumerate-connected": "{device_alias} ({device_address})",
     "tooltip-format-enumerate-connected-battery": "{device_alias} ({device_address}) - {device_battery_percentage}%",
-    "on-click": "/home/syg/.config/nixos/scripts/bluetooth-tui.sh left",
-    "on-click-right": "/home/syg/.config/nixos/scripts/bluetooth-tui.sh right",
-    "on-click-middle": "/home/syg/.config/nixos/scripts/bluetooth-tui.sh middle"
+    "on-click": "/home/syg/.config/nixos/scripts/desktop/bluetooth-tui.sh left",
+    "on-click-right": "/home/syg/.config/nixos/scripts/desktop/bluetooth-tui.sh right",
+    "on-click-middle": "/home/syg/.config/nixos/scripts/desktop/bluetooth-tui.sh middle"
   },
   "network": {
     "format-wifi": "{icon} {essid}",
@@ -91,7 +91,7 @@
       "ethernet": "󰈀",
       "disconnected": "󰖪"
     },
-    "on-click-right": "/home/syg/.config/nixos/scripts/network-tui.sh right",
+    "on-click-right": "/home/syg/.config/nixos/scripts/desktop/network-tui.sh right",
     "signal": 4,
     "interval": 5
   },

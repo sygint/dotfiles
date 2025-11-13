@@ -220,7 +220,7 @@ print_next_steps() {
     echo -e "${BLUE}Development commands:${NC}"
     echo "• 'nix flake check' - Validate configuration"
     echo "• 'nix build .#nixosConfigurations.nixos.config.system.build.toplevel' - Test build"
-    echo "• './scripts/security-audit.sh' - Run security audit"
+    echo "• './scripts/security/security-scan.sh' - Run security audit"
 }
 
 main "$@"
