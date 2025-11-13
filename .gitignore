@@ -15,6 +15,9 @@ secrets
 .direnv/
 .venv/
 
+# Environment variables (contains secrets)
+.env
+
 # Nohup output files
 nohup.out
 
@@ -37,3 +40,6 @@ dotfiles/.config/Code/User/prompts/
 !dotfiles/.config/Code/User/prompts/critical-thinking.chatmode.md
 !dotfiles/.config/Code/User/prompts/mentor.chatmode.md
 !dotfiles/.config/Code/User/prompts/debug.chatmode.md
+
+# VM disk images
+*.qcow2
