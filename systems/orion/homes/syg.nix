@@ -37,10 +37,25 @@
     };
   };
 
-  # Automatically fix monitors after config switch (orion only)
-  home.activation.fixMonitors = config.lib.hm.dag.entryAfter ["writeBoundary"] ''
-    $DRY_RUN_CMD $HOME/.config/nixos/systems/orion/scripts/monitor-handler.sh --fast || true
-  '';
+  # Declarative Flatpak management
+  services.flatpak = {
+    enable = true;
+    packages = [
+      "us.zoom.Zoom"
+    ];
+    update = {
+      onActivation = false;  # Don't auto-update on every rebuild
+      auto = {
+        enable = true;
+        onCalendar = "weekly";  # Auto-update weekly
+      };
+    };
+  };
+
+    # Add Flatpak directories to XDG_DATA_DIRS so apps appear in Rofi
+  home.sessionVariables = {
+    XDG_DATA_DIRS = "$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share";
+  };
 
   # wayland.windowManager.sway.enable = true;
 
