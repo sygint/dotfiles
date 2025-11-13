@@ -3,16 +3,16 @@
 # This file contains machine-specific settings like user preferences,
 # application choices, and local configuration.
 #
-# Network configuration (IPs, MACs, SSH) is centralized in network-config.nix
+# Network configuration (IPs, MACs, SSH) is centralized in fleet-config.nix
 let
   # Import centralized network configuration
-  networkConfig = import ../../network-config.nix;
+  networkConfig = import ../../fleet-config.nix;
   # Get this host's network settings
   thisHost = networkConfig.hosts.orion;
 in
 {
   system = {
-    hostName = thisHost.hostname;  # From network-config.nix
+    hostName = thisHost.hostname;  # From fleet-config.nix
     # Machine-specific settings
     # Add other system-level configs here
   };

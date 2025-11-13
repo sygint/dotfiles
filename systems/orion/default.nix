@@ -31,6 +31,7 @@ in
     };
     # Disable stylix librewolf target to suppress warning
     sharedModules = [
+      inputs.nix-flatpak.homeManagerModules.nix-flatpak
       {
         stylix.targets.librewolf.enable = false;
       }
