@@ -45,8 +45,8 @@ fi
 
 # 2. Security audit
 echo -e "\n${BLUE}2. Running security audit...${NC}"
-if [ -f "scripts/security-audit.sh" ]; then
-    if timeout 120 ./scripts/security-audit.sh >/dev/null 2>&1; then
+if [ -f "scripts/security/security-scan.sh" ]; then
+    if timeout 120 ./scripts/security/security-scan.sh >/dev/null 2>&1; then
         log_success "Security audit passed"
     else
         log_warning "Security audit found issues (run manually for details)"

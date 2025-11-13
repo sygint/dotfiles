@@ -18,7 +18,7 @@ info:
   @echo "📁 Config: $(pwd)"
   @echo ""
   @echo "🌐 Known Hosts:"
-  @nix-instantiate --eval --strict --json -E "builtins.attrNames (import ./network-config.nix).hosts" 2>/dev/null | jq -r '.[]' | sed 's/^/  - /' || echo "  (Unable to load)"
+  @nix-instantiate --eval --strict --json -E "builtins.attrNames (import ./fleet-config.nix).hosts" 2>/dev/null | jq -r '.[]' | sed 's/^/  - /' || echo "  (Unable to load)"
   @echo ""
   @echo "🔐 Secrets: $(test -d ../nixos-secrets && echo '✅ Available' || echo '❌ Not found')"
 
@@ -47,30 +47,30 @@ deploy HOST: rebuild-pre
   #!/usr/bin/env bash
   set -euo pipefail
   
-  # Auto-detect IP and user from network-config.nix
-  IP=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
-  USER=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
+  # Auto-detect IP and user from fleet-config.nix
+  IP=$(nix-instantiate --eval --strict -E "(import ./fleet-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
+  USER=$(nix-instantiate --eval --strict -E "(import ./fleet-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
   
   if [ -z "$IP" ] || [ "$IP" = "unknown" ]; then
     echo "❌ Could not determine IP for {{HOST}}"
-    echo "💡 Tip: Check network-config.nix or use: just deploy-manual {{HOST}} <IP> <USER>"
+    echo "💡 Tip: Check fleet-config.nix or use: just deploy-manual {{HOST}} <IP> <USER>"
     exit 1
   fi
   
   echo "🚀 Deploying to {{HOST}} ($USER@$IP)"
-  ./scripts/safe-deploy.sh {{HOST}} "$IP" "$USER"
+  ./scripts/deployment/safe-deploy.sh {{HOST}} "$IP" "$USER"
 
 # Deploy with manual IP/user (for new hosts or overrides)
 deploy-manual HOST IP USER: rebuild-pre
   @echo "🚀 Deploying to {{HOST}} ({{USER}}@{{IP}})"
-  ./scripts/safe-deploy.sh {{HOST}} {{IP}} {{USER}}
+  ./scripts/deployment/safe-deploy.sh {{HOST}} {{IP}} {{USER}}
 
 # Rollback a remote host to previous generation
 rollback HOST:
   #!/usr/bin/env bash
   set -euo pipefail
-  IP=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
-  USER=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
+  IP=$(nix-instantiate --eval --strict -E "(import ./fleet-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
+  USER=$(nix-instantiate --eval --strict -E "(import ./fleet-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
   
   if [ -z "$IP" ]; then
     echo "❌ Could not determine IP for {{HOST}}"
@@ -85,36 +85,36 @@ rollback HOST:
 check HOST:
   #!/usr/bin/env bash
   set -euo pipefail
-  IP=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
-  USER=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
+  IP=$(nix-instantiate --eval --strict -E "(import ./fleet-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
+  USER=$(nix-instantiate --eval --strict -E "(import ./fleet-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
   
   if [ -z "$IP" ]; then
     echo "❌ Could not determine IP for {{HOST}}"
     exit 1
   fi
   
-  ./scripts/pre-flight.sh {{HOST}} "$IP" "$USER"
+  ./scripts/deployment/pre-flight.sh {{HOST}} "$IP" "$USER"
 
 # Validate host (post-deploy check)
 validate HOST:
   #!/usr/bin/env bash
   set -euo pipefail
-  IP=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
-  USER=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
+  IP=$(nix-instantiate --eval --strict -E "(import ./fleet-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
+  USER=$(nix-instantiate --eval --strict -E "(import ./fleet-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
   
   if [ -z "$IP" ]; then
     echo "❌ Could not determine IP for {{HOST}}"
     exit 1
   fi
   
-  ./scripts/validate.sh {{HOST}} "$IP" "$USER"
+  ./scripts/deployment/validate.sh {{HOST}} "$IP" "$USER"
 
 # SSH into any host
 ssh HOST:
   #!/usr/bin/env bash
   set -euo pipefail
-  IP=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
-  USER=$(nix-instantiate --eval --strict -E "(import ./network-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
+  IP=$(nix-instantiate --eval --strict -E "(import ./fleet-config.nix).hosts.{{HOST}}.ip" 2>/dev/null | tr -d '"' || echo "")
+  USER=$(nix-instantiate --eval --strict -E "(import ./fleet-config.nix).hosts.{{HOST}}.ssh.user" 2>/dev/null | tr -d '"' || echo "syg")
   
   if [ -z "$IP" ]; then
     echo "❌ Could not determine IP for {{HOST}}"
@@ -169,20 +169,20 @@ update-deploy HOST: update (deploy HOST)
 
 # List all systems discovered from flake
 fleet-list:
-  @./scripts/fleet.sh list
+  @./scripts/deployment/fleet.sh list
 
 # Fleet status (check all systems)
 fleet-status:
-  @./scripts/fleet.sh status
+  @./scripts/deployment/fleet.sh status
 
 # Deploy to multiple hosts (comma-separated: orion,cortex)
 fleet-deploy HOSTS:
-  @./scripts/fleet.sh deploy {{HOSTS}}
+  @./scripts/deployment/fleet.sh deploy {{HOSTS}}
 
 # Check all hosts in fleet
 fleet-check:
   #!/usr/bin/env bash
-  for host in $(./scripts/fleet.sh list 2>/dev/null | grep -v "Available" || echo "cortex"); do
+  for host in $(./scripts/deployment/fleet.sh list 2>/dev/null | grep -v "Available" || echo "cortex"); do
     echo "🔍 Checking $host..."
     just check "$host" || true
   done
@@ -222,7 +222,7 @@ dev *ARGS:
   fi
   
   echo "🚀 Starting dev environment..."
-  exec "$CONFIG_DIR/scripts/dev-shell.sh" "$TARGET_DIR"
+  exec "$CONFIG_DIR/scripts/development/dev-shell.sh" "$TARGET_DIR"
 
 # ====== UTILITIES ======
 

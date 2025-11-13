@@ -67,9 +67,9 @@ if [ "$SSID_COUNT" -le 1 ] || [ "$WIFI_STATE" = "DOWN" ] || [ "$WIFI_STATE" = "D
         log "SUCCESS: WiFi networks now visible"
         
         # Restart Hyprpanel to refresh the network widget
-        if [ -f "$HOME/.config/nixos/scripts/start-hyprpanel.sh" ]; then
+        if [ -f "$HOME/.config/nixos/scripts/statusbar/start-hyprpanel.sh" ]; then
             log "Restarting Hyprpanel..."
-            "$HOME/.config/nixos/scripts/start-hyprpanel.sh" 2>&1 | tee -a "$LOGFILE"
+            "$HOME/.config/nixos/scripts/statusbar/start-hyprpanel.sh" 2>&1 | tee -a "$LOGFILE"
             log "Hyprpanel restarted"
         else
             log "WARNING: Hyprpanel startup script not found"
