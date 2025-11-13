@@ -5,6 +5,7 @@
 { config, pkgs, inputs, fh, lib, hasSecrets, ... }:
 let
   systemVars = import ./variables.nix;
+  fleetConfig = import ../../fleet-config.nix;
   inherit (systemVars.system) hostName;
   inherit (systemVars.user) username;
 in
@@ -41,8 +42,8 @@ in
     supportedFilesystems = [ "ntfs" ];
   };
 
-  # Set your time zone.
-  time.timeZone = "America/Los_Angeles";
+  # Set timezone from global fleet config
+  time.timeZone = fleetConfig.global.timeZone;
 
   # Enable Logitech device support
   hardware.logitech.wireless = {
