@@ -9,6 +9,7 @@
     hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     stylix.url = "github:danth/stylix";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.6.0";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,7 +33,7 @@
     # builders = [ ]; # No remote builders configured
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, home-manager, fh, nix-snapd, ... } @ inputs:
+  outputs = { self, nixpkgs, nixos-hardware, home-manager, fh, nix-snapd, nix-flatpak, ... } @ inputs:
     let
       inherit (nixpkgs) lib;
       system = "x86_64-linux";
@@ -60,8 +61,9 @@
         nexus = {
           path = ./systems/nexus;
           modules = [
-            # Add any extra modules here, e.g. stylix, sops, etc. as needed
+            inputs.disko.nixosModules.disko
             home-manager.nixosModules.home-manager
+            inputs.sops-nix.nixosModules.sops
           ];
         };
         axon = {
@@ -89,6 +91,7 @@
             inherit self inputs userVars;
           };
           modules = [
+            nix-flatpak.homeManagerModules.nix-flatpak
             ./systems/orion/homes/syg.nix
             {
               nixpkgs.config.allowUnfree = true;
@@ -128,7 +131,7 @@
               };
             };
             nexus = {
-              hostname = "192.168.1.10";  # TODO: Update with actual Nexus IP
+              hostname = "192.168.1.22";  # Nexus homelab services server
               sshUser = "admin";  # Override global SSH user for Nexus
               profiles.system = {
                 path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nexus;
