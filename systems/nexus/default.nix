@@ -80,7 +80,7 @@ in
   users.users.maintenance = {
     isNormalUser = true;
     description = "Console-only emergency maintenance account";
-    hashedPassword = "$6$c5EF8P72vGv5Dize$cyxB5yReQzNXLVjZcdng7UuTLx9SA4oXGGHEtseUYdAH.yVBjALBz3RZd3u6mwlhgZh9wUT74yG6po7pOREch0";
+    hashedPassword = "$6$Q22NXbAkZYBG38hI$5vM9ZPrugG27jLt4NYiU3ME768eB8PPMOhcsewzm7HlpkWfEu8biU/m.9lTR7n9uBRpm.KYhGug72hktoYubC1";
     extraGroups = [ "wheel" ];  # Allows sudo
     # No SSH keys - console access only
   };
