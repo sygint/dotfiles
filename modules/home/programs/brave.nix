@@ -39,8 +39,9 @@ in
         "--disable-brave-rewards"
         "--disable-brave-rewards-extension"
         "--disable-brave-update"
-        # Disable all notifications (including Rewards notifications)
+        # Disable all notifications and sponsored content
         "--disable-features=BraveRewards"
+        "--disable-brave-ads-ntp-reconcile"
         # Additional privacy flags
         "--disable-background-networking"
         "--disable-breakpad"
