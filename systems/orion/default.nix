@@ -127,6 +127,11 @@ in
       };
     };
 
+    # Enable security module with sudo password requirement
+    system.security = {
+      enable = true;  # Enable sudo with wheelNeedsPassword
+    };
+
     # Base security and program modules are enabled in base config
 
     wayland = {
