@@ -19,15 +19,36 @@
             services.openssh = {
               enable = true;
               settings = {
-                PermitRootLogin = "yes";
+                # SSH key authentication only (secure for nixos-anywhere)
+                PermitRootLogin = "prohibit-password";
                 PasswordAuthentication = false;
               };
+              # Only allow SSH from local network
+              listenAddresses = [
+                { addr = "0.0.0.0"; port = 22; }
+              ];
+            };
+            
+            # Firewall: Only allow SSH from local network
+            networking.firewall = {
+              enable = true;
+              allowedTCPPorts = [ 22 ];
+              # Restrict SSH to local network (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+              extraCommands = ''
+                iptables -A nixos-fw -p tcp --dport 22 -s 192.168.0.0/16 -j nixos-fw-accept
+                iptables -A nixos-fw -p tcp --dport 22 -s 10.0.0.0/8 -j nixos-fw-accept
+                iptables -A nixos-fw -p tcp --dport 22 -s 172.16.0.0/12 -j nixos-fw-accept
+                iptables -A nixos-fw -p tcp --dport 22 -j nixos-fw-log-refuse
+              '';
             };
             
             # Pre-configure SSH authorized keys for root
             users.users.root.openssh.authorizedKeys.keys = [
               "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMSdxXvx7Df+/2cPMe7C2TUSqRkYee5slatv7t3MG593 syg@nixos"
             ];
+            
+            # Console password for physical access / troubleshooting
+            users.users.root.password = "nixos";
             
             # Useful packages for installation
             environment.systemPackages = with pkgs; [
@@ -37,9 +58,6 @@
               htop
               tmux
             ];
-            
-            # Set a known root password as fallback (change this!)
-            users.users.root.password = "nixos";
             
             # Network configuration
             networking.useDHCP = true;
