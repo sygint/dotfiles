@@ -25,7 +25,11 @@
     brave.enable = true;
     librewolf.enable = true;
     firefox.enable = true;          # Standard Firefox for work/media (full device access)
-    vscode = {
+    # vscode = {
+    #   enable = true;
+    #   copilotPrompts.enable = true; # Enable curated GitHub Copilot Chat prompts
+    # };
+    vscode-fhs = {
       enable = true;
       copilotPrompts.enable = true; # Enable curated GitHub Copilot Chat prompts
     };

@@ -1,0 +1,18 @@
+{
+  // Use direnv to load devenv environment in VSCode terminal
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.profiles.linux": {
+    "zsh": {
+      "path": "zsh",
+      "args": ["-l"]
+    }
+  },
+  
+  // Make VSCode git operations use the shell environment (with devenv tools)
+  "git.terminalGitEditor": true,
+  "git.useIntegratedTerminal": true,
+  
+  // Ensure direnv is loaded for git operations
+  "git.enabled": true,
+  "git.path": "git"
+}

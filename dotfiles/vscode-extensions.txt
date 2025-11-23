@@ -1,0 +1,25 @@
+# List your VSCode extension IDs here, one per line.
+# Example:
+# ms-vscode.cpptools
+# github.copilot
+# streetsidesoftware.code-spell-checker
+
+github.copilot
+github.copilot-chat
+jnoortheen.nix-ide
+bbenoist.nix
+astro-build.astro-vscode
+svelte.svelte-vscode
+bradlc.vscode-tailwindcss
+yzhang.markdown-all-in-one
+streetsidesoftware.code-spell-checker
+usernamehw.errorlens
+dbaeumer.vscode-eslint
+alefragnani.project-manager
+ryu1kn.partial-diff
+timonwong.shellcheck
+mhutchie.git-graph
+sanjulaganepola.github-local-actions
+maattdd.gitless
+specstory.specstory-vscode
+samgiz.vscode-kanbn-boards

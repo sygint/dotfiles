@@ -22,5 +22,21 @@
   "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font Mono",
   "terminal.integrated.fontSize": 16.0,
   "workbench.colorTheme": "Stylix",
-  "chat.agent.maxRequests": 50
+  "chat.agent.maxRequests": 50,
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": false,
+    "plaintext": false,
+    "markdown": true
+  },
+  "github.copilot.chat.enabled": true,
+  "github.copilot.editor.enableAutoCompletions": true,
+  "chat.experimental.defaultAgent": "copilot",
+  "workbench.chat.defaultAgent": "copilot",
+  "github.copilot.chat.welcomeMessage": "never",
+  "github.copilot.chat.localeOverride": "en",
+  "git.path": "/run/current-system/sw/bin/git",
+  "terminal.integrated.env.linux": {
+    "PATH": "${env:PATH}:/run/current-system/sw/bin"
+  }
 }

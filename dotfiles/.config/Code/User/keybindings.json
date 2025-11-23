@@ -1,0 +1,19 @@
+[
+  // GitHub Copilot Chat keybindings
+  {
+    "key": "ctrl+i",
+    "command": "github.copilot.interactiveEditor.generate"
+  },
+  {
+    "key": "ctrl+shift+i",
+    "command": "workbench.action.chat.open"
+  },
+  {
+    "key": "ctrl+alt+i",
+    "command": "workbench.view.chat"
+  },
+  {
+    "key": "ctrl+shift+alt+i", 
+    "command": "github.copilot.chat.newChat"
+  }
+]
