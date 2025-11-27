@@ -14,6 +14,9 @@
   modules = {
     system.security.enable = true;
     programs.nix-helpers.enable = true;
+    # Monitor tools are enabled; the monitor setup script is now resilient
+    # to non-graphical / build environments and won't fail activations.
+    programs.monitor-tools.enable = true;
   };
 
   # Essential system programs
@@ -68,6 +71,8 @@
     # Allow all wheel group users to push unsigned paths to nix store
     # This enables passwordless deploy-rs deployments via SSH authentication
     trusted-users = [ "root" "@wheel" ];
+    # Limit parallel builds to prevent system overload
+    max-jobs = 4;
   };
 
   # This value determines the NixOS release from which the default
