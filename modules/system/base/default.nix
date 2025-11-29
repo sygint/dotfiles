@@ -1,5 +1,9 @@
 { config, pkgs, lib, ... }:
 {
+  imports = [
+    ./networking.nix  # Fleet-wide hosts configuration
+  ];
+
   # Base NixOS configuration - essential settings for any system
   
   # Essential boot configuration

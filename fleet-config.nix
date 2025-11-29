@@ -35,7 +35,7 @@
     orion = {
       hostname = "orion";
       fqdn = "orion.home";
-      ip = "192.168.1.100";  # Update with actual IP if static
+      ip = "192.168.1.30";  # DHCP reservation on UDM Pro
       
       # Network interfaces
       interfaces = {
@@ -75,7 +75,7 @@
     cortex = {
       hostname = "cortex";
       fqdn = "cortex.home";
-      ip = "192.168.1.7";
+      ip = "192.168.1.10";  # Static IP for main workstation
       
       # Network interfaces
       interfaces = {
@@ -115,19 +115,19 @@
     nexus = {
       hostname = "nexus";
       fqdn = "nexus.home";
-      ip = "192.168.1.10";
+      ip = "192.168.1.22";  # Permanent static IP (DHCP reservation configured)
       
       # Network interfaces
       interfaces = {
         ethernet = {
-          name = "enp0s0";  # Update with actual interface name
+          name = "eno1";  # Primary ethernet interface
           mac = null;  # Update with actual MAC for Wake-on-LAN if needed
         };
       };
       
       # SSH configuration
       ssh = {
-        user = "admin";
+        user = "deploy";
         port = 22;
         keyPath = "~/.ssh/id_ed25519";
         authorizedKeys = [
