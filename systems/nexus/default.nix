@@ -11,8 +11,10 @@ in
 {
   imports = [
     ./hardware.nix
-    ./disk-config.nix  # Disko configuration for nixos-anywhere
+    ./disk-config.nix
     ../../modules/system.nix
+  ] ++ lib.optionals hasSecrets [
+    (import (inputs.nixos-secrets + "/default.nix") { inherit config lib pkgs inputs hasSecrets; })
   ];
 
   # Essential boot configuration
@@ -25,6 +27,39 @@ in
 
   networking.hostName = hostName;
   time.timeZone = networkConfig.global.timeZone;
+
+  # ===== Secrets Management =====
+  # Secrets are mandatory for this system
+  assertions = [
+    { assertion = hasSecrets; message = "Secrets required—nixos-secrets submodule missing"; }
+  ];
+
+  # The nixos-secrets module already sets defaultSopsFile, just configure what we need here
+  sops = {
+    age.keyFile = lib.mkForce "/var/lib/sops-nix/key.txt";  # Override to use dedicated key file
+    
+    secrets."nexus/rescue_password_hash" = {
+      neededForUsers = true;
+    };
+    # Leantime environment files for containers (loaded at runtime by Podman)
+    # These files contain MYSQL_PASSWORD and MYSQL_ROOT_PASSWORD for DB
+    # and LEAN_DB_PASSWORD for the app container
+    secrets."nexus/leantime_db_env" = {
+      owner = "root";
+      group = "root";
+      mode = "0400";
+    };
+    secrets."nexus/leantime_app_env" = {
+      owner = "root";
+      group = "root";
+      mode = "0400";
+    };
+    
+    secrets."nexus/grafana_admin_password" = {
+      owner = "grafana";
+      group = "grafana";
+    };
+  };
 
   # ===== NAS Storage Mounts =====
   # Mount Synology NAS media shares via NFS
@@ -64,25 +99,38 @@ in
   };
 
   # ===== User Configuration =====
+
+  # Deploy user: SSH-only for remote deployments (key-only, no password)
   users.users.${username} = {
     isNormalUser = true;
-    description = "Nexus Administrator";
+    description = "Remote deployment user (SSH key-only)";
     extraGroups = [ "wheel" "networkmanager" "jellyfin" "grafana" ];
+    # SSH: Key-only authentication (no password set)
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMSdxXvx7Df+/2cPMe7C2TUSqRkYee5slatv7t3MG593 syg@nixos"
     ];
+    # Password is explicitly locked - this user CANNOT login at console
+    # This provides clear separation: SSH uses this user, console uses rescue user
+    # Passwordless sudo via security.sudo.wheelNeedsPassword = false
+    hashedPassword = "!";  # Locked account - SSH key only
   };
 
-  # Maintenance user for console/KVM emergency access only
-  # This user CANNOT login via SSH (no keys, PasswordAuthentication disabled)
-  # Use this account for physical console or KVM access when SSH is broken
-  # TODO: Move password to sops after fixing age key configuration
-  users.users.maintenance = {
+  # Rescue user: Console-only for physical/KVM emergency access (password-only, no SSH)
+  users.users.rescue = {
     isNormalUser = true;
-    description = "Console-only emergency maintenance account";
-    hashedPassword = "$6$Q22NXbAkZYBG38hI$5vM9ZPrugG27jLt4NYiU3ME768eB8PPMOhcsewzm7HlpkWfEu8biU/m.9lTR7n9uBRpm.KYhGug72hktoYubC1";
-    extraGroups = [ "wheel" ];  # Allows sudo
-    # No SSH keys - console access only
+    description = "Emergency console access (password-only)";
+    extraGroups = [ "wheel" ];  # Can sudo for system repairs
+    # Password for console/KVM access via secrets
+    hashedPasswordFile = config.sops.secrets."nexus/rescue_password_hash".path;
+    # No SSH keys - this user CANNOT login remotely
+    # Provides audit trail: rescue user = physical access only
+  };
+
+  # ===== Nix Configuration =====
+  # Deploy user needs to be trusted for remote deployments
+  nix.settings = {
+    trusted-users = [ "root" "deploy" ];
+    experimental-features = [ "nix-command" "flakes" ];
   };
 
   # Ensure Jellyfin can read NAS mounts
@@ -94,6 +142,11 @@ in
   ];
 
   # ===== Security Configuration =====
+
+  # Passwordless sudo for wheel group (needed for remote deployments)
+  # Override the security module's default of requiring passwords
+  security.sudo.wheelNeedsPassword = lib.mkForce false;
+
   services.openssh = {
     enable = true;
     settings = {
@@ -156,7 +209,7 @@ in
       };
       security = {
         admin_user = "admin";
-        admin_password = "admin"; # Change this on first login!
+        admin_password_file = config.sops.secrets."nexus/grafana_admin_password".path;
       };
     };
     
@@ -170,6 +223,81 @@ in
           isDefault = true;
         }
       ];
+    };
+  };
+
+
+
+  # Create required directories for Leantime data persistence
+  # Leantime storage directories
+  # UID/GID 1000 = www-data inside the leantime container
+  # These directories MUST exist before the container starts
+  systemd.tmpfiles.rules = [
+    # Root leantime directory
+    "d /var/lib/leantime 0755 root root -"
+    
+    # Database data (MariaDB runs as different user)
+    "d /var/lib/leantime/db-data 0755 root root -"
+    
+    # Application directories (owned by container's www-data = UID 1000)
+    "d /var/lib/leantime/userfiles 0755 1000 1000 -"
+    "d /var/lib/leantime/plugins 0755 1000 1000 -"
+    
+    # Storage directory structure (required by Laravel/Leantime)
+    "d /var/lib/leantime/storage 0755 1000 1000 -"
+    "d /var/lib/leantime/storage/logs 0755 1000 1000 -"
+    "d /var/lib/leantime/storage/app 0755 1000 1000 -"
+    "d /var/lib/leantime/storage/debugbar 0755 1000 1000 -"
+    "d /var/lib/leantime/storage/framework 0755 1000 1000 -"
+    "d /var/lib/leantime/storage/framework/cache 0755 1000 1000 -"
+    "d /var/lib/leantime/storage/framework/cache/data 0755 1000 1000 -"
+    "d /var/lib/leantime/storage/framework/cache/installation 0755 1000 1000 -"
+    "d /var/lib/leantime/storage/framework/sessions 0755 1000 1000 -"
+    "d /var/lib/leantime/storage/framework/views 0755 1000 1000 -"
+  ];
+
+  virtualisation.oci-containers = {
+    backend = "podman";
+    containers = {
+      # Leantime - Goals-focused PM tool (https://leantime.io/)
+      leantime-db = {
+        image = "mariadb:10.11";
+        ports = [ ]; # Not exposed outside
+        volumes = [
+          "/var/lib/leantime/db-data:/var/lib/mysql"
+        ];
+        environment = {
+          MYSQL_DATABASE = "leantime";
+          MYSQL_USER = "leantime";
+          # Passwords loaded from environmentFiles below
+        };
+        environmentFiles = [
+          config.sops.secrets."nexus/leantime_db_env".path
+        ];
+        autoStart = true;
+      };
+      leantime = {
+        image = "leantime/leantime:latest";
+        ports = [ "8080:8080" ];
+        volumes = [
+          "/var/lib/leantime/userfiles:/var/www/html/userfiles"
+          "/var/lib/leantime/plugins:/var/www/html/app/Plugins"
+          "/var/lib/leantime/storage:/var/www/html/storage"
+        ];
+        environment = {
+          LEAN_DB_HOST = "leantime-db";
+          LEAN_DB_USER = "leantime";
+          LEAN_DB_DATABASE = "leantime";
+          LEAN_EMAIL_RETURN = "no-reply@localhost";
+          LEAN_APP_URL = "http://nexus.home:8080"; # Use flake DNS/hostname instead of localhost
+          # Password loaded from environmentFiles below
+        };
+        environmentFiles = [
+          config.sops.secrets."nexus/leantime_app_env".path
+        ];
+        dependsOn = [ "leantime-db" ];
+        autoStart = true;
+      };
     };
   };
 
@@ -199,6 +327,7 @@ in
     allowedTCPPorts = [ 
       22      # SSH
       3000    # Grafana
+      8080    # Leantime
       8096    # Jellyfin HTTP
       8920    # Jellyfin HTTPS
       9090    # Prometheus (optional - can access via Grafana)
@@ -221,6 +350,8 @@ in
     };
 
     services = {
+      containerization.enable = true;  # Podman for OCI containers
+
       syncthing = {
         enable = false;  # Enable if needed
       };
@@ -228,6 +359,11 @@ in
       printing = {
         enable = false;  # Headless server
       };
+    };
+
+    system.security = {
+      enable = true;  # Enable security module (sudo, polkit, etc.)
+      serverHardening.enable = true;  # Full server hardening profile (fail2ban, auditd, SSH, kernel, monitoring)
     };
   };
 
@@ -250,6 +386,7 @@ in
     tmux
     wget
     curl
+    sqlite
     
     # Jellyfin utilities
     libva-utils  # Provides vainfo to check hardware video acceleration

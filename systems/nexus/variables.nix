@@ -18,9 +18,9 @@ in
   };
 
   user = {
-    username = "admin";
-    name = "Nexus Administrator";
-    email = "admin@nexus.home";
+    username = "deploy";
+    name = "Deployment User";
+    email = "deploy@nexus.home";
     # Add any other user-specific variables here
   };
 

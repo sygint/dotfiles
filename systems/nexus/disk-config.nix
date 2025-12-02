@@ -27,6 +27,14 @@
                 ];
               };
             };
+            # Swap partition - 16GB for hibernation/memory pressure
+            swap = {
+              size = "16G";
+              content = {
+                type = "swap";
+                resumeDevice = true;
+              };
+            };
             # Root partition - uses remaining space
             root = {
               size = "100%";
