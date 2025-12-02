@@ -43,12 +43,12 @@
     vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
   };
   
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
       intel-media-driver      # For 8th gen and newer
       intel-vaapi-driver      # Fallback
-      vaapiVdpau
+      libva-vdpau-driver
       libvdpau-va-gl
       intel-compute-runtime   # OpenCL
     ];
