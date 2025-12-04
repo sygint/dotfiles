@@ -134,12 +134,7 @@ in
   };
 
   # Ensure Jellyfin can read NAS mounts
-  systemd.tmpfiles.rules = [
-    "d /mnt/nas 0755 root root -"
-    "d /mnt/nas/movies 0755 root root -"
-    "d /mnt/nas/tvshows 0755 root root -"
-    "d /mnt/nas/music 0755 root root -"
-  ];
+
 
   # ===== Security Configuration =====
 
@@ -233,17 +228,16 @@ in
   # UID/GID 1000 = www-data inside the leantime container
   # These directories MUST exist before the container starts
   systemd.tmpfiles.rules = [
-    # Root leantime directory
+    # NAS mounts
+    "d /mnt/nas 0755 root root -"
+    "d /mnt/nas/movies 0755 root root -"
+    "d /mnt/nas/tvshows 0755 root root -"
+    "d /mnt/nas/music 0755 root root -"
+    # Leantime storage
     "d /var/lib/leantime 0755 root root -"
-    
-    # Database data (MariaDB runs as different user)
     "d /var/lib/leantime/db-data 0755 root root -"
-    
-    # Application directories (owned by container's www-data = UID 1000)
     "d /var/lib/leantime/userfiles 0755 1000 1000 -"
     "d /var/lib/leantime/plugins 0755 1000 1000 -"
-    
-    # Storage directory structure (required by Laravel/Leantime)
     "d /var/lib/leantime/storage 0755 1000 1000 -"
     "d /var/lib/leantime/storage/logs 0755 1000 1000 -"
     "d /var/lib/leantime/storage/app 0755 1000 1000 -"
