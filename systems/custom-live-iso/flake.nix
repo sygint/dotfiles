@@ -20,7 +20,8 @@
               enable = true;
               settings = {
                 # SSH key authentication only (secure for nixos-anywhere)
-                PermitRootLogin = "prohibit-password";
+                # Use mkForce to override the installation-device.nix default
+                PermitRootLogin = lib.mkForce "prohibit-password";
                 PasswordAuthentication = false;
               };
               # Only allow SSH from local network
@@ -42,13 +43,28 @@
               '';
             };
             
-            # Pre-configure SSH authorized keys for root
+            # Pre-configure SSH authorized keys for root (for nixos-anywhere)
             users.users.root.openssh.authorizedKeys.keys = [
               "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMSdxXvx7Df+/2cPMe7C2TUSqRkYee5slatv7t3MG593 syg@nixos"
             ];
             
             # Console password for physical access / troubleshooting
             users.users.root.password = "nixos";
+            
+            # Create deploy user for consistent deployment workflow
+            # This ensures systems bootstrapped from this ISO already have the deploy user configured
+            users.users.deploy = {
+              isNormalUser = true;
+              description = "Deployment user for remote management";
+              extraGroups = [ "wheel" "networkmanager" ];
+              openssh.authorizedKeys.keys = [
+                "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMSdxXvx7Df+/2cPMe7C2TUSqRkYee5slatv7t3MG593 syg@nixos"
+              ];
+              password = "deploy"; # Console access if needed during installation
+            };
+            
+            # Enable passwordless sudo for wheel group (needed for deploy-rs and remote management)
+            security.sudo.wheelNeedsPassword = false;
             
             # Useful packages for installation
             environment.systemPackages = with pkgs; [
