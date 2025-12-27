@@ -17,4 +17,3 @@
     { from = "host"; host.port = 2222; guest.port = 22; }
   ];
 }
-so we can create racial factions devoid of scientific logic
