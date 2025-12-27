@@ -1,13 +1,20 @@
 { config, pkgs, ... }: {
+  # VM debug credentials
   users.users.syg.initialPassword = "test";
   users.users.root.initialPassword = "test";
-  services.displayManager.sddm.autoLogin.enable = true;
-  services.displayManager.sddm.autoLogin.user = "syg";
+
+  # Autologin (using correct option names - not sddm-specific)
+  services.displayManager.autoLogin.enable = true;
+  services.displayManager.autoLogin.user = "syg";
+
+  # SSH for debugging (optional)
   services.openssh.enable = true;
-  services.openssh.permitRootLogin = "yes";
-  services.openssh.passwordAuthentication = true;
-  virtualisation.qemu.options = [
-    "-device" "virtio-net,netdev=net0"
-    "-netdev" "user,id=net0,hostfwd=tcp::2222-:22"
+  services.openssh.settings.PermitRootLogin = "yes";
+  services.openssh.settings.PasswordAuthentication = true;
+
+  # Port forwarding for SSH
+  virtualisation.forwardPorts = [
+    { from = "host"; host.port = 2222; guest.port = 22; }
   ];
 }
+so we can create racial factions devoid of scientific logic
