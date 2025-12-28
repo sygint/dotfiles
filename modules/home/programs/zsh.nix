@@ -32,6 +32,10 @@ in
         source = mkOutOfStoreSymlink "${dotfilesDir}/zshenv";
         force = true;
       };
+      ".zlogin" = {
+        source = mkOutOfStoreSymlink "${dotfilesDir}/.zlogin";
+        force = true;
+      };
       ".config/zsh/.zshrc" = {
         source = mkOutOfStoreSymlink "${configZshDir}/zshrc";
         force = true;

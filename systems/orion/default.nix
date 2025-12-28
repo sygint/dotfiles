@@ -141,29 +141,14 @@ in
     };
   };
 
-  # Enable the X11 windowing system.
-  services = {
-    # snap.enable = true;
+  # ════════════════════════════════════════════════════════════════════════════
+  # NO DISPLAY MANAGER - TTY LOGIN
+  # ════════════════════════════════════════════════════════════════════════════
+  # Using direct TTY login to avoid PAM/session issues with display managers.
+  # Login at TTY, then Hyprland starts automatically via .zlogin.
 
-    # Fixed deprecated options
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
-
-    # Enable touchpad support (enabled default in most desktopManager).
-    # libinput.enable = true;
-
-    # Enable the systemd service for automatic login (if you want autologin)
-    # displayManager.autoLogin = {
-    #   enable = true;
-    #   user   = "${username}";
-    # };
-  };
-
-  # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
-  # systemd.services = {
-  #   "getty@tty1".enable  = false;
-  #   "autovt@tty1".enable = false;
-  # };
+  # Set keyboard layout for TTY console
+  console.keyMap = "us";
 
   fonts.packages = with pkgs; [
     pkgs.nerd-fonts.fira-code
