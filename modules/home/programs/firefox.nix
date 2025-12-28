@@ -17,6 +17,9 @@ in
   options.modules.programs.firefox.enable = mkEnableOption "Firefox web browser (standard, for work/media)";
 
   config = mkIf cfg.enable {
+    # Tell stylix which Firefox profiles to style
+    stylix.targets.firefox.profileNames = [ "default" ];
+
     programs.firefox = {
       enable = true;
 
