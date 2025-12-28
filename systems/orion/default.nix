@@ -229,9 +229,11 @@ in
       gparted
       keepassxc
       kitty
+      libreoffice
       librewolf-unwrapped
       meld
       nemo-with-extensions  # Nemo with file-roller and other extensions
+      rocketchat-desktop
       shiori
       signal-desktop
       inputs.zen-browser.packages."${system}".default
