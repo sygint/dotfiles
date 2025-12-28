@@ -31,12 +31,9 @@ in
     # Enable gnome-keyring for secure storage (works in all desktop environments)
     services.gnome.gnome-keyring.enable = true;
 
-    # PAM configuration for gnome-keyring automatic unlock
+    # PAM configuration for gnome-keyring automatic unlock on TTY login
     security.pam.services = {
       login.enableGnomeKeyring = true;
-      gdm.enableGnomeKeyring = true;
-      gdm-password.enableGnomeKeyring = true;
-      greetd.enableGnomeKeyring = true;
     };
 
     # Install secret management tools
