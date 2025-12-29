@@ -242,7 +242,7 @@ in
       rocketchat-desktop
       shiori
       signal-desktop
-      inputs.zen-browser.packages."${system}".default
+      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       # Enhanced development tools (base has basic git)
       act # gh actions cli

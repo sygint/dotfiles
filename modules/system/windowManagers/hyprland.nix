@@ -22,11 +22,7 @@ in
     };
 
     # PAM service for hyprlock authentication
-    security.pam.services.hyprlock = {
-      text = ''
-        auth include login
-      '';
-    };
+    security.pam.services.hyprlock = {};
 
     environment.systemPackages = with pkgs; [
       hyprlock
