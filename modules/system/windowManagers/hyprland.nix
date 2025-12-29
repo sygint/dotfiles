@@ -16,8 +16,9 @@ in
     programs = {
       hyprland = {
         enable = true;
-        withUWSM = true;
-        package = inputs.hyprland.packages."${pkgs.system}".hyprland;
+        # Note: withUWSM removed - using start-hyprland wrapper instead (simpler, recommended approach)
+        # UWSM is for advanced users who want full systemd unit management
+        package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
       };
     };
 
@@ -28,7 +29,6 @@ in
       hyprlock
       hypridle
       # light
-      xdg-desktop-portal-hyprland
     ];
   };
 }
