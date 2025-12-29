@@ -29,6 +29,12 @@ in
       inherit inputs;
       userVars = systemVars.user;
     };
+    # Auto back up files that would be clobbered by Home Manager so that
+    # unmanaged files are not lost during activation. This prevents
+    # activations from failing due to existing files like
+    # '/home/syg/.mozilla/firefox/profiles.ini'. The extension can be
+    # changed as needed.
+    backupFileExtension = ".hm-backup";
     # Disable stylix librewolf target to suppress warning
     sharedModules = [
       inputs.nix-flatpak.homeManagerModules.nix-flatpak
