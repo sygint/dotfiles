@@ -84,6 +84,12 @@ in
             version = "1.16.2";
             sha256 = "sha256-avrq1e+L+2ZCIDBz1WOOHtU9a16VNkDOzrE1ccPnTKg=";
           }
+          {
+            name = "opencode";
+            publisher = "sst-dev";
+            version = "0.0.13";
+            sha256 = "1m301j2qbym3j2qnck76jyxakca3h1qiybc2r7wy7z11m98mg9z9";
+          }
         ];
       })
     ];
