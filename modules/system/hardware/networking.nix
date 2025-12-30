@@ -20,7 +20,6 @@ in
   config = mkIf cfg.enable {
     networking = {
       hostName = "${cfg.hostName}"; # Define your hostname.
-      wireless.enable = false; # Set to true to enable wireless support via wpa_supplicant.
       networkmanager.enable = true;
 
       # Configure network proxy if necessary
