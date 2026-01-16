@@ -7,6 +7,8 @@
     obsidian
     opencode
     solaar
+    zed-editor
+    gnome-calculator
     # Add other extra programs here as needed
   ];
 }
