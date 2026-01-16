@@ -21,19 +21,30 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     nixos-secrets.url = "path:/home/syg/.config/nixos-secrets";
     nixos-secrets.flake = false;
+    opencode.url = "github:anomalyco/opencode";
   };
 
   nixConfig = {
-  # NOTE: To use Cachix for binary caching, set up a personal cache at https://cachix.org and add your cache URL and public key here.
-  # Example:
-  # extra-substituters = [ "https://your-cachix.cachix.org" ];
-  # extra-trusted-public-keys = [ "your-cachix.cachix.org-1:..." ];
-  # See https://docs.cachix.org for setup instructions.
-  # We'll revisit this later.
+    # NOTE: To use Cachix for binary caching, set up a personal cache at https://cachix.org and add your cache URL and public key here.
+    # Example:
+    # extra-substituters = [ "https://your-cachix.cachix.org" ];
+    # extra-trusted-public-keys = [ "your-cachix.cachix.org-1:..." ];
+    # See https://docs.cachix.org for setup instructions.
+    # We'll revisit this later.
     # builders = [ ]; # No remote builders configured
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, home-manager, fh, nix-snapd, nix-flatpak, ... } @ inputs:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nixos-hardware,
+      home-manager,
+      fh,
+      nix-snapd,
+      nix-flatpak,
+      ...
+    }@inputs:
     let
       inherit (nixpkgs) lib;
       system = "x86_64-linux";
@@ -84,11 +95,13 @@
 
       inherit (nixpkgs.legacyPackages.${system}) pkgs;
 
-      mkHomeConfiguration = variables:
+      mkHomeConfiguration =
+        variables:
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           extraSpecialArgs = {
             inherit self inputs userVars;
+            opencode = inputs.opencode.packages.${system};
           };
           modules = [
             nix-flatpak.homeManagerModules.nix-flatpak
@@ -102,15 +115,21 @@
     {
       nixosConfigurations = lib.mapAttrs (
         name: cfg:
-          nixpkgs.lib.nixosSystem {
-            system = system;
-            modules = [ cfg.path ] ++ cfg.modules;
-            specialArgs = {
-              inherit self system inputs fh userVars;
-              # Enable secrets for cortex and orion (age key configured)
-              hasSecrets = if (name == "cortex" || name == "orion") then true else false;
-            };
-          }
+        nixpkgs.lib.nixosSystem {
+          system = system;
+          modules = [ cfg.path ] ++ cfg.modules;
+          specialArgs = {
+            inherit
+              self
+              system
+              inputs
+              fh
+              userVars
+              ;
+            # Enable secrets for cortex and orion (age key configured)
+            hasSecrets = if (name == "cortex" || name == "orion") then true else false;
+          };
+        }
       ) systems;
 
       homeConfigurations = {
@@ -118,38 +137,40 @@
         "${username}@${systemVars.hostName}" = mkHomeConfiguration userVars;
       };
 
-        # Add deploy-rs output for fleet management
-        deploy = {
-          sshUser = "jarvis";  # Global SSH user for all nodes
-          
-          nodes = {
-            cortex = {
-              hostname = "192.168.1.7";  # TODO: Switch to cortex.home when DNS is fixed
-              profiles.system = {
-                path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.cortex;
-                user = "root";  # Activate as root (via sudo)
-              };
-            };
-            nexus = {
-              hostname = "192.168.1.22";  # Nexus homelab services server
-              sshUser = "admin";  # Override global SSH user for Nexus
-              profiles.system = {
-                path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nexus;
-                user = "root";  # Activate as root (via sudo)
-              };
-            };
-            axon = {
-              hostname = "192.168.1.11";  # TODO: Update with actual Axon IP
-              profiles.system = {
-                path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.axon;
-                user = "root";  # Activate as root (via sudo)
-              };
-            };
-            # Add other systems here as needed
-          };
-        };
+      # Add deploy-rs output for fleet management
+      deploy = {
+        sshUser = "jarvis"; # Global SSH user for all nodes
 
-        # Add deploy-rs checks
-        checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
+        nodes = {
+          cortex = {
+            hostname = "192.168.1.7"; # TODO: Switch to cortex.home when DNS is fixed
+            profiles.system = {
+              path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.cortex;
+              user = "root"; # Activate as root (via sudo)
+            };
+          };
+          nexus = {
+            hostname = "192.168.1.22"; # Nexus homelab services server
+            sshUser = "admin"; # Override global SSH user for Nexus
+            profiles.system = {
+              path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nexus;
+              user = "root"; # Activate as root (via sudo)
+            };
+          };
+          axon = {
+            hostname = "192.168.1.11"; # TODO: Update with actual Axon IP
+            profiles.system = {
+              path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.axon;
+              user = "root"; # Activate as root (via sudo)
+            };
+          };
+          # Add other systems here as needed
+        };
+      };
+
+      # Add deploy-rs checks
+      checks = builtins.mapAttrs (
+        system: deployLib: deployLib.deployChecks self.deploy
+      ) inputs.deploy-rs.lib;
     };
 }
