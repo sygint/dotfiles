@@ -23,3 +23,5 @@ sanjulaganepola.github-local-actions
 maattdd.gitless
 specstory.specstory-vscode
 samgiz.vscode-kanbn-boards
+ms-vsliveshare.vsliveshare
+sst-dev.opencode
