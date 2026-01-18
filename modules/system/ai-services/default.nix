@@ -8,120 +8,129 @@
   ...
 }:
 
+let
+  cfg = config.modules.system.ai-services;
+in
 {
-
-  # Enable NVIDIA drivers for RTX 5090
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.nvidia = {
-    # CRITICAL: RTX 5090 (Blackwell) REQUIRES open kernel modules
-    # Proprietary driver will fail with "requires use of the NVIDIA open kernel modules"
-    open = true; # MUST be true for RTX 5090/Blackwell architecture
-
-    # Enable modesetting (required for Wayland, useful even on headless)
-    modesetting.enable = true;
-
-    # Power management (important for high-end GPUs)
-    powerManagement.enable = true;
-
-    # Use the latest stable driver
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+  options.modules.system.ai-services = {
+    enable = lib.mkEnableOption "AI services with Ollama and NVIDIA CUDA support";
   };
 
-  # Enable NVIDIA persistence daemon for better performance
-  hardware.nvidia.nvidiaPersistenced = true;
+  config = lib.mkIf cfg.enable {
 
-  # CRITICAL: Workaround for RTX 5090 (Blackwell architecture) driver bug
-  # Without this, CUDA will fail to initialize with "init failure: 3"
-  # See: https://github.com/ollama/ollama/issues/11593
-  # See: https://forums.developer.nvidia.com/t/solved-cuda-driver-initialization-failed-2x-rtx-5090/334578/4
-  boot.extraModprobeConfig = ''
-    options nvidia_uvm uvm_disable_hmm=1
-  '';
+    # Enable NVIDIA drivers for RTX 5090
+    services.xserver.videoDrivers = [ "nvidia" ];
 
-  # Enable Ollama LLM service with CUDA acceleration
-  services.ollama = {
-    enable = true;
-    # Enable CUDA acceleration for RTX 5090
-    package = pkgs.ollama-cuda;
-    # Listen on all interfaces so we can access from other machines on the network
-    host = "0.0.0.0";
-    port = 11434;
+    hardware.nvidia = {
+      # CRITICAL: RTX 5090 (Blackwell) REQUIRES open kernel modules
+      # Proprietary driver will fail with "requires use of the NVIDIA open kernel modules"
+      open = true; # MUST be true for RTX 5090/Blackwell architecture
 
-    # Environment variables for optimal GPU performance
-    environmentVariables = {
-      # Allow Ollama to use most available VRAM (RTX 5090 has 32GB)
-      # Leave ~2GB for display/system overhead
-      OLLAMA_MAX_VRAM = "30000000000"; # 30GB
-      # Enable CUDA graphs for better performance
-      CUDA_LAUNCH_BLOCKING = "0";
+      # Enable modesetting (required for Wayland, useful even on headless)
+      modesetting.enable = true;
+
+      # Power management (important for high-end GPUs)
+      powerManagement.enable = true;
+
+      # Use the latest stable driver
+      package = config.boot.kernelPackages.nvidiaPackages.stable;
     };
 
-    # Preload models optimized for RTX 5090 (32GB VRAM)
-    # NOTE: Only models that fit entirely in VRAM for best performance
-    # Avoided 70B+ models which require RAM offloading (too slow)
-    loadModels = [
-      "llama3.2:3b" # Llama 3.2 3B - Ultra-fast baseline (~2GB VRAM)
-      "qwen2.5:7b" # Qwen 2.5 7B - Excellent general purpose (~4GB VRAM)
-      "deepseek-r1:14b" # DeepSeek R1 14B - Strong reasoning (~8GB VRAM)
-      "qwen2.5-coder:32b" # Qwen 2.5 Coder 32B - Best coding model (~17GB VRAM)
-      "command-r:35b" # Command-R 35B - Excellent for RAG/long context (~19GB VRAM)
-      "mixtral:8x7b" # Mixtral 8x7B - MoE architecture, great performance (~26GB VRAM)
+    # Enable NVIDIA persistence daemon for better performance
+    hardware.nvidia.nvidiaPersistenced = true;
+
+    # CRITICAL: Workaround for RTX 5090 (Blackwell architecture) driver bug
+    # Without this, CUDA will fail to initialize with "init failure: 3"
+    # See: https://github.com/ollama/ollama/issues/11593
+    # See: https://forums.developer.nvidia.com/t/solved-cuda-driver-initialization-failed-2x-rtx-5090/334578/4
+    boot.extraModprobeConfig = ''
+      options nvidia_uvm uvm_disable_hmm=1
+    '';
+
+    # Enable Ollama LLM service with CUDA acceleration
+    services.ollama = {
+      enable = true;
+      # Enable CUDA acceleration for RTX 5090
+      package = pkgs.ollama-cuda;
+      # Listen on all interfaces so we can access from other machines on the network
+      host = "0.0.0.0";
+      port = 11434;
+
+      # Environment variables for optimal GPU performance
+      environmentVariables = {
+        # Allow Ollama to use most available VRAM (RTX 5090 has 32GB)
+        # Leave ~2GB for display/system overhead
+        OLLAMA_MAX_VRAM = "30000000000"; # 30GB
+        # Enable CUDA graphs for better performance
+        CUDA_LAUNCH_BLOCKING = "0";
+      };
+
+      # Preload models optimized for RTX 5090 (32GB VRAM)
+      # NOTE: Only models that fit entirely in VRAM for best performance
+      # Avoided 70B+ models which require RAM offloading (too slow)
+      loadModels = [
+        "llama3.2:3b" # Llama 3.2 3B - Ultra-fast baseline (~2GB VRAM)
+        "qwen2.5:7b" # Qwen 2.5 7B - Excellent general purpose (~4GB VRAM)
+        "deepseek-r1:14b" # DeepSeek R1 14B - Strong reasoning (~8GB VRAM)
+        "qwen2.5-coder:32b" # Qwen 2.5 Coder 32B - Best coding model (~17GB VRAM)
+        "command-r:35b" # Command-R 35B - Excellent for RAG/long context (~19GB VRAM)
+        "mixtral:8x7b" # Mixtral 8x7B - MoE architecture, great performance (~26GB VRAM)
+      ];
+    };
+
+    # Enable Open WebUI (formerly Ollama WebUI)
+    # NOTE: Temporarily disabled due to ctranslate2 build issues on NixOS unstable
+    # See: https://github.com/NixOS/nixpkgs/issues (ctranslate2 CMake compatibility)
+    # TODO: Re-enable once upstream fixes the build
+    # services.open-webui = {
+    #   enable = true;
+    #   # Port for web interface
+    #   port = 8080;
+    #   # Point to local Ollama instance
+    #   environment = {
+    #     OLLAMA_API_BASE_URL = "http://localhost:11434";
+    #     # Enable various features
+    #     WEBUI_AUTH = "true";  # Enable authentication
+    #     WEBUI_NAME = "Cortex AI - RTX 5090";  # Custom branding
+    #     # Allow file uploads for RAG (Retrieval Augmented Generation)
+    #     ENABLE_RAG_WEB_LOADER_SSL_VERIFICATION = "false";
+    #   };
+    # };
+
+    # Open firewall ports for AI services
+    # Note: These are restricted by the main firewall config to local network only
+    networking.firewall.allowedTCPPorts = [
+      11434 # Ollama API
+      # 8080   # Open WebUI (disabled temporarily)
     ];
-  };
 
-  # Enable Open WebUI (formerly Ollama WebUI)
-  # NOTE: Temporarily disabled due to ctranslate2 build issues on NixOS unstable
-  # See: https://github.com/NixOS/nixpkgs/issues (ctranslate2 CMake compatibility)
-  # TODO: Re-enable once upstream fixes the build
-  # services.open-webui = {
-  #   enable = true;
-  #   # Port for web interface
-  #   port = 8080;
-  #   # Point to local Ollama instance
-  #   environment = {
-  #     OLLAMA_API_BASE_URL = "http://localhost:11434";
-  #     # Enable various features
-  #     WEBUI_AUTH = "true";  # Enable authentication
-  #     WEBUI_NAME = "Cortex AI - RTX 5090";  # Custom branding
-  #     # Allow file uploads for RAG (Retrieval Augmented Generation)
-  #     ENABLE_RAG_WEB_LOADER_SSL_VERIFICATION = "false";
-  #   };
-  # };
+    # Ensure sufficient resources for AI workloads
+    # Add some system tuning for better performance with large models
+    boot.kernel.sysctl = {
+      # Increase shared memory for larger models
+      "kernel.shmmax" = 34359738368; # 32GB (match GPU VRAM)
+      "kernel.shmall" = 8388608; # 32GB in pages
+      # Optimize for high-throughput workloads
+      "vm.swappiness" = 10; # Reduce swapping (we have plenty of RAM for models)
+    };
 
-  # Open firewall ports for AI services
-  # Note: These are restricted by the main firewall config to local network only
-  networking.firewall.allowedTCPPorts = [
-    11434 # Ollama API
-    # 8080   # Open WebUI (disabled temporarily)
-  ];
+    # Add useful packages for AI/ML administration
+    environment.systemPackages = with pkgs; [
+      ollama # CLI for managing models
+      nvtopPackages.full # NVIDIA GPU monitoring (like htop for GPU)
+      cudaPackages.cudatoolkit # CUDA toolkit for diagnostics
+    ];
 
-  # Ensure sufficient resources for AI workloads
-  # Add some system tuning for better performance with large models
-  boot.kernel.sysctl = {
-    # Increase shared memory for larger models
-    "kernel.shmmax" = 34359738368; # 32GB (match GPU VRAM)
-    "kernel.shmall" = 8388608; # 32GB in pages
-    # Optimize for high-throughput workloads
-    "vm.swappiness" = 10; # Reduce swapping (we have plenty of RAM for models)
-  };
-
-  # Add useful packages for AI/ML administration
-  environment.systemPackages = with pkgs; [
-    ollama # CLI for managing models
-    nvtopPackages.full # NVIDIA GPU monitoring (like htop for GPU)
-    cudaPackages.cudatoolkit # CUDA toolkit for diagnostics
-  ];
-
-  # Systemd service overrides for better resource management
-  systemd.services.ollama = {
-    serviceConfig = {
-      # Nice level for prioritization
-      Nice = -10; # Higher priority for LLM inference
-      # Limit memory usage to prevent OOM
-      MemoryMax = "80%"; # Use up to 80% of system RAM
-      # CPU affinity - use all cores
-      CPUWeight = 100;
+    # Systemd service overrides for better resource management
+    systemd.services.ollama = {
+      serviceConfig = {
+        # Nice level for prioritization
+        Nice = -10; # Higher priority for LLM inference
+        # Limit memory usage to prevent OOM
+        MemoryMax = "80%"; # Use up to 80% of system RAM
+        # CPU affinity - use all cores
+        CPUWeight = 100;
+      };
     };
   };
 }
