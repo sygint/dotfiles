@@ -29,8 +29,8 @@ in
         openDefaultPorts = false; # Don't auto-open ports to internet
         settings.gui = {
           user = "${cfg.username}";
-          # Password is managed by sops-nix secret at runtime
-          # The secret file is available at: config.sops.secrets."syg/syncthing_password".path
+          # Password is managed by a sops-nix secret at runtime
+          # The secret file is expected at: config.sops.secrets."${cfg.username}/syncthing_password".path
         };
       };
     };
