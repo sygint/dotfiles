@@ -1,6 +1,6 @@
 { userVars, ... }:
 {
-  imports = [ ../base ];
+  imports = [ ../_base ];
 
   # Desktop-specific Home Manager settings
   home.file.wallpapers = {
