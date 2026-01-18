@@ -2,6 +2,7 @@
 , lib
 , pkgs
 , userVars
+, systemName ? "orion"  # Default to "orion" for backwards compatibility
 , ...
 }:
 let
@@ -24,12 +25,12 @@ let
         (hyprland.webBrowser or "brave")
         (hyprland.menu or "rofi")
         (
-          if barCfg == "waybar" then "${configRoot}/systems/orion/scripts/start-waybar.sh"
-          else if barCfg == "hyprpanel" then "${configRoot}/systems/orion/scripts/start-hyprpanel.sh"
+          if barCfg == "waybar" then "${configRoot}/systems/${systemName}/scripts/start-waybar.sh"
+          else if barCfg == "hyprpanel" then "${configRoot}/systems/${systemName}/scripts/start-hyprpanel.sh"
           else ""
         )
         (
-          "${configRoot}/systems/orion/scripts/monitor-handler.sh --fast --bar=" + barCfg
+          "${configRoot}/systems/${systemName}/scripts/monitor-handler.sh --fast --bar=" + barCfg
         )
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)

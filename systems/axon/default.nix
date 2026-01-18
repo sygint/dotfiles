@@ -26,6 +26,7 @@ in
     extraSpecialArgs = {
       inherit inputs;
       userVars = systemVars.user;
+      systemName = hostName;  # Pass hostname for system-specific paths
     };
     users = {
   axon = import ./homes/axon.nix;      # Admin user configuration (now axon)

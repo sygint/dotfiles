@@ -28,6 +28,7 @@ in
     extraSpecialArgs = {
       inherit inputs;
       userVars = systemVars.user;
+      systemName = hostName;  # Pass hostname for system-specific paths
     };
     # Auto back up files that would be clobbered by Home Manager so that
     # unmanaged files are not lost during activation. This prevents
