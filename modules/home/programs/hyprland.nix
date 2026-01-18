@@ -15,6 +15,11 @@ let
   hyprland = userVars.hyprland;
   barCfg = hyprland.bar or "hyprpanel";  # Default to hyprpanel if not specified
 
+  # NOTE: Systems that enable this module must have the required scripts in:
+  # systems/${systemName}/scripts/start-waybar.sh (if using waybar)
+  # systems/${systemName}/scripts/start-hyprpanel.sh (if using hyprpanel)
+  # systems/${systemName}/scripts/monitor-handler.sh
+
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
     lib.replaceStrings
