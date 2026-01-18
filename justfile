@@ -9,7 +9,7 @@ default:
 
 # Run BEFORE every rebuild/deploy - syncs secrets automatically
 rebuild-pre: update-secrets
- # Show system information
+# Show system information
 info:
   @echo "📦 NixOS Configuration Info"
   @echo ""
