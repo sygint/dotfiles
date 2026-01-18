@@ -22,6 +22,8 @@
     nixos-secrets.url = "path:/home/syg/.config/nixos-secrets";
     nixos-secrets.flake = false;
     opencode.url = "github:anomalyco/opencode";
+    devenv-bootstrap.url = "path:/home/syg/.config/nixos/archive/devenv-bootstrap";
+    import-tree.url = "github:vic/import-tree";
   };
 
   nixConfig = {
