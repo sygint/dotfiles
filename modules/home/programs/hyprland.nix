@@ -13,6 +13,8 @@ let
   cfg = config.modules.programs.hyprland;
   hyprland = userVars.hyprland;
   barCfg = hyprland.bar or "hyprpanel";  # Default to hyprpanel if not specified
+  hostName = userVars.hostName or "orion";  # Default to orion for backward compatibility
+  scriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
@@ -24,12 +26,12 @@ let
         (hyprland.webBrowser or "brave")
         (hyprland.menu or "rofi")
         (
-          if barCfg == "waybar" then "${configRoot}/systems/orion/scripts/start-waybar.sh"
-          else if barCfg == "hyprpanel" then "${configRoot}/systems/orion/scripts/start-hyprpanel.sh"
+          if barCfg == "waybar" then "${scriptsDir}/start-waybar.sh"
+          else if barCfg == "hyprpanel" then "${scriptsDir}/start-hyprpanel.sh"
           else ""
         )
         (
-          "${configRoot}/systems/orion/scripts/monitor-handler.sh --fast --bar=" + barCfg
+          "${scriptsDir}/monitor-handler.sh --fast --bar=" + barCfg
         )
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)
