@@ -651,6 +651,22 @@
         "type": "github"
       }
     },
+    "nix-flatpak": {
+      "locked": {
+        "lastModified": 1739444422,
+        "narHash": "sha256-iAVVHi7X3kWORftY+LVbRiStRnQEob2TULWyjMS6dWg=",
+        "owner": "gmodena",
+        "repo": "nix-flatpak",
+        "rev": "5e54c3ca05a7c7d968ae1ddeabe01d2a9bc1e177",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gmodena",
+        "ref": "v0.6.0",
+        "repo": "nix-flatpak",
+        "type": "github"
+      }
+    },
     "nix-snapd": {
       "inputs": {
         "flake-compat": "flake-compat_3",
@@ -691,8 +707,8 @@
     "nixos-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1761812052,
-        "narHash": "sha256-XUlj6DXXZbRqJOK6MQGY1or4fxaM8Oqt36j+rBO1peI=",
+        "lastModified": 1768560442,
+        "narHash": "sha256-o7VZ77HUzmhuLBi9zAApmKy0USMVxi6vpNi2PPZP2W4=",
         "path": "/home/syg/.config/nixos-secrets",
         "type": "path"
       },
@@ -878,6 +894,7 @@
         "fh": "fh",
         "home-manager": "home-manager",
         "hyprland": "hyprland",
+        "nix-flatpak": "nix-flatpak",
         "nix-snapd": "nix-snapd",
         "nixos-hardware": "nixos-hardware",
         "nixos-secrets": "nixos-secrets",
