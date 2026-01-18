@@ -14,6 +14,8 @@ let
   hyprland = userVars.hyprland;
   barCfg = hyprland.bar or "hyprpanel";  # Default to hyprpanel if not specified
   hostName = userVars.hostName or "orion";  # Default to orion for backward compatibility
+  # Scripts directory for system-specific Hyprland scripts
+  # Note: Only systems with Hyprland enabled should have this directory
   scriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
   # Generate hyprland.conf from template with variable substitution

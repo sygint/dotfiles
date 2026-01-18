@@ -9,6 +9,8 @@ let
   configscriptsDir = "${configRoot}/scripts";
   barCfg = userVars.hyprland.bar or "hyprpanel";  # Default to hyprpanel if not specified
   hostName = userVars.hostName or "orion";  # Default to orion for backward compatibility
+  # Scripts directory for system-specific Hyprland scripts
+  # Note: Only systems with Hyprland enabled should have this directory
   systemScriptsDir = "${configRoot}/systems/${hostName}/scripts";
 in
 {

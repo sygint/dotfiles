@@ -27,7 +27,7 @@ in
     useUserPackages = true;
     extraSpecialArgs = {
       inherit inputs;
-      userVars = systemVars.user // { hostName = hostName; };
+      userVars = systemVars.user // { inherit hostName; };
     };
     # Auto back up files that would be clobbered by Home Manager so that
     # unmanaged files are not lost during activation. This prevents
