@@ -80,6 +80,8 @@
     brave.enable = true;
     librewolf.enable = true;
     firefox.enable = true; # Standard Firefox for work/media (full device access)
+    mullvad-browser.enable = true; # Mullvad Browser for privacy
+    devenv.enable = true; # Development environment manager
     vscode-fhs = {
       enable = true;
       copilotPrompts.enable = true; # Enable curated GitHub Copilot Chat prompts
