@@ -2,7 +2,15 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, fh, lib, hasSecrets, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  fh,
+  lib,
+  hasSecrets,
+  ...
+}:
 let
   systemVars = import ./variables.nix;
   fleetConfig = import ../../fleet-config.nix;
@@ -17,8 +25,17 @@ in
     ../../modules/system/base
     # Import all other system modules
     ../../modules/system.nix
-  ] ++ lib.optionals hasSecrets [
-    (import (inputs.nixos-secrets + "/default.nix") { inherit config lib pkgs inputs hasSecrets; })
+  ]
+  ++ lib.optionals hasSecrets [
+    (import (inputs.nixos-secrets + "/default.nix") {
+      inherit
+        config
+        lib
+        pkgs
+        inputs
+        hasSecrets
+        ;
+    })
   ];
 
   # Home Manager configuration
@@ -67,7 +84,7 @@ in
       mesa
       libva
       libva-utils
-      vaapiVdpau
+      libva-vdpau-driver
       libvdpau-va-gl
     ];
   };
@@ -84,7 +101,12 @@ in
   users.users.syg = {
     isNormalUser = true;
     description = "syg";
-    extraGroups = [ "networkmanager" "wheel" "dialout" "plugdev" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "dialout"
+      "plugdev"
+    ];
     shell = pkgs.zsh;
   };
   environment.shells = with pkgs; [ zsh ];
@@ -117,7 +139,7 @@ in
 
       virtualization = {
         enable = true;
-        service = "qemu";  # Temporarily using QEMU (VirtualBox build failing)
+        service = "qemu"; # Temporarily using QEMU (VirtualBox build failing)
         username = "${username}";
       };
 
@@ -135,7 +157,7 @@ in
 
     # Enable security module with sudo password requirement
     system.security = {
-      enable = true;  # Enable sudo with wheelNeedsPassword
+      enable = true; # Enable sudo with wheelNeedsPassword
     };
 
     # Base security and program modules are enabled in base config
@@ -238,7 +260,7 @@ in
       libreoffice
       librewolf-unwrapped
       meld
-      nemo-with-extensions  # Nemo with file-roller and other extensions
+      nemo-with-extensions # Nemo with file-roller and other extensions
       rocketchat-desktop
       shiori
       signal-desktop
@@ -261,19 +283,24 @@ in
   };
 
   # Extend base unfree packages with orion-specific ones
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "obsidian"
-    "slack"
-    "synology-drive-client"
-    "vscode"
-    "vscode-with-extensions"
-    "vscode-extension-github-copilot"
-    "vscode-extension-github-copilot-chat"
-    "Oracle_VirtualBox_Extension_Pack"
-    "vscode-extension-mhutchie-git-graph"
-  ];
+  nixpkgs.config.allowUnfreePredicate =
+    pkg:
+    builtins.elem (lib.getName pkg) [
+      "obsidian"
+      "slack"
+      "synology-drive-client"
+      "vscode"
+      "vscode-with-extensions"
+      "vscode-extension-github-copilot"
+      "vscode-extension-github-copilot-chat"
+      "Oracle_VirtualBox_Extension_Pack"
+      "vscode-extension-mhutchie-git-graph"
+    ];
 
-  nix.settings.trusted-users = [ "root" "syg" ];
+  nix.settings.trusted-users = [
+    "root"
+    "syg"
+  ];
 
   # WiFi undock fix - passwordless sudo for driver reload
   security.sudo.extraRules = [
@@ -313,5 +340,5 @@ in
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
- # System State Version Handled in base config
+  # System State Version Handled in base config
 }

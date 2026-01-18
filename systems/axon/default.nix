@@ -1,7 +1,15 @@
 # Axon Media Center NixOS Configuration
 # Optimized for streaming from Jellyfin server on Synology NAS
 
-{ config, pkgs, inputs, fh, lib, hasSecrets, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  fh,
+  lib,
+  hasSecrets,
+  ...
+}:
 let
   systemVars = import ./variables.nix;
   inherit (systemVars.system) hostName;
@@ -15,8 +23,17 @@ in
     ../../modules/system/base
     # Import all other system modules
     ../../modules/system.nix
-  ] ++ lib.optionals hasSecrets [
-    (import (inputs.nixos-secrets + "/default.nix") { inherit config lib pkgs inputs hasSecrets; })
+  ]
+  ++ lib.optionals hasSecrets [
+    (import (inputs.nixos-secrets + "/default.nix") {
+      inherit
+        config
+        lib
+        pkgs
+        inputs
+        hasSecrets
+        ;
+    })
   ];
 
   # Home Manager configuration
@@ -28,14 +45,17 @@ in
       userVars = systemVars.user;
     };
     users = {
-  axon = import ./homes/axon.nix;      # Admin user configuration (now axon)
-      kiosk = import ./homes/kiosk.nix;     # Kiosk user configuration
+      axon = import ./homes/axon.nix; # Admin user configuration (now axon)
+      kiosk = import ./homes/kiosk.nix; # Kiosk user configuration
     };
   };
 
   boot = {
-    supportedFilesystems = [ "ntfs" "exfat" ];
-  # Quiet boot for Axon
+    supportedFilesystems = [
+      "ntfs"
+      "exfat"
+    ];
+    # Quiet boot for Axon
     consoleLogLevel = 0;
     initrd.verbose = false;
     kernelParams = [
@@ -66,7 +86,7 @@ in
       mesa
       libva
       libva-utils
-      vaapiVdpau
+      libva-vdpau-driver
       libvdpau-va-gl
       # Intel specific (if Intel graphics)
       intel-media-driver
@@ -89,26 +109,37 @@ in
   users.users.axon = {
     isNormalUser = true;
     description = "axon";
-    extraGroups = [ "networkmanager" "wheel" "audio" "video" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "audio"
+      "video"
+    ];
     shell = pkgs.zsh;
     # Set a password hash for admin access when needed
     # hashedPassword = "$6$..."; # Generate with: mkpasswd -m sha-512
     # For testing/VM: simple password (change in production!)
     initialPassword = "admin";
   };
-  
+
   # Dedicated kiosk user for media playback (more secure)
   users.users.kiosk = {
     isNormalUser = true;
-  description = "Axon Kiosk User";
-    extraGroups = [ "audio" "video" ];
+    description = "Axon Kiosk User";
+    extraGroups = [
+      "audio"
+      "video"
+    ];
     shell = pkgs.bash;
     # Empty password for auto-login to work (GDM requirement)
     # In production, consider using initialPassword instead
     initialPassword = "";
   };
-  
-  environment.shells = with pkgs; [ zsh bash ];
+
+  environment.shells = with pkgs; [
+    zsh
+    bash
+  ];
 
   # Security: Require password for admin operations
   security.sudo.wheelNeedsPassword = true;
@@ -132,7 +163,7 @@ in
 
     services = {
       printing = {
-  enable = false; # Usually not needed for Axon
+        enable = false; # Usually not needed for Axon
         enableAutoDiscovery = false;
         enableSharing = false;
       };
@@ -141,7 +172,7 @@ in
     # Wayland configuration for modern display management
     wayland = {
       enable = true;
-  hyprland.enable = false; # Using GNOME for Axon simplicity
+      hyprland.enable = false; # Using GNOME for Axon simplicity
     };
   };
 
@@ -161,7 +192,7 @@ in
     # Disable GNOME tracker for performance
     gnome.tracker.enable = false;
     gnome.tracker-miners.enable = false;
-    
+
     # Auto-login for kiosk user
     displayManager.autoLogin = {
       enable = true;
@@ -175,39 +206,39 @@ in
     wantedBy = [ "graphical-session.target" ];
     after = [ "graphical-session.target" ];
     partOf = [ "graphical-session.target" ];
-    
+
     serviceConfig = {
       Type = "exec";
       User = "kiosk";
       Group = "users";
-      
+
       # Environment for Wayland/X11 compatibility
       Environment = [
-        "XDG_RUNTIME_DIR=/run/user/1001"  # kiosk user UID
+        "XDG_RUNTIME_DIR=/run/user/1001" # kiosk user UID
         "WAYLAND_DISPLAY=wayland-1"
         "DISPLAY=:0"
         "XDG_SESSION_TYPE=wayland"
       ];
-      
+
       # Launch Jellyfin in TV/kiosk mode
       ExecStart = "${pkgs.jellyfin-media-player}/bin/jellyfinmediaplayer --fullscreen --tv";
-      
+
       # Restart policy for robustness
       Restart = "always";
       RestartSec = "3";
-      
+
       # Security restrictions for kiosk user
       NoNewPrivileges = true;
       PrivateTmp = true;
       ProtectSystem = "strict";
       ProtectHome = true;
-      
+
       # Only allow access to necessary paths
-      ReadWritePaths = [ 
+      ReadWritePaths = [
         "/home/kiosk"
         "/tmp"
       ];
-      
+
       # Additional security
       ProtectKernelTunables = true;
       ProtectControlGroups = true;
@@ -220,7 +251,7 @@ in
     description = "Jellyfin Media Player Kiosk Mode (User Service)";
     wantedBy = [ "default.target" ];
     after = [ "graphical-session.target" ];
-    
+
     serviceConfig = {
       Type = "exec";
       ExecStart = "${pkgs.jellyfin-media-player}/bin/jellyfinmediaplayer --fullscreen --tv";
@@ -262,44 +293,44 @@ in
 
   # Axon-specific packages
   environment.systemPackages = with pkgs; [
-  # Core Axon applications
-    jellyfin-media-player    # Primary Jellyfin client
-    kodi                     # Alternative media center
-    vlc                      # Versatile media player
-    mpv                      # Lightweight media player
-    
+    # Core Axon applications
+    jellyfin-media-player # Primary Jellyfin client
+    kodi # Alternative media center
+    vlc # Versatile media player
+    mpv # Lightweight media player
+
     # Streaming clients
-    firefox                  # For web-based streaming
+    firefox # For web-based streaming
     # chromium               # Alternative browser (disabled for VM testing - huge build)
-    
+
     # Media utilities
-    mediainfo               # Media file information
-    ffmpeg                  # Media conversion
-    yt-dlp                  # YouTube downloader
-    
+    mediainfo # Media file information
+    ffmpeg # Media conversion
+    yt-dlp # YouTube downloader
+
     # Remote control and automation
-    libcec                  # CEC library (includes cec-client utilities)
-    
+    libcec # CEC library (includes cec-client utilities)
+
     # Network tools
-    nfs-utils               # For NFS shares
-    cifs-utils              # For SMB/CIFS shares
-    
+    nfs-utils # For NFS shares
+    cifs-utils # For SMB/CIFS shares
+
     # System utilities for admin access
-    htop                    # System monitor
-    tree                    # Directory listing
-    wget                    # Download utility
-    curl                    # HTTP client
-    
+    htop # System monitor
+    tree # Directory listing
+    wget # Download utility
+    curl # HTTP client
+
     # File management
-    nemo-with-extensions    # File manager
-    
+    nemo-with-extensions # File manager
+
     # Kiosk management utilities
     (pkgs.writeShellScriptBin "kiosk-admin" ''
       # Switch to axon user from kiosk
       echo "Switching to axon user..."
       sudo -u axon -i
     '')
-    
+
     (pkgs.writeShellScriptBin "kiosk-restart" ''
       # Restart kiosk service
       systemctl --user restart jellyfin-kiosk
@@ -308,12 +339,14 @@ in
 
   # Allow unfree packages for media applications
   nixpkgs.config = {
-    allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-      "kodi"
-      "jellyfin-media-player"
-      # "chrome"
-      # "chromium"
-    ];
+    allowUnfreePredicate =
+      pkg:
+      builtins.elem (lib.getName pkg) [
+        "kodi"
+        "jellyfin-media-player"
+        # "chrome"
+        # "chromium"
+      ];
     # Allow insecure packages (qtwebengine needed for Jellyfin Media Player)
     permittedInsecurePackages = [
       "qtwebengine-5.15.19"
@@ -334,13 +367,13 @@ in
   # Firewall configuration for media streaming
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ 
-      8096  # Jellyfin
-      8920  # Jellyfin HTTPS
+    allowedTCPPorts = [
+      8096 # Jellyfin
+      8920 # Jellyfin HTTPS
     ];
     allowedUDPPorts = [
-      1900  # DLNA/UPnP discovery
-      7359  # Jellyfin discovery
+      1900 # DLNA/UPnP discovery
+      7359 # Jellyfin discovery
     ];
   };
 

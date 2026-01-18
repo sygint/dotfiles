@@ -1,14 +1,27 @@
 # Hardware configuration for Nexus - HP EliteDesk G4 800
 # This is a template - run nixos-generate-config on the actual hardware
-{ config, lib, pkgs, modulesPath, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  modulesPath,
+  ...
+}:
 
 {
-  imports =
-    [ (modulesPath + "/installer/scan/not-detected.nix")
-    ];
+  imports = [
+    (modulesPath + "/installer/scan/not-detected.nix")
+  ];
 
   # HP EliteDesk G4 800 typically has Intel 8th gen CPUs
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" "sdhci_pci" ];
+  boot.initrd.availableKernelModules = [
+    "xhci_pci"
+    "ahci"
+    "nvme"
+    "usb_storage"
+    "sd_mod"
+    "sdhci_pci"
+  ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
@@ -17,7 +30,7 @@
   # Boot from NixOS installer, then run:
   #   nixos-generate-config --show-hardware-config
   # Copy the output here, especially the fileSystems sections
-  
+
   # Example - YOU MUST REPLACE THESE UUIDs:
   # fileSystems."/" =
   #   { device = "/dev/disk/by-uuid/YOUR-ROOT-UUID";
@@ -40,17 +53,17 @@
 
   # Enable hardware video acceleration for Jellyfin (Intel Quick Sync)
   nixpkgs.config.packageOverrides = pkgs: {
-    vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+    intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
   };
-  
+
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
-      intel-media-driver      # For 8th gen and newer
-      intel-vaapi-driver      # Fallback
+      intel-media-driver # For 8th gen and newer
+      intel-vaapi-driver # Fallback
       libva-vdpau-driver
       libvdpau-va-gl
-      intel-compute-runtime   # OpenCL
+      intel-compute-runtime # OpenCL
     ];
   };
 }
