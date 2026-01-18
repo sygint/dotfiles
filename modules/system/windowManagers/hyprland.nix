@@ -16,8 +16,10 @@ in
     programs = {
       hyprland = {
         enable = true;
-        # Note: withUWSM removed - using start-hyprland wrapper instead (simpler, recommended approach)
-        # UWSM is for advanced users who want full systemd unit management
+        # Note: withUWSM removed - using the start-hyprland wrapper instead (simpler, recommended approach).
+        # The start-hyprland wrapper is installed by this Hyprland package into $PATH; use `start-hyprland`
+        # as your session/exec command in your display manager or TTY. UWSM is for advanced users who want
+        # full systemd unit management.
         package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
       };
     };
