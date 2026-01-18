@@ -54,7 +54,10 @@ in
           enable = true;
           qemu = {
             swtpm.enable = true;
-            # OVMF is now available by default, no need to enable explicitly
+            # On current NixOS releases, libvirt's default QEMU firmware setup
+            # already includes OVMF (including the "full" OVMFFull-style image),
+            # so we do not need to add OVMF packages or options here. On older
+            # NixOS versions, you may still need to configure OVMF explicitly.
           };
         };
         spiceUSBRedirection.enable = true;
