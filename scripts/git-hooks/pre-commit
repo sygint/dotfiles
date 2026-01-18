@@ -1,2 +1,46 @@
 #!/usr/bin/env bash
+
+# Pre-commit hook for secret detection
+#
+# CHANGE EXPLANATION (commit 9426d5a):
+# This hook was intentionally simplified from a comprehensive 300+ line NixOS
+# validation script to focus solely on secret detection via git-secrets.
+#
+# REMOVED FUNCTIONALITY:
+# The previous version included extensive validation checks:
+# - Nix syntax checking (nix flake check --no-build)
+# - Code formatting validation (tabs, trailing whitespace)
+# - Security configuration checks (SSH hardening, firewall rules)
+# - NixOS configuration validation (system definitions, hardware configs)
+# - Build tests (nixos-rebuild dry-build)
+# - Large file detection
+#
+# WHY THE CHANGE:
+# 1. Pre-commit hooks should be fast and focused on preventing immediate issues
+# 2. Comprehensive validation (Nix builds, full flake checks) can take minutes
+# 3. Slow hooks discourage frequent commits and proper version control practices
+# 4. Secret detection is critical and must run on every commit
+# 5. Other validations are better suited for:
+#    - CI/CD pipelines (GitHub Actions, etc.)
+#    - Manual pre-push validation
+#    - Developer-initiated builds
+#
+# WHERE FUNCTIONALITY MOVED:
+# - Secret scanning: NOW HERE via git-secrets (fast, <1 second)
+# - Deep secret scanning: scripts/security/security-scan.sh (git-secrets + TruffleHog)
+# - Nix validation: Run manually with `nix flake check` or `nixos-rebuild build`
+# - Formatting: Run manually with `nixfmt` or use editor integrations
+# - Full validation: Should be implemented in CI/CD pipeline
+#
+# RECOMMENDED WORKFLOW:
+# 1. Commit freely - this hook only blocks actual secrets (fast)
+# 2. Before pushing - run: ./scripts/security/security-scan.sh
+# 3. Before merging - rely on CI/CD for full validation
+# 4. Manual validation - use: nix flake check, nixos-rebuild dry-build
+#
+# For more information:
+# - docs/SECURITY-SCANNING.md - Secret scanning documentation
+# - scripts/security/README.md - Security tools usage
+# - devenv.nix - Development environment with security tools
+
 git secrets --pre_commit_hook -- "$@"
