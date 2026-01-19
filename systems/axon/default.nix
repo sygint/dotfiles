@@ -95,7 +95,7 @@ in
   };
 
   # Audio configuration optimized for Axon
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -180,24 +180,24 @@ in
   services = {
     xserver = {
       enable = true;
-      displayManager = {
-        gdm = {
-          enable = true;
-          autoSuspend = false; # Prevent auto-suspend on Axon
-        };
-      };
-      desktopManager.gnome.enable = true;
     };
+
+    displayManager = {
+      gdm = {
+        enable = true;
+        autoSuspend = false; # Prevent auto-suspend on Axon
+      };
+      autoLogin = {
+        enable = true;
+        user = "kiosk";
+      };
+    };
+
+    desktopManager.gnome.enable = true;
 
     # Disable GNOME tracker for performance
-    gnome.tracker.enable = false;
-    gnome.tracker-miners.enable = false;
-
-    # Auto-login for kiosk user
-    displayManager.autoLogin = {
-      enable = true;
-      user = "kiosk";
-    };
+    gnome.tinysparql.enable = false;
+    gnome.localsearch.enable = false;
   };
 
   # Kiosk mode service - launches Jellyfin directly on boot

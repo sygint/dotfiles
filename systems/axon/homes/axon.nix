@@ -1,5 +1,11 @@
- # Home Manager configuration for Axon admin user
-{ config, pkgs, inputs, userVars, ... }:
+# Home Manager configuration for Axon admin user
+{
+  config,
+  pkgs,
+  inputs,
+  userVars,
+  ...
+}:
 
 {
   # Basic user info
@@ -31,8 +37,12 @@
 
   programs.git = {
     enable = true;
-    userName = userVars.name;
-    userEmail = userVars.email;
+    settings = {
+      user = {
+        name = userVars.name;
+        email = userVars.email;
+      };
+    };
   };
 
   programs.zsh = {
@@ -47,7 +57,7 @@
       cat = "bat";
       cd = "z";
     };
-    initExtra = ''
+    initContent = ''
       eval "$(starship init zsh)"
       eval "$(zoxide init zsh)"
     '';
@@ -71,7 +81,7 @@
   programs.firefox = {
     enable = true;
     profiles.default = {
-  name = "Axon";
+      name = "Axon";
       settings = {
         "media.ffmpeg.vaapi.enabled" = true;
         "media.hardware-video-decoding.force-enabled" = true;
