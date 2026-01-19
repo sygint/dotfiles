@@ -22,6 +22,11 @@ let
   hostName = userVars.hostName or "orion"; # Default to orion for backward compatibility
   scriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
+  # NOTE: Systems that enable this module must have the required scripts in:
+  # systems/${hostName}/scripts/start-waybar.sh (if using waybar)
+  # systems/${hostName}/scripts/start-hyprpanel.sh (if using hyprpanel)
+  # systems/${hostName}/scripts/monitor-handler.sh
+
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
     lib.replaceStrings
