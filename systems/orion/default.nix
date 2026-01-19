@@ -44,7 +44,9 @@ in
     useUserPackages = true;
     extraSpecialArgs = {
       inherit inputs;
-      userVars = systemVars.user;
+      userVars = systemVars.user // {
+        inherit hostName;
+      };
       opencode = inputs.opencode.packages.${pkgs.system};
     };
     # Auto back up files that would be clobbered by Home Manager so that

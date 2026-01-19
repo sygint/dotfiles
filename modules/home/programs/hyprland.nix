@@ -1,18 +1,26 @@
-{ config
-, lib
-, pkgs
-, userVars
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  userVars,
+  ...
 }:
 let
-  inherit (lib) mkEnableOption mkOption mkIf types;
+  inherit (lib)
+    mkEnableOption
+    mkOption
+    mkIf
+    types
+    ;
   inherit (config.lib.file) mkOutOfStoreSymlink;
 
   configRoot = "/home/${userVars.username}/.config/nixos";
   configDotfilesDir = "${configRoot}/dotfiles/.config";
   cfg = config.modules.programs.hyprland;
   hyprland = userVars.hyprland;
-  barCfg = hyprland.bar or "hyprpanel";  # Default to hyprpanel if not specified
+  barCfg = hyprland.bar or "hyprpanel"; # Default to hyprpanel if not specified
+  hostName = userVars.hostName or "orion"; # Default to orion for backward compatibility
+  scriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
   # Generate hyprland.conf from template with variable substitution
   hyprlandConf = pkgs.writeText "hyprland.conf" (
@@ -24,30 +32,37 @@ let
         (hyprland.webBrowser or "brave")
         (hyprland.menu or "rofi")
         (
-          if barCfg == "waybar" then "${configRoot}/systems/orion/scripts/start-waybar.sh"
-          else if barCfg == "hyprpanel" then "${configRoot}/systems/orion/scripts/start-hyprpanel.sh"
-          else ""
+          if barCfg == "waybar" then
+            "${scriptsDir}/start-waybar.sh"
+          else if barCfg == "hyprpanel" then
+            "${scriptsDir}/start-hyprpanel.sh"
+          else
+            ""
         )
-        (
-          "${configRoot}/systems/orion/scripts/monitor-handler.sh --fast --bar=" + barCfg
-        )
+        ("${scriptsDir}/monitor-handler.sh --fast --bar=" + barCfg)
       ]
       (builtins.readFile ../../../dotfiles/.config/hypr/hyprland.conf)
   );
 
   # Determine which packages to auto-install (can be disabled by setting to null)
   defaultTerminalPkg = cfg.packages.terminal;
-  defaultBrowserPkg  = cfg.packages.browser;
-  defaultFileMgrPkg  = cfg.packages.fileManager;
+  defaultBrowserPkg = cfg.packages.browser;
+  defaultFileMgrPkg = cfg.packages.fileManager;
 
   # Always include hyprland itself when enabled. Related utilities and extras are controlled by packages.
   hyprlandPkgs = [
     pkgs.hypridle
     pkgs.hyprlock
-    pkgs.brightnessctl  # For screen brightness control
-  ] ++ lib.filter (x: x != null) [defaultTerminalPkg defaultBrowserPkg defaultFileMgrPkg] ++ cfg.packages.extra
-    # Only include mako when using waybar (hyprpanel has its own notification system)
-    ++ lib.optionals (barCfg == "waybar") [ pkgs.mako ];
+    pkgs.brightnessctl # For screen brightness control
+  ]
+  ++ lib.filter (x: x != null) [
+    defaultTerminalPkg
+    defaultBrowserPkg
+    defaultFileMgrPkg
+  ]
+  ++ cfg.packages.extra
+  # Only include mako when using waybar (hyprpanel has its own notification system)
+  ++ lib.optionals (barCfg == "waybar") [ pkgs.mako ];
 
 in
 {
@@ -65,7 +80,7 @@ in
       };
       browser = mkOption {
         type = types.nullOr types.package;
-        default = null;  # Don't auto-install browser (usually managed elsewhere)
+        default = null; # Don't auto-install browser (usually managed elsewhere)
         description = "Browser package to install (null = don't install)";
       };
       fileManager = mkOption {
@@ -76,16 +91,25 @@ in
 
       extra = mkOption {
         type = types.listOf types.package;
-        default = [];
+        default = [ ];
         description = "Extra packages to install with Hyprland";
       };
     };
 
     # Command names used in hyprland config (independent of what's installed)
     defaults = {
-      terminal = mkOption { type = types.str; default = "ghostty"; };
-      browser = mkOption { type = types.str; default = "brave"; };
-      fileManager = mkOption { type = types.str; default = "nemo"; };
+      terminal = mkOption {
+        type = types.str;
+        default = "ghostty";
+      };
+      browser = mkOption {
+        type = types.str;
+        default = "brave";
+      };
+      fileManager = mkOption {
+        type = types.str;
+        default = "nemo";
+      };
     };
 
   };
@@ -93,7 +117,7 @@ in
   config = mkIf cfg.enable {
     home = {
       # Always include hyprland itself when enabled
-      packages = [ pkgs.hyprland ] ++ (if cfg.packages.enable then hyprlandPkgs else []);
+      packages = [ pkgs.hyprland ] ++ (if cfg.packages.enable then hyprlandPkgs else [ ]);
 
       file = {
         ".config/hypr/hyprlock.conf" = {
