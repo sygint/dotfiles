@@ -27,13 +27,15 @@
   };
 
   nixConfig = {
-    # NOTE: To use Cachix for binary caching, set up a personal cache at https://cachix.org and add your cache URL and public key here.
-    # Example:
-    # extra-substituters = [ "https://your-cachix.cachix.org" ];
-    # extra-trusted-public-keys = [ "your-cachix.cachix.org-1:..." ];
-    # See https://docs.cachix.org for setup instructions.
-    # We'll revisit this later.
-    # builders = [ ]; # No remote builders configured
+    # Binary caches for faster builds
+    extra-substituters = [
+      "https://hyprland.cachix.org"
+      "https://nix-community.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
   };
 
   outputs =
