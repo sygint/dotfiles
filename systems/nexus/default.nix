@@ -357,7 +357,7 @@ in
 
     system.security = {
       enable = true;  # Enable security module (sudo, polkit, etc.)
-      serverHardening.enable = true;  # Full server hardening profile (fail2ban, auditd, SSH, kernel, monitoring)
+      hardening.enable = true;  # Full server hardening profile (fail2ban, auditd, SSH, kernel, monitoring)
     };
   };
 

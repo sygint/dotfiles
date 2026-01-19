@@ -118,7 +118,7 @@ in
   # Security hardening and monitoring
   modules.system.security = {
     enable = true;
-    serverHardening.enable = true; # Enable fail2ban, auditd, SSH hardening, kernel hardening
+    hardening.enable = true; # Enable fail2ban, auditd, SSH hardening, kernel hardening
   };
 
   # Enable AI services (Ollama with NVIDIA CUDA support)
@@ -259,7 +259,7 @@ in
   };
 
   # Note: System hardening sysctl settings are configured in the security module
-  # (modules/system/system/security.nix) via security.serverHardening.enable = true;
+  # (modules/system/system/security.nix) via security.hardening.enable = true;
 
   # Set state version
   system.stateVersion = "24.11";

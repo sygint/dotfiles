@@ -1,8 +1,9 @@
-{ config
-, lib
-, options
-, pkgs
-, ...
+{
+  config,
+  lib,
+  options,
+  pkgs,
+  ...
 }:
 let
   inherit (lib) mkEnableOption mkIf mkMerge;
@@ -13,7 +14,10 @@ in
     enable = mkEnableOption "Enable Virtualization (VirtualBox or QEMU)";
 
     service = lib.mkOption {
-      type = lib.types.enum [ "virtualbox" "qemu" ];
+      type = lib.types.enum [
+        "virtualbox"
+        "qemu"
+      ];
       default = "virtualbox";
       description = "The virtualization service to use (either VirtualBox or QEMU).";
     };

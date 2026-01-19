@@ -1,7 +1,8 @@
-{ config
-, lib
-, options
-, ...
+{
+  config,
+  lib,
+  options,
+  ...
 }:
 let
   inherit (lib) mkEnableOption mkIf;
@@ -22,8 +23,8 @@ in
     services = {
       syncthing = {
         enable = true;
-        user = cfg.username;  # Run as this user
-        group = "users";      # Group for the user
+        user = cfg.username; # Run as this user
+        group = "users"; # Group for the user
         dataDir = "/home/${cfg.username}/.local/share/syncthing";
         configDir = "/home/${cfg.username}/.config/syncthing";
         openDefaultPorts = false; # Don't auto-open ports to internet
@@ -39,11 +40,17 @@ in
     networking.firewall.interfaces = {
       "eth0" = {
         allowedTCPPorts = [ 22000 ]; # Syncthing transfer protocol
-        allowedUDPPorts = [ 22000 21027 ]; # Syncthing transfer and discovery
+        allowedUDPPorts = [
+          22000
+          21027
+        ]; # Syncthing transfer and discovery
       };
       "wlp1s0" = {
-        allowedTCPPorts = [ 22000 ]; # Syncthing transfer protocol  
-        allowedUDPPorts = [ 22000 21027 ]; # Syncthing transfer and discovery
+        allowedTCPPorts = [ 22000 ]; # Syncthing transfer protocol
+        allowedUDPPorts = [
+          22000
+          21027
+        ]; # Syncthing transfer and discovery
       };
       # Not exposed to internet - LAN interfaces only
     };

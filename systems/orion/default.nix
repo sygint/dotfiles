@@ -1,6 +1,6 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# and in the NixOS manual (accessible by running 'nixos-help').
 
 {
   config,
@@ -45,6 +45,7 @@ in
     extraSpecialArgs = {
       inherit inputs;
       userVars = systemVars.user;
+      opencode = inputs.opencode.packages.${pkgs.system};
     };
     # Auto back up files that would be clobbered by Home Manager so that
     # unmanaged files are not lost during activation. This prevents
@@ -210,7 +211,7 @@ in
       };
 
       emoji = {
-        package = pkgs.noto-fonts-emoji;
+        package = pkgs.noto-fonts-color-emoji;
         name = "Noto Color Emoji";
       };
     };
