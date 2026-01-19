@@ -128,8 +128,8 @@
               fh
               userVars
               ;
-            # Enable secrets for cortex and orion (age key configured)
-            hasSecrets = if (name == "cortex" || name == "orion") then true else false;
+            # Enable secrets for cortex, orion, and nexus (age key configured)
+            hasSecrets = if (name == "cortex" || name == "orion" || name == "nexus") then true else false;
           };
         }
       ) systems;

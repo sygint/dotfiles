@@ -127,17 +127,35 @@ check_security() {
         log_info "No explicit security module configuration found"
     fi
 
-    # Check for dangerous SSH settings in staged files
-    staged_files=$(git diff --cached --name-only || true)
-    if [ -n "$staged_files" ]; then
-        if echo "$staged_files" | xargs grep -l "PasswordAuthentication.*=.*true" 2>/dev/null | grep -v "pre-commit" | head -1; then
-            log_error "Found SSH password authentication enabled in staged files"
-            SECURITY_ISSUES=1
-        fi
-        if echo "$staged_files" | xargs grep -l 'PermitRootLogin.*=.*"yes"' 2>/dev/null | grep -v "pre-commit" | head -1; then
-            log_error "Found root SSH login enabled in staged files"
-            SECURITY_ISSUES=1
-        fi
+    log_info "Checking security configuration..."
+    if nix flake check --no-build . 2>/dev/null; then
+        log_success "Security assertions passed"
+    else
+        log_error "Security assertions failed - run 'nix flake check' for details"
+        SECURITY_ISSUES=1
+    fi
+
+    # Nix eval-based SSH security checks for all flake systems
+    if command -v jq >/dev/null 2>&1 && nix flake show --json >/dev/null 2>&1; then
+        systems=$(nix flake show --json | jq -r '.nixosConfigurations? // {} | keys[]' 2>/dev/null || true)
+        for sys in $systems; do
+            # Evaluate both SSH settings in a single nix eval call using JSON
+            ssh_settings=$(nix eval --json ".#nixosConfigurations.\"$sys\".config.services.openssh.settings" 2>/dev/null || echo '{}')
+            
+            # Check PasswordAuthentication
+            pass_auth=$(echo "$ssh_settings" | jq -r '.PasswordAuthentication // "unset"' 2>/dev/null || echo "unset")
+            if [ "$pass_auth" = "true" ]; then
+                log_error "SSH PasswordAuthentication is enabled for $sys"
+                SECURITY_ISSUES=1
+            fi
+            
+            # Check PermitRootLogin
+            root_login=$(echo "$ssh_settings" | jq -r '.PermitRootLogin // "unset"' 2>/dev/null || echo "unset")
+            if [ "$root_login" = "yes" ]; then
+                log_error "SSH PermitRootLogin is enabled for $sys"
+                SECURITY_ISSUES=1
+            fi
+        done
     fi
 
     if [ $SECURITY_ISSUES -eq 0 ]; then

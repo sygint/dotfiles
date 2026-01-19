@@ -1,9 +1,10 @@
-{ config
-, lib
-, options
-, pkgs
-, inputs
-, ...
+{
+  config,
+  lib,
+  options,
+  pkgs,
+  inputs,
+  ...
 }:
 let
   inherit (lib) mkEnableOption mkIf;
@@ -25,7 +26,7 @@ in
     };
 
     # PAM service for hyprlock authentication
-    security.pam.services.hyprlock = {};
+    security.pam.services.hyprlock = { };
 
     environment.systemPackages = with pkgs; [
       hyprlock
