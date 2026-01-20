@@ -1,7 +1,8 @@
 {
-  description = "Nixos config flake";
+  description = "NixOS config flake with flake-parts";
 
   inputs = {
+    flake-parts.url = "github:hercules-ci/flake-parts";
     nix-snapd.url = "https://flakehub.com/f/io12/nix-snapd/0.1.47.tar.gz";
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url = "github:nixos/nixpkgs?shallow=1&ref=nixos-unstable";
@@ -39,142 +40,41 @@
   };
 
   outputs =
-    {
-      self,
-      nixpkgs,
-      nixos-hardware,
-      home-manager,
-      fh,
-      nix-snapd,
-      nix-flatpak,
-      ...
-    }@inputs:
-    let
-      inherit (nixpkgs) lib;
-      system = "x86_64-linux";
+    inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      # Import flake modules
+      imports = [
+        ./flake-modules/nixos-configurations.nix
+        ./flake-modules/home-configurations.nix
+        ./flake-modules/deploy.nix
+      ];
 
-      # List all systems here for easy extensibility
-      systems = {
-        orion = {
-          path = ./systems/orion;
-          modules = [
-            inputs.stylix.nixosModules.stylix
-            nix-snapd.nixosModules.default
-            nixos-hardware.nixosModules.framework-13-7040-amd
-            home-manager.nixosModules.home-manager
-            inputs.sops-nix.nixosModules.sops
-          ];
-        };
-        cortex = {
-          path = ./systems/cortex;
-          modules = [
-            inputs.disko.nixosModules.disko
-            home-manager.nixosModules.home-manager
-            inputs.sops-nix.nixosModules.sops
-          ];
-        };
-        nexus = {
-          path = ./systems/nexus;
-          modules = [
-            inputs.disko.nixosModules.disko
-            home-manager.nixosModules.home-manager
-            inputs.sops-nix.nixosModules.sops
-          ];
-        };
-        axon = {
-          path = ./systems/axon;
-          modules = [
-            inputs.stylix.nixosModules.stylix
-            home-manager.nixosModules.home-manager
-          ];
-        };
-        # Add new systems here!
-      };
+      # Systems to support
+      systems = [ "x86_64-linux" ];
 
-      # Import variables for home-manager (unchanged)
-      variables = import ./systems/orion/variables.nix;
-      inherit (variables.user) username;
-      userVars = variables.user;
-      systemVars = variables.system;
+      # Per-system outputs (packages, devShells, etc.)
+      perSystem =
+        {
+          config,
+          self',
+          inputs',
+          pkgs,
+          system,
+          ...
+        }:
+        {
+          # Formatter
+          formatter = pkgs.nixpkgs-fmt;
 
-      inherit (nixpkgs.legacyPackages.${system}) pkgs;
-
-      mkHomeConfiguration =
-        variables:
-        home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          extraSpecialArgs = {
-            inherit self inputs userVars;
-            opencode = inputs.opencode.packages.${system};
+          # Dev shell
+          devShells.default = pkgs.mkShell {
+            packages = with pkgs; [
+              git
+              nixd
+              nixpkgs-fmt
+              just
+            ];
           };
-          modules = [
-            nix-flatpak.homeManagerModules.nix-flatpak
-            ./systems/orion/homes/syg.nix
-            {
-              nixpkgs.config.allowUnfree = true;
-            }
-          ];
         };
-    in
-    {
-      nixosConfigurations = lib.mapAttrs (
-        name: cfg:
-        nixpkgs.lib.nixosSystem {
-          system = system;
-          modules = [ cfg.path ] ++ cfg.modules;
-          specialArgs = {
-            inherit
-              self
-              system
-              inputs
-              fh
-              userVars
-              ;
-            # Enable secrets for cortex, orion, and nexus (age key configured)
-            hasSecrets = if (name == "cortex" || name == "orion" || name == "nexus") then true else false;
-          };
-        }
-      ) systems;
-
-      homeConfigurations = {
-        ${username} = mkHomeConfiguration userVars;
-        "${username}@${systemVars.hostName}" = mkHomeConfiguration userVars;
-      };
-
-      # Add deploy-rs output for fleet management
-      deploy = {
-        sshUser = "jarvis"; # Global SSH user for all nodes
-
-        nodes = {
-          cortex = {
-            hostname = "192.168.1.7"; # TODO: Switch to cortex.home when DNS is fixed
-            profiles.system = {
-              path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.cortex;
-              user = "root"; # Activate as root (via sudo)
-            };
-          };
-          nexus = {
-            hostname = "192.168.1.22"; # Nexus homelab services server
-            sshUser = "admin"; # Override global SSH user for Nexus
-            profiles.system = {
-              path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nexus;
-              user = "root"; # Activate as root (via sudo)
-            };
-          };
-          axon = {
-            hostname = "192.168.1.11"; # TODO: Update with actual Axon IP
-            profiles.system = {
-              path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.axon;
-              user = "root"; # Activate as root (via sudo)
-            };
-          };
-          # Add other systems here as needed
-        };
-      };
-
-      # Add deploy-rs checks
-      checks = builtins.mapAttrs (
-        system: deployLib: deployLib.deployChecks self.deploy
-      ) inputs.deploy-rs.lib;
     };
 }
