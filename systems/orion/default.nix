@@ -25,6 +25,8 @@ in
     ../../modules/system/base
     # Import all other system modules
     ../../modules/system.nix
+    # Import unified feature modules
+    ../../modules/features.nix
   ]
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {
@@ -129,10 +131,16 @@ in
       };
     };
 
+    features = {
+      mullvad.enable = true; # Unified system + home config
+      hyprland = {
+        enable = true;
+        packages.enable = true;
+      };
+    };
+
     services = {
       # xserver.enable = true;
-
-      mullvad.enable = true;
 
       syncthing = {
         enable = true;
@@ -165,11 +173,8 @@ in
 
     # Base security and program modules are enabled in base config
 
-    wayland = {
-      enable = true;
-
-      hyprland.enable = true;
-    };
+    # Wayland-specific settings (Hyprland now in features.hyprland)
+    wayland.enable = true;
   };
 
   # ════════════════════════════════════════════════════════════════════════════
