@@ -45,22 +45,6 @@ in
         description = "Extra packages to install with Hyprland";
       };
     };
-
-    # Command names used in hyprland config (independent of what's installed)
-    defaults = {
-      terminal = mkOption {
-        type = types.str;
-        default = "ghostty";
-      };
-      browser = mkOption {
-        type = types.str;
-        default = "brave";
-      };
-      fileManager = mkOption {
-        type = types.str;
-        default = "nemo";
-      };
-    };
   };
 
   config = mkIf cfg.enable {
@@ -125,8 +109,6 @@ in
           defaultFileMgrPkg = cfg.packages.fileManager;
 
           hyprlandPkgs = [
-            pkgs.hypridle
-            pkgs.hyprlock
             pkgs.brightnessctl
           ]
           ++ lib.filter (x: x != null) [
