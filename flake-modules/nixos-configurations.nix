@@ -1,7 +1,10 @@
 { self, inputs, ... }:
 let
   inherit (inputs.nixpkgs) lib;
-  system = "x86_64-linux";
+
+  # Import shared constants
+  shared = import ./lib.nix { inherit inputs; };
+  inherit (shared) system userVars;
 
   # List all systems here for easy extensibility
   systems = {
@@ -44,11 +47,6 @@ let
     };
     # Add new systems here!
   };
-
-  # Import variables for home-manager
-  variables = import ../systems/orion/variables.nix;
-  inherit (variables.user) username;
-  userVars = variables.user;
 in
 {
   flake.nixosConfigurations = lib.mapAttrs (
