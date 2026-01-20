@@ -23,6 +23,8 @@ in
     ../../modules/system/base
     # Import all other system modules
     ../../modules/system.nix
+    # Import unified feature modules
+    ../../modules/features.nix
   ]
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {
@@ -172,7 +174,11 @@ in
     # Wayland configuration for modern display management
     wayland = {
       enable = true;
-      hyprland.enable = false; # Using GNOME for Axon simplicity
+    };
+
+    # Hyprland disabled - using GNOME for Axon simplicity
+    features = {
+      hyprland.enable = false;
     };
   };
 
