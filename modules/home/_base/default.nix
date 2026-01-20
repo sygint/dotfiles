@@ -22,7 +22,6 @@ in
     programs = {
       # Core utilities - essential for everyone
       btop.enable = true;
-      zsh.enable = true;
       git.enable = true;
     };
   };

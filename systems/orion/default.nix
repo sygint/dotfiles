@@ -132,6 +132,7 @@ in
     };
 
     features = {
+      zsh.enable = true;
       mullvad.enable = true; # Unified system + home config
       hyprland = {
         enable = true;
@@ -241,10 +242,6 @@ in
     };
 
     systemPackages = with pkgs; [
-      # Enhanced shell tools (base has basic zsh)
-      antidote
-      starship
-
       # Enhanced CLI applications (base has basic set)
       bat
       eza

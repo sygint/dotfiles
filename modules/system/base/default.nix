@@ -1,11 +1,16 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   imports = [
-    ./networking.nix  # Fleet-wide hosts configuration
+    ./networking.nix # Fleet-wide hosts configuration
   ];
 
   # Base NixOS configuration - essential settings for any system
-  
+
   # Essential boot configuration
   boot = {
     loader = {
@@ -25,24 +30,20 @@
 
   # Essential system programs
   programs = {
-    zsh.enable = true;
     nix-index.enable = true;
     command-not-found.enable = false;
-    dconf.enable = true;  # Required for many desktop services
+    dconf.enable = true; # Required for many desktop services
   };
 
   # Essential system services
   services = {
     dbus.enable = true;
-    udisks2.enable = true;  # Disk mounting
-    upower.enable = true;   # Power management
+    udisks2.enable = true; # Disk mounting
+    upower.enable = true; # Power management
   };
 
   # Core system packages - essential for any NixOS system
   environment.systemPackages = with pkgs; [
-    # Essential shell tools
-    zsh
-    
     # Essential CLI applications
     curl
     file
@@ -59,8 +60,8 @@
 
     # Essential development tools
     git
-    just  # Task automation for NixOS config management
-    deploy-rs  # Remote NixOS deployment tool
+    just # Task automation for NixOS config management
+    deploy-rs # Remote NixOS deployment tool
 
     # Essential system tools
     home-manager
@@ -71,10 +72,16 @@
 
   # Essential Nix configuration
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
     # Allow all wheel group users to push unsigned paths to nix store
     # This enables passwordless deploy-rs deployments via SSH authentication
-    trusted-users = [ "root" "@wheel" ];
+    trusted-users = [
+      "root"
+      "@wheel"
+    ];
     # Limit parallel builds to prevent system overload
     max-jobs = 4;
   };
