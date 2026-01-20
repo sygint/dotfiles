@@ -5,7 +5,7 @@
   # their own complex configuration modules
   home.packages = with pkgs; [
     obsidian
-    opencode.desktop # OpenCode Desktop app from flake
+    # opencode.desktop # OpenCode Desktop app from flake - temporarily disabled due to bun version mismatch
     solaar
     zed-editor
     gnome-calculator

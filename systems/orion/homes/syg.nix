@@ -66,10 +66,7 @@
   };
 
   modules.programs = {
-    hyprland = {
-      enable = true;
-      packages.enable = true;
-    };
+    # hyprland now managed by unified features.hyprland module in system config
 
     hyprpanel.enable = true; # Enable HyprPanel
     waybar.enable = false; # Disable Waybar
@@ -80,7 +77,7 @@
     brave.enable = true;
     librewolf.enable = true;
     firefox.enable = true; # Standard Firefox for work/media (full device access)
-    mullvad-browser.enable = true; # Mullvad Browser for privacy
+    # mullvad-browser now managed by unified features.mullvad module in system config
     devenv.enable = true; # Development environment manager
     vscode-fhs = {
       enable = true;
