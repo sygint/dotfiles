@@ -1,20 +1,18 @@
 { self, inputs, ... }:
 let
-  system = "x86_64-linux";
+  # Import shared constants
+  shared = import ./lib.nix { inherit inputs; };
+  inherit (shared) system userVars systemVars;
+
   inherit (inputs.nixpkgs.legacyPackages.${system}) pkgs;
 
-  # Import variables for home-manager
-  variables = import ../systems/orion/variables.nix;
-  inherit (variables.user) username;
-  userVars = variables.user;
-  systemVars = variables.system;
-
   mkHomeConfiguration =
-    variables:
+    _userVars:
     inputs.home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
       extraSpecialArgs = {
-        inherit self inputs userVars;
+        inherit self inputs;
+        userVars = _userVars;
         opencode = inputs.opencode.packages.${system};
       };
       modules = [
@@ -28,7 +26,7 @@ let
 in
 {
   flake.homeConfigurations = {
-    ${username} = mkHomeConfiguration userVars;
-    "${username}@${systemVars.hostName}" = mkHomeConfiguration userVars;
+    ${userVars.username} = mkHomeConfiguration userVars;
+    "${userVars.username}@${systemVars.hostName}" = mkHomeConfiguration userVars;
   };
 }
