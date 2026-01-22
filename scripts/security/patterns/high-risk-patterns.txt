@@ -1,0 +1,26 @@
+# High-risk secret patterns (regex, ECMA extended where supported)
+# Lines beginning with # are comments and ignored.
+# Keep patterns narrowly targeted to reduce false positives.
+
+# AWS Access Key IDs
+(AKIA|ASIA)[0-9A-Z]{16}
+
+# GitHub Personal Access Tokens (classic)
+ghp_[0-9A-Za-z]{36}
+
+# GitHub Fine-grained tokens (prefix may vary)
+ghu_[0-9A-Za-z]{36}
+ghs_[0-9A-Za-z]{36}
+
+# Slack tokens
+xox[baprs]-[0-9A-Za-z]{10,}
+
+# Private key headers
+-----BEGIN (RSA|OPENSSH|EC|DSA|PGP) PRIVATE KEY-----
+
+# Generic password/secret assignments (quoted) (case-insensitive simulated)
+([Pp]assword|[Ss]ecret|[Tt]oken|[Aa][Pp][Ii](-|_)?[Kk]ey)\s*[:=]\s*["'][^"']{8,}["']
+
+# Common cloud secret fragments
+AIza[0-9A-Za-z\-_]{35}  # Google API key
+sk_live_[0-9A-Za-z]{24,} # Stripe live secret key

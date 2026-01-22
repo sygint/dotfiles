@@ -1,0 +1,116 @@
+name: CI
+
+on: [push, pull_request]
+ 
+# Add release trigger for heavy-tests only on tags (and scheduled)
+on:
+  push:
+    tags: ['v*']
+  schedule:
+    - cron: '0 2 * * *' # daily at 02:00 UTC (mirror-preview heavy run)
+
+jobs:
+  flake-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Nix
+        uses: cachix/install-nix-action@v15
+      - name: Nix flake check
+        run: nix flake check --show-trace
+
+  templates-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run template dry-runs
+        run: |
+          set -euo pipefail
+          # Run generic dry-run for the current folder (if it has a test project)
+          ./devenv-bootstrap --dry-run || true
+
+          # Node test
+          mkdir -p /tmp/ci-node && cd /tmp/ci-node
+          echo '{"name":"x","engines":{"node":"20"}}' > package.json
+          ../../devenv-bootstrap --dry-run
+          cd -
+
+          # Python test
+          mkdir -p /tmp/ci-python && cd /tmp/ci-python
+          echo 'flask' > requirements.txt; touch app.py
+          ../../devenv-bootstrap --dry-run
+          cd -
+
+          # Rust test
+          mkdir -p /tmp/ci-rust && cd /tmp/ci-rust
+          printf '[package]\nname = "x"\nversion = "0.1.0"' > Cargo.toml
+          ../../devenv-bootstrap --dry-run
+          cd -
+
+          # Go test
+          mkdir -p /tmp/ci-go && cd /tmp/ci-go
+          printf 'module test\n\ngo 1.21' > go.mod
+          printf 'package main\n\nfunc main() {}' > main.go
+          ../../devenv-bootstrap --dry-run
+          cd -
+
+          # Generic test
+          mkdir -p /tmp/ci-generic && cd /tmp/ci-generic
+          ../../devenv-bootstrap --dry-run
+          cd -
+
+  mirror-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run mirror script tests
+        run: |
+          set -euo pipefail
+          chmod +x ./scripts/test-mirror.sh
+          ./scripts/test-mirror.sh
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: [flake-check, templates-smoke, mirror-test]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Nix
+        uses: cachix/install-nix-action@v15
+      - name: Run integration tests
+        run: |
+          set -euo pipefail
+          chmod +x ./test.sh
+          ./test.sh 2>&1 | tee integration-test-log.txt
+          echo "Integration tests completed with exit status: ${PIPESTATUS[0]}"
+        continue-on-error: false
+      - name: Upload integration logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-log
+          path: integration-test-log.txt
+
+  heavy-tests:
+    runs-on: ubuntu-latest
+    needs: [integration-tests]
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Nix
+        uses: cachix/install-nix-action@v15
+      - name: Run heavy tests
+        run: |
+          set -euo pipefail
+          chmod +x ./scripts/test-heavy.sh
+          ./scripts/test-heavy.sh 2>&1 | tee heavy-test-log.txt
+      - name: Upload heavy logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: heavy-test-log
+          path: heavy-test-log.txt
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Run shellcheck
+        run: shellcheck ./scripts/*.sh || true

@@ -1,0 +1,69 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: flake-check
+    image: ubuntu:22.04
+    commands:
+      - set -euo pipefail
+      - apt-get update && apt-get install -y curl git build-essential
+      - curl -L https://nixos.org/nix/install | sh
+      - . /root/.nix-profile/etc/profile.d/nix.sh
+      - nix flake check --show-trace || true
+
+  - name: templates-smoke
+    image: ubuntu:22.04
+    commands:
+      - set -euo pipefail
+      - apt-get update && apt-get install -y curl git build-essential jq
+      - curl -L https://nixos.org/nix/install | sh
+      - . /root/.nix-profile/etc/profile.d/nix.sh
+      - ./devenv-bootstrap --dry-run || true
+      - mkdir -p /tmp/ci-node && cd /tmp/ci-node
+      - echo '{"name":"x","engines":{"node":"20"}}' > package.json
+      - $(cat <<'BASH'
+        cd /tmp/ci-node
+        /drone/src/devenv-bootstrap --dry-run || true
+        BASH)
+
+  - name: mirror-test
+    image: ubuntu:22.04
+    commands:
+      - set -euo pipefail
+      - apt-get update && apt-get install -y curl git build-essential
+      - chmod +x ./scripts/test-mirror.sh
+      - ./scripts/test-mirror.sh
+  - name: integration-tests
+    image: ubuntu:22.04
+    commands:
+      - set -euo pipefail
+      - apt-get update && apt-get install -y curl git build-essential jq
+      - chmod +x ./test.sh
+      - ./test.sh 2>&1 | tee integration-test-log.txt || true
+      - cat integration-test-log.txt
+      - if grep -q "Failures:" integration-test-log.txt ; then exit 1; fi
+
+  - name: heavy-tests
+    image: ubuntu:22.04
+    when:
+      event:
+        - tag
+    commands:
+      - set -euo pipefail
+      - apt-get update && apt-get install -y curl git build-essential
+      - chmod +x ./scripts/test-heavy.sh
+      - ./scripts/test-heavy.sh 2>&1 | tee heavy-test-log.txt
+      - cat heavy-test-log.txt
+  - name: lint
+    image: ubuntu:22.04
+    commands:
+      - set -euo pipefail
+      - apt-get update && apt-get install -y shellcheck ca-certificates
+      - shellcheck ./scripts/*.sh || true
+
+trigger:
+  event:
+    - push
+    - pull_request
+  cron:
+    - "0 0 * * *"  # daily mirror

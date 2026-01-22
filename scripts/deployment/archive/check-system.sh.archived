@@ -1,0 +1,236 @@
+#!/usr/bin/env bash
+# NixOS System Health Check
+# Performs comprehensive SSH connectivity and service health checks
+# Can be used standalone or integrated into deployment workflows
+
+set -euo pipefail
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+info() { echo -e "${BLUE}ℹ $*${NC}"; }
+success() { echo -e "${GREEN}✓ $*${NC}"; }
+warn() { echo -e "${YELLOW}⚠ $*${NC}"; }
+error() { echo -e "${RED}✗ $*${NC}" >&2; }
+
+usage() {
+    cat <<EOF
+NixOS System Health Check
+
+Usage: $0 <hostname> [ssh-user] [flake-name]
+
+Arguments:
+  hostname    - IP address or hostname to check
+  ssh-user    - SSH user (default: root)
+  flake-name  - Expected hostname from flake (default: hostname)
+
+Examples:
+  $0 192.168.1.7
+  $0 cortex.home jarvis cortex
+  $0 192.168.1.22 deploy nexus
+
+Checks Performed:
+  1.  SSH key availability
+  2.  Network connectivity (ping)
+  3.  SSH port accessibility
+  4.  SSH authentication
+  5.  System information
+  6.  Hostname/user verification
+  7.  Security services (fail2ban, auditd, sshd)
+  8.  Configuration file validation
+  9.  Security binary availability
+  10. NixOS generation info
+  11. Systemd service links
+  12. Recommendations
+
+Exit Codes:
+  0 - All checks passed
+  1 - One or more checks failed
+EOF
+}
+
+check_system() {
+    local hostname="${1:-}"
+    local ssh_user="${2:-root}"
+    local expected_hostname="${3:-$hostname}"
+    local timeout=10
+    local failed=0
+
+    if [ -z "$hostname" ]; then
+        error "Hostname is required"
+        usage
+        exit 1
+    fi
+
+    info "Checking $hostname (expecting: $expected_hostname) as $ssh_user..."
+    echo ""
+
+    # Step 1: SSH key check
+    info "Step 1: Checking SSH keys..."
+    if ssh-add -l &>/dev/null; then
+        LOADED_KEYS=$(ssh-add -l | wc -l)
+        success "SSH agent has $LOADED_KEYS key(s) loaded"
+    else
+        warn "SSH agent not running or no keys loaded"
+        info "Try: ssh-add ~/.ssh/id_ed25519"
+    fi
+    echo ""
+
+    # Step 2: Ping
+    info "Step 2: Testing network connectivity to $hostname..."
+    if ping -c 1 -W "$timeout" "$hostname" &>/dev/null; then
+        success "Host $hostname is reachable"
+    else
+        error "Cannot reach $hostname"
+        failed=1
+    fi
+    echo ""
+
+    # Step 3: SSH port
+    info "Step 3: Checking if SSH port is open..."
+    if timeout 5 bash -c "cat < /dev/null > /dev/tcp/$hostname/22" 2>/dev/null; then
+        success "SSH port (22) is open on $hostname"
+    else
+        error "SSH port (22) is not accessible"
+        failed=1
+    fi
+    echo ""
+
+    # Step 4: SSH connection
+    info "Step 4: Testing SSH connection..."
+    if ssh -o ConnectTimeout="$timeout" -o BatchMode=yes "$ssh_user@$hostname" "echo 'SSH connection successful'" &>/dev/null; then
+        success "SSH connection successful!"
+    else
+        warn "SSH connection failed"
+        info "Trying verbose SSH connection for debugging..."
+        ssh -v -o ConnectTimeout="$timeout" "$ssh_user@$hostname" "exit" 2>&1 | tail -20
+        failed=1
+    fi
+    echo ""
+
+    # If SSH failed, no point continuing
+    if [ $failed -eq 1 ]; then
+        error "Cannot establish SSH connection. Stopping checks."
+        exit 1
+    fi
+
+    # Step 5: System info
+    info "Step 5: Gathering system info..."
+    ssh "$ssh_user@$hostname" "uname -a && uptime"
+    echo ""
+
+    # Step 6: Hostname/user verification
+    info "Step 6: Verifying system identity..."
+    ACTUAL_HOSTNAME=$(ssh -o ConnectTimeout="$timeout" "$ssh_user@$hostname" "hostname" 2>/dev/null || echo "unknown")
+    if [ "$ACTUAL_HOSTNAME" = "$expected_hostname" ]; then
+        success "Hostname confirmed: $expected_hostname"
+    else
+        warn "Hostname is '$ACTUAL_HOSTNAME' (expected '$expected_hostname')"
+    fi
+    
+    USER_CHECK=$(ssh -o ConnectTimeout="$timeout" "$ssh_user@$hostname" "whoami" 2>/dev/null || echo "unknown")
+    if [ "$USER_CHECK" = "$ssh_user" ]; then
+        success "User confirmed: $ssh_user"
+    else
+        warn "User is '$USER_CHECK' (expected '$ssh_user')"
+    fi
+    echo ""
+
+    # Step 7: Security service checks
+    info "Step 7: Checking security services..."
+    for service in fail2ban auditd sshd; do
+        if ssh "$ssh_user@$hostname" "systemctl is-active $service" &>/dev/null; then
+            success "$service is running"
+        else
+            warn "$service is not running or not accessible"
+        fi
+    done
+    echo ""
+
+    # Step 8: Config file validation
+    info "Step 8: Checking config files..."
+    if ssh "$ssh_user@$hostname" "test -f /etc/fail2ban/jail.local" 2>/dev/null; then
+        success "fail2ban jail.local exists"
+        if ssh "$ssh_user@$hostname" "fail2ban-client -t" &>/dev/null; then
+            success "fail2ban configuration is valid"
+        else
+            warn "fail2ban configuration has errors (or needs sudo)"
+        fi
+    else
+        warn "fail2ban jail.local not found (or needs sudo to check)"
+    fi
+    
+    if ssh "$ssh_user@$hostname" "test -f /etc/audit/auditd.conf" 2>/dev/null; then
+        success "auditd.conf exists"
+    else
+        warn "auditd.conf not found (or needs sudo to check)"
+    fi
+    echo ""
+
+    # Step 9: Binary/package presence
+    info "Step 9: Checking security binaries..."
+    for binary in fail2ban-server fail2ban-client auditd auditctl; do
+        if ssh "$ssh_user@$hostname" "which $binary" &>/dev/null; then
+            success "$binary is available"
+        else
+            warn "$binary is not available"
+        fi
+    done
+    echo ""
+
+    # Step 10: NixOS generation check
+    info "Step 10: Checking NixOS configuration generation..."
+    CURRENT_GEN=$(ssh "$ssh_user@$hostname" "readlink /nix/var/nix/profiles/system" 2>/dev/null || echo "unknown")
+    if [ "$CURRENT_GEN" != "unknown" ]; then
+        success "Current generation: $CURRENT_GEN"
+    else
+        warn "Could not determine NixOS generation"
+    fi
+    echo ""
+
+    # Step 11: Systemd service configuration check
+    info "Step 11: Checking systemd service links..."
+    for service in fail2ban auditd sshd; do
+        if ssh "$ssh_user@$hostname" "test -L /etc/systemd/system/multi-user.target.wants/$service.service" 2>/dev/null; then
+            success "$service.service is linked in systemd target"
+        else
+            warn "$service.service not found in systemd multi-user.target.wants"
+        fi
+    done
+    echo ""
+
+    # Step 12: Recommendations
+    info "Step 12: Summary and Recommendations"
+    if ssh "$ssh_user@$hostname" "systemctl is-active fail2ban auditd sshd" &>/dev/null; then
+        success "All security services appear to be running correctly!"
+    else
+        warn "Some services may not be running. Recommended actions:"
+        echo "  1. Check service status: ssh $ssh_user@$hostname 'systemctl status fail2ban auditd sshd'"
+        echo "  2. Check system logs: ssh $ssh_user@$hostname 'sudo journalctl -b'"
+        echo "  3. Redeploy configuration if services are expected to be running"
+    fi
+
+    if [ $failed -eq 0 ]; then
+        echo ""
+        success "Health check completed successfully!"
+        return 0
+    else
+        echo ""
+        error "Health check completed with failures"
+        return 1
+    fi
+}
+
+# Main execution
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+        usage
+        exit 0
+    fi
+    
+    check_system "$@"
+fi

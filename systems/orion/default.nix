@@ -153,6 +153,10 @@ in
         variant = "fhs"; # FHS environment for imperative extension management
         copilotPrompts.enable = true;
       };
+      # Web browsers
+      brave.enable = true;
+      firefox.enable = true;
+      librewolf.enable = true;
     };
 
     services = {

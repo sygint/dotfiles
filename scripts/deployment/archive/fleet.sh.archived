@@ -1,0 +1,623 @@
+#!/usr/bin/env bash
+# Unified NixOS Fleet Management Script
+# Auto-discovers systems from flake.nix, supports deploy/update/build/check/list
+# shellcheck disable=SC2317  # Don't warn about unreachable commands (error() exits)
+
+set -euo pipefail
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+info() { echo -e "${BLUE}ℹ $*${NC}"; }
+success() { echo -e "${GREEN}✓ $*${NC}"; }
+warn() { echo -e "${YELLOW}⚠ $*${NC}"; }
+error() { echo -e "${RED}✗ $*${NC}"; log_operation "ERROR" "$*"; exit 1; }
+
+# === Logging ===
+
+LOG_FILE="${HOME}/.nixos-fleet.log"
+
+log_operation() {
+    local level="$1"
+    shift
+    local message="$*"
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "[$timestamp] [$level] $message" >> "$LOG_FILE"
+}
+
+FLAKE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+SECRETS_MANAGER="$FLAKE_DIR/scripts/secrets-manager.sh"
+
+# Auto-discover systems from flake.nix
+
+get_systems() {
+    nix eval "$FLAKE_DIR#nixosConfigurations" --apply 'builtins.attrNames' --json 2>/dev/null | jq -r '.[]'
+}
+
+# Load host variables from Nix config
+
+get_host_vars() {
+    local system="$1"
+    # Try to load from Nix config first, fallback to reading variables.nix directly
+    if nix eval --json "$FLAKE_DIR#nixosConfigurations.$system.config.variables" 2>/dev/null; then
+        return 0
+    fi
+    
+    # Fallback: read variables.nix directly and convert to JSON
+    local vars_file="$FLAKE_DIR/systems/$system/variables.nix"
+    if [[ -f "$vars_file" ]]; then
+        nix-instantiate --eval --strict --json -E "import $vars_file" 2>/dev/null || echo "{}"
+    else
+        echo "{}"
+    fi
+}
+
+usage() {
+    echo -e "${GREEN}Fleet Management Tool${NC}"
+    echo "Usage: $0 <command> <system> [options]"
+    echo "Commands:"
+    echo "  list                List all systems"
+    echo "  build <system>      Build system config locally"
+    echo "  check <system>      Check connection and health"
+    echo "  deploy <system>     Initial deployment (nixos-anywhere)"
+    echo "  update <system>     Update system (colmena)"
+    echo "  update-all          Update all systems in parallel"
+    echo "  update-tag @<tag>   Update systems with specific tag"
+    echo ""
+    echo "  ISO Management:"
+    echo "  iso build           Build custom live ISO with SSH key"
+    echo "  iso flash <device>  Flash ISO to USB device (e.g., /dev/sda)"
+    echo "  iso list-devices    List available USB devices"
+    echo "  iso path            Show path to built ISO"
+    echo ""
+    echo "  Secrets Management:"
+    echo "  secrets <subcommand>    Manage secrets (see: $0 secrets help)"
+    echo "  secrets edit            Edit secrets file"
+    echo "  secrets view            View secrets (read-only)"
+    echo "  secrets cat             Print decrypted secrets"
+    echo "  secrets validate        Test encryption/decryption"
+    echo "  secrets add-host <sys>  Add password for system"
+    echo "  secrets rotate <sys>    Rotate password for system"
+    echo "  secrets status          Show secrets file status"
+    echo "  secrets config          Show configuration"
+    echo "  secrets recipients      List who can decrypt"
+    echo ""
+    echo "Options:"
+    echo "  --validate-secrets  Validate secrets before deployment"
+    echo ""
+    echo "Tags:"
+    echo "  @laptop    - Laptop systems (orion)"
+    echo "  @server    - Server systems (cortex, nexus)"
+    echo "  @homelab   - Homelab servers (cortex, nexus)"
+    echo "  @desktop   - Desktop/laptop systems (orion, axon)"
+    echo "  @htpc      - HTPC systems (axon)"
+}
+
+list_systems() {
+    info "Available systems:"
+    get_systems | awk '{print "  - "$1}'
+}
+
+build_system() {
+    local system="${1:-}"
+    if [ -z "$system" ]; then
+        error "Usage: $0 build <system>"
+    fi
+    info "Building $system configuration..."
+    nix build "$FLAKE_DIR#nixosConfigurations.$system.config.system.build.toplevel" --show-trace && success "Build successful for $system"
+}
+
+check_system() {
+    local system="${1:-}"
+    local timeout=10
+
+    if [ -z "$system" ]; then
+        error "Usage: $0 check <system>"
+    fi
+
+    # Load host variables
+    local VARS
+    VARS=$(get_host_vars "$system")
+    local hostname
+    local ssh_user
+    hostname=$(echo "$VARS" | jq -r '.network.ip // .network.hostname // ""')
+    ssh_user=$(echo "$VARS" | jq -r '.network.ssh.user // .user.username // "root"')
+
+    if [ -z "$hostname" ]; then
+        error "Could not determine hostname or IP for $system from config"
+    fi
+
+    info "Checking $system ($hostname) as $ssh_user..."
+
+    # Step 1: SSH key check
+    info "Step 1: Checking SSH keys..."
+    if ssh-add -l &>/dev/null; then
+        LOADED_KEYS=$(ssh-add -l | wc -l)
+        success "SSH agent has $LOADED_KEYS key(s) loaded"
+    else
+        warn "SSH agent not running or no keys loaded"
+        info "Try: ssh-add ~/.ssh/id_ed25519"
+    fi
+
+    # Step 2: Ping
+    info "Step 2: Testing network connectivity to $hostname..."
+    if ping -c 1 -W "$timeout" "$hostname" &>/dev/null; then
+        success "Host $hostname is reachable"
+    else
+        error "Cannot reach $hostname"
+        return 1
+    fi
+
+    # Step 3: SSH port
+    info "Step 3: Checking if SSH port is open..."
+    if timeout 5 bash -c "cat < /dev/null > /dev/tcp/$hostname/22" 2>/dev/null; then
+        success "SSH port (22) is open on $hostname"
+    else
+        error "SSH port (22) is not accessible"
+        return 1
+    fi
+
+    # Step 4: SSH connection
+    info "Step 4: Testing SSH connection..."
+    if ssh -o ConnectTimeout="$timeout" -o BatchMode=yes "$ssh_user@$hostname" "echo 'SSH connection successful'" &>/dev/null; then
+        success "SSH connection successful!"
+    else
+        warn "SSH connection failed"
+        info "Trying verbose SSH connection for debugging..."
+        ssh -v -o ConnectTimeout="$timeout" "$ssh_user@$hostname" "exit" 2>&1 | tail -20
+        return 1
+    fi
+
+    # Step 5: System info
+    info "Step 5: Gathering system info..."
+    ssh "$ssh_user@$hostname" "uname -a && uptime"
+
+    # Step 6: Hostname/user verification
+    info "Step 6: Verifying system identity..."
+    HOSTNAME=$(ssh -o ConnectTimeout="$timeout" "$ssh_user@$hostname" "hostname" 2>/dev/null || echo "unknown")
+    if [ "$HOSTNAME" = "$system" ]; then
+        success "Hostname confirmed: $system"
+    else
+        warn "Hostname is '$HOSTNAME' (expected '$system')"
+    fi
+    USER_CHECK=$(ssh -o ConnectTimeout="$timeout" "$ssh_user@$hostname" "whoami" 2>/dev/null || echo "unknown")
+    if [ "$USER_CHECK" = "$ssh_user" ]; then
+        success "User confirmed: $ssh_user"
+    else
+        warn "User is '$USER_CHECK' (expected '$ssh_user')"
+    fi
+
+    # Step 7: Security service checks
+    info "Step 7: Checking security services..."
+    # shellcheck disable=SC2029  # Variable expansion is intentional
+    for service in fail2ban auditd sshd; do
+        if ssh "$ssh_user@$hostname" "systemctl is-active $service" &>/dev/null; then
+            success "$service is running"
+        else
+            warn "$service is not running or not accessible"
+        fi
+    done
+
+    # Step 8: Config file validation
+    info "Step 8: Checking config files..."
+    if ssh "$ssh_user@$hostname" "test -f /etc/fail2ban/jail.local" 2>/dev/null; then
+        success "fail2ban jail.local exists"
+        if ssh "$ssh_user@$hostname" "fail2ban-client -t" &>/dev/null; then
+            success "fail2ban configuration is valid"
+        else
+            warn "fail2ban configuration has errors (or needs sudo)"
+        fi
+    else
+        warn "fail2ban jail.local not found (or needs sudo to check)"
+    fi
+    if ssh "$ssh_user@$hostname" "test -f /etc/audit/auditd.conf" 2>/dev/null; then
+        success "auditd.conf exists"
+    else
+        warn "auditd.conf not found (or needs sudo to check)"
+    fi
+
+    # Step 9: Binary/package presence
+    info "Step 9: Checking security binaries..."
+    # shellcheck disable=SC2029  # Variable expansion is intentional
+    for binary in fail2ban-server fail2ban-client auditd auditctl; do
+        if ssh "$ssh_user@$hostname" "which $binary" &>/dev/null; then
+            success "$binary is available"
+        else
+            warn "$binary is not available"
+        fi
+    done
+
+    # Step 10: NixOS generation check
+    info "Step 10: Checking NixOS configuration generation..."
+    CURRENT_GEN=$(ssh "$ssh_user@$hostname" "readlink /nix/var/nix/profiles/system" 2>/dev/null || echo "unknown")
+    if [ "$CURRENT_GEN" != "unknown" ]; then
+        success "Current generation: $CURRENT_GEN"
+    else
+        warn "Could not determine NixOS generation"
+    fi
+
+    # Step 11: Systemd service configuration check
+    info "Step 11: Checking systemd service links..."
+    # shellcheck disable=SC2029  # Variable expansion is intentional
+    for service in fail2ban auditd sshd; do
+        if ssh "$ssh_user@$hostname" "test -L /etc/systemd/system/multi-user.target.wants/$service.service" 2>/dev/null; then
+            success "$service.service is linked in systemd target"
+        else
+            warn "$service.service not found in systemd multi-user.target.wants"
+        fi
+    done
+
+    # Step 12: Recommendations
+    info "Step 12: Recommendations"
+    if ssh "$ssh_user@$hostname" "systemctl is-active fail2ban auditd sshd" &>/dev/null; then
+        success "All security services appear to be running correctly!"
+    else
+        warn "Some services may not be running. Recommended actions:"
+        echo "1. Redeploy the configuration: ./fleet.sh update $system"
+        echo "2. Check NixOS configuration syntax: nix build .#nixosConfigurations.$system.config.system.build.toplevel"
+        echo "3. Manually rebuild on the target: ssh -t $ssh_user@$hostname 'sudo nixos-rebuild switch --flake /etc/nixos#$system'"
+        echo "4. Check the full system logs: ssh -t $ssh_user@$hostname 'sudo journalctl -b'"
+    fi
+}
+
+# Secrets Management Integration
+
+ISO_FLAKE_DIR="$FLAKE_DIR/systems/custom-live-iso"
+ISO_RESULT_PATH="$ISO_FLAKE_DIR/result/iso/nixos-homelab-installer.iso"
+
+iso_command() {
+    local subcmd="${1:-}"
+    shift || true
+    
+    case "$subcmd" in
+        build)
+            iso_build
+            ;;
+        flash)
+            iso_flash "${1:-}"
+            ;;
+        list-devices)
+            iso_list_devices
+            ;;
+        path)
+            iso_path
+            ;;
+        *)
+            error "Unknown iso subcommand: $subcmd"
+            echo "Available subcommands: build, flash, list-devices, path"
+            exit 1
+            ;;
+    esac
+}
+
+iso_build() {
+    info "Building custom live ISO with SSH key..."
+    log_operation "INFO" "Building live ISO"
+    
+    if [ ! -d "$ISO_FLAKE_DIR" ]; then
+        error "ISO flake directory not found: $ISO_FLAKE_DIR"
+    fi
+    
+    cd "$ISO_FLAKE_DIR"
+    
+    info "This will take a few minutes (downloading packages + building)..."
+    if nix build ".#nixosConfigurations.installer.config.system.build.isoImage"; then
+        success "ISO built successfully!"
+        if [ -f "$ISO_RESULT_PATH" ]; then
+            local iso_size
+            iso_size=$(du -h "$ISO_RESULT_PATH" | cut -f1)
+            success "ISO location: $ISO_RESULT_PATH"
+            success "ISO size: $iso_size"
+            info "Next steps:"
+            echo "  1. List USB devices: $0 iso list-devices"
+            echo "  2. Flash to USB: $0 iso flash /dev/sdX"
+        else
+            warn "ISO built but not found at expected location"
+        fi
+    else
+        error "ISO build failed"
+    fi
+    
+    cd "$FLAKE_DIR"
+}
+
+iso_flash() {
+    local device="${1:-}"
+    
+    if [ -z "$device" ]; then
+        error "Usage: $0 iso flash <device>"
+        info "Example: $0 iso flash /dev/sda"
+        info "Tip: Run '$0 iso list-devices' to see available devices"
+        exit 1
+    fi
+    
+    if [ ! -f "$ISO_RESULT_PATH" ]; then
+        error "ISO not found at: $ISO_RESULT_PATH"
+        info "Build it first with: $0 iso build"
+        exit 1
+    fi
+    
+    if [ ! -b "$device" ]; then
+        error "Device not found or not a block device: $device"
+        info "Run '$0 iso list-devices' to see available devices"
+        exit 1
+    fi
+    
+    # Safety checks
+    if [[ "$device" == *"nvme"* ]] || [[ "$device" == *"mmcblk"* ]]; then
+        warn "WARNING: $device looks like an internal drive!"
+        warn "Are you SURE this is your USB device?"
+    fi
+    
+    local iso_size
+    iso_size=$(du -h "$ISO_RESULT_PATH" | cut -f1)
+    
+    warn "DESTRUCTIVE OPERATION - THIS WILL ERASE $device!"
+    info "ISO: $ISO_RESULT_PATH ($iso_size)"
+    info "Target: $device"
+    read -r -p "Type 'yes' to flash the ISO: " confirm
+    
+    if [[ "$confirm" != "yes" ]]; then
+        info "Cancelled"
+        exit 0
+    fi
+    
+    info "Flashing ISO to $device..."
+    log_operation "INFO" "Flashing ISO to $device"
+    
+    if sudo dd if="$ISO_RESULT_PATH" of="$device" bs=4M status=progress conv=fsync; then
+        success "ISO flashed successfully to $device!"
+        info "Syncing filesystem..."
+        sync
+        success "Done! You can now safely remove the USB drive"
+        info "Next steps:"
+        echo "  1. Insert USB into target system"
+        echo "  2. Boot from USB"
+        echo "  3. Deploy: $0 deploy <system>"
+    else
+        error "Failed to flash ISO"
+    fi
+}
+
+iso_list_devices() {
+    info "Available block devices:"
+    echo ""
+    
+    # Show lsblk with useful columns
+    lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,VENDOR,MODEL | grep -E "^NAME|disk|part" || true
+    
+    echo ""
+    info "USB devices (likely candidates):"
+    
+    # Try to identify USB devices
+    for dev in /dev/sd[a-z]; do
+        if [ -b "$dev" ]; then
+            # Check if it's USB via udev
+            if udevadm info --query=property --name="$dev" 2>/dev/null | grep -q "ID_BUS=usb"; then
+                local size
+                size=$(lsblk -ndo SIZE "$dev" 2>/dev/null || echo "unknown")
+                local model
+                model=$(lsblk -ndo MODEL "$dev" 2>/dev/null || echo "unknown")
+                echo "  $dev - $size - $model (USB)"
+            fi
+        fi
+    done
+    
+    echo ""
+    warn "IMPORTANT: Double-check the device before flashing!"
+    info "Use: $0 iso flash /dev/sdX"
+}
+
+iso_path() {
+    if [ -f "$ISO_RESULT_PATH" ]; then
+        echo "$ISO_RESULT_PATH"
+        local iso_size
+        iso_size=$(du -h "$ISO_RESULT_PATH" | cut -f1)
+        info "Size: $iso_size"
+    else
+        warn "ISO not found. Build it first with: $0 iso build"
+        exit 1
+    fi
+}
+
+secrets_command() {
+    if [ ! -x "$SECRETS_MANAGER" ]; then
+        error "Secrets manager not found at: $SECRETS_MANAGER"
+    fi
+    
+    # Pass all arguments directly to secrets-manager
+    "$SECRETS_MANAGER" "$@"
+}
+
+validate_secrets() {
+    local system="${1:-}"
+    
+    if [ ! -x "$SECRETS_MANAGER" ]; then
+        warn "Secrets manager not available, skipping validation"
+        return 0
+    fi
+    
+    info "Validating secrets before deployment..."
+    
+    # Check if secrets are valid
+    if ! "$SECRETS_MANAGER" validate &>/dev/null; then
+        error "Secrets validation failed. Run: $0 secrets validate"
+    fi
+    
+    # Check if system has secrets defined
+    if [ -n "$system" ]; then
+        # Check for system-specific secrets
+        if "$SECRETS_MANAGER" cat | grep -q "^$system:"; then
+            # Validate structure: must have maintenance_password_hash
+            if ! "$SECRETS_MANAGER" cat | grep -A 1 "^$system:" | grep -q "maintenance_password_hash:"; then
+                error "Invalid secrets structure for $system: missing maintenance_password_hash"
+            fi
+            
+            # Validate hash format (should be $6$ for SHA-512)
+            local hash_line
+            hash_line=$("$SECRETS_MANAGER" cat | grep -A 1 "^$system:" | grep "maintenance_password_hash:")
+            if [[ ! "$hash_line" =~ \$6\$ ]]; then
+                warn "Password hash for $system may not be SHA-512 format"
+            fi
+            
+            success "Secrets validated for $system"
+        else
+            warn "No secrets found for $system (may be intentional)"
+        fi
+    fi
+}
+
+deploy_system() {
+    local system="${1:-}"
+    local validate_secrets_flag="${2:-}"
+
+    if [ -z "$system" ]; then
+        error "Usage: $0 deploy <system> [--validate-secrets]"
+    fi
+
+    # Validate secrets if requested
+    if [ "$validate_secrets_flag" = "--validate-secrets" ]; then
+        validate_secrets "$system"
+    fi
+
+    # Load host variables
+    local VARS
+    VARS=$(get_host_vars "$system")
+    local ip
+    ip=$(echo "$VARS" | jq -r '.network.ip // .network.hostname // ""')
+    
+    # IMPORTANT: nixos-anywhere ALWAYS uses root for initial deployment
+    # The configured user (jarvis, syg, etc) doesn't exist yet!
+    local user="root"
+
+    if [ -z "$ip" ]; then
+        error "Could not determine IP/hostname for $system from config"
+    fi
+
+    warn "DESTRUCTIVE OPERATION - THIS WILL WIPE THE DISK!"
+    read -r -p "Type 'yes' to continue: " confirm
+    [[ "$confirm" == "yes" ]] || { info "Cancelled"; exit 0; }
+    build_system "$system"
+    info "Deploying $system to $ip as $user (nixos-anywhere initial install)..."
+    nix run github:nix-community/nixos-anywhere -- --flake "$FLAKE_DIR#$system" "$user@$ip" && success "Deployment complete!"
+}
+
+update_system() {
+    local system="${1:-}"
+    local validate_secrets_flag="${2:-}"
+
+    if [ -z "$system" ]; then
+        error "Usage: $0 update <system> [--validate-secrets]"
+    fi
+
+    # Validate secrets if requested
+    if [ "$validate_secrets_flag" = "--validate-secrets" ]; then
+        validate_secrets "$system"
+    fi
+
+    info "Updating $system using colmena..."
+    log_operation "INFO" "Updating $system with colmena"
+    
+    cd "$FLAKE_DIR"
+    nix run .#colmena -- apply --on "$system" --impure && success "Update complete!"
+}
+
+update_all_systems() {
+    info "Updating ALL systems in parallel using colmena..."
+    log_operation "INFO" "Updating all systems with colmena"
+    
+    cd "$FLAKE_DIR"
+    nix run .#colmena -- apply --impure && success "All systems updated!"
+}
+
+update_by_tag() {
+    local tag="${1:-}"
+    
+    if [ -z "$tag" ]; then
+        error "Usage: $0 update-tag @<tag>"
+    fi
+    
+    # Strip @ if provided
+    tag="${tag#@}"
+    
+    info "Updating systems with tag @$tag using colmena..."
+    log_operation "INFO" "Updating systems with tag @$tag"
+    
+    cd "$FLAKE_DIR"
+    nix run .#colmena -- apply --on "@$tag" --impure && success "Systems with tag @$tag updated!"
+}
+
+vm_test() {
+    local system="${1:-}"
+    if [ -z "$system" ]; then
+        error "Usage: $0 vm-test <system>"
+    fi
+    info "Building and running VM test for $system..."
+    nix-build "$FLAKE_DIR/tests/vm-fleet-test.nix" --argstr system "$system"
+    success "VM test completed for $system"
+}
+
+main() {
+    if [ $# -eq 0 ]; then 
+        usage
+        exit 1
+    fi
+
+    cmd="$1"
+    shift
+    
+    # Log the command
+    log_operation "INFO" "Command: $cmd $*"
+
+    case "$cmd" in
+        list) 
+            list_systems 
+            ;;
+        build) 
+            log_operation "INFO" "Building system: ${1:-}"
+            build_system "${1:-}" 
+            ;;
+        check) 
+            log_operation "INFO" "Checking system: ${1:-}"
+            check_system "${1:-}"
+            ;;
+        deploy) 
+            log_operation "INFO" "Deploying system: ${1:-}"
+            deploy_system "${1:-}" "${2:-}"
+            ;;
+        update) 
+            log_operation "INFO" "Updating system: ${1:-}"
+            update_system "${1:-}" "${2:-}"
+            ;;
+        update-all)
+            log_operation "INFO" "Updating all systems"
+            update_all_systems
+            ;;
+        update-tag)
+            log_operation "INFO" "Updating systems with tag: ${1:-}"
+            update_by_tag "${1:-}"
+            ;;
+        iso)
+            log_operation "INFO" "ISO command: $*"
+            iso_command "$@"
+            ;;
+        secrets)
+            secrets_command "$@"
+            ;;
+        vm-test)
+            log_operation "INFO" "VM test: ${1:-}"
+            vm_test "${1:-}"
+            ;;
+        *) 
+            error "Unknown command: $cmd"
+            usage
+            ;;
+    esac
+}
+
+main "$@"
