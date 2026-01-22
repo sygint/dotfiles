@@ -1,17 +1,23 @@
 # NixOS Configuration
 
-Personal NixOS configuration with modular, composable design for multi-system/multi-user support.
+Personal NixOS configuration with **unified feature modules** based on the dendritic pattern.
 
-## � Documentation
+## 📚 Documentation
 
 **New here?** See [DOCS.md](DOCS.md) for complete navigation.
 
-**Quick links:**
-- [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) - Deploy and manage systems
-- [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md) - Bootstrap new NixOS systems
-- [systems/cortex/AI-SERVICES.md](systems/cortex/AI-SERVICES.md) - AI/LLM infrastructure on Cortex
-- [docs/SECURITY.md](docs/SECURITY.md) - Security configuration
-- [SECRETS.md](SECRETS.md) - Secrets management (sops-nix + age)
+**Architecture:**
+- **[docs/DENDRITIC-MIGRATION.md](docs/DENDRITIC-MIGRATION.md)** - Unified feature modules guide ⭐ **START HERE**
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Detailed module system documentation
+- **[FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md)** - Deploy and manage systems
+
+**System-Specific:**
+- **[systems/cortex/AI-SERVICES.md](systems/cortex/AI-SERVICES.md)** - AI/LLM infrastructure on Cortex
+- **[docs/BOOTSTRAP.md](docs/BOOTSTRAP.md)** - Bootstrap new NixOS systems
+
+**Security & Secrets:**
+- **[docs/SECURITY.md](docs/SECURITY.md)** - Security configuration
+- **[SECRETS.md](SECRETS.md)** - Secrets management (sops-nix + age)
 
 ## 🚀 Quick Start
 
@@ -34,72 +40,87 @@ See [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) for complete deployment guide.
 
 ## 🏗️ Architecture Overview
 
-Modular, composable NixOS configuration with centralized management:
-- **Centralized Config**: All network settings in `network-config.nix`
-- **Modular Design**: Mix-and-match system and home modules
-- **Fleet Management**: Deploy to multiple systems with Colmena/deploy-rs
-- **Secrets Integration**: sops-nix with automatic age key management
-
-### 📁 Directory Structure
+**Unified Feature Modules** - One file per feature, containing both system and user configuration.
 
 ```
-├── flake.nix              # Main flake configuration
-├── DOCS.md                # Documentation index (start here!)
-├── modules/               # Reusable configuration modules
-│   ├── home/             # Home Manager modules (user configs)
-│   └── system/           # NixOS system modules
-├── systems/              # System-specific configurations
-│   ├── orion/           # Workstation (Framework 13)
-│   └── cortex/          # AI Server (RTX 5090)
-├── scripts/              # Deployment and utility scripts
-├── dotfiles/             # Dotfiles (symlinked by Home Manager)
-└── docs/                 # Additional documentation
-    ├── troubleshooting/  # Issue-specific guides
-    └── blog/             # Learning journey posts
+modules/
+├── features/           # ⭐ PRIMARY: 30 unified feature modules
+│   ├── hyprland.nix   # Wayland compositor + config
+│   ├── mullvad.nix    # VPN service + browser
+│   ├── git.nix        # Git + user config
+│   └── ...            # All features in one place!
+├── system/            # Special-purpose system modules
+│   ├── base/          # Essential base configuration
+│   └── ai-services/   # Cortex-specific AI services
+└── home/              # Home Manager base layers
+    ├── _base/         # Essential CLI tools
+    └── _base-desktop/ # Desktop environment essentials
 ```
 
-## 🧩 Module System
+### Using Features
 
-**Design Philosophy:** Composition over inheritance - mix and match modules as needed.
-
-### System Modules (`modules/system/`)
-- **base/** - Essential NixOS foundation (boot, packages, services)
-- **hardware/** - Audio, bluetooth, networking
-- **services/** - System services (syncthing, mullvad)
-- **windowManagers/** - Desktop environments (Hyprland)
-
-### Home Modules (`modules/home/`)
-- **base/** - Essential user tools (zsh, git, btop)
-- **base-desktop/** - Desktop tools (terminal, wallpapers)
-- **programs/** - Individual applications (modular)
-
-**Usage:**
 ```nix
-# Enable modules in system configuration
-modules = {
-  hardware.audio.enable = true;
-  wayland.hyprland.enable = true;
+# systems/orion/default.nix
+modules.features = {
+  # Desktop environment
+  hyprland.enable = true;
+  hyprpanel.enable = true;
+  
+  # Development tools
+  git.enable = true;
+  vscode.enable = true;
+  kitty.enable = true;
+  
+  # Web browsers
+  brave.enable = true;
+  firefox.enable = true;
+  
+  # Services
+  mullvad.enable = true;
+  syncthing.enable = true;
+  
+  # Infrastructure
+  audio.enable = true;
+  bluetooth.enable = true;
+  networking.enable = true;
 };
 ```
 
-### System Structure
+**Benefits:**
+- 🎯 **Single source of truth**: One file per feature
+- 🔧 **Consistent interface**: All use `modules.features.*`
+- 📦 **Complete configuration**: System + home together
+- 🧩 **Composable**: Mix and match across systems
 
-Each system in `systems/` contains:
-- `variables.nix` - System/user configuration
-- `default.nix` - NixOS system config
-- `hardware.nix` - Hardware-specific settings
-- `homes/` - User home configurations
-
-Variables (`userVars`, `systemVars`) are passed to all modules for parameterization.
+See **[docs/DENDRITIC-MIGRATION.md](docs/DENDRITIC-MIGRATION.md)** for complete details.
 
 ## 🎯 Design Principles
 
-1. **Composition over Inheritance** - Mix and match modules
-2. **Parameterization** - Configure via `userVars`/`systemVars`
-3. **Reusability** - Modules work across systems and users
-4. **Minimal Abstraction** - Only add complexity when valuable
+1. **One Feature, One File** - All configuration for a feature in a single place
+2. **Unified Namespace** - All features use `modules.features.*`
+3. **Explicit Configuration** - Features never auto-enable
+4. **Composability** - Mix and match features across systems
+5. **Parameterization** - Configure via `userVars`/`systemVars`
+
+See **[docs/DENDRITIC-MIGRATION.md](docs/DENDRITIC-MIGRATION.md)** for the migration story and detailed architecture.
 
 ## ➕ Adding Components
+
+**New Feature Module:**
+```bash
+# 1. Create file in modules/features/
+touch modules/features/myfeature.nix
+
+# 2. Define module (see template in docs/DENDRITIC-MIGRATION.md)
+
+# 3. Enable in system
+# systems/orion/default.nix
+modules.features.myfeature.enable = true;
+
+# 4. Test and apply
+nix flake check
+sudo nixos-rebuild switch --flake .#orion
+```
 
 **New System:**
 ```bash
@@ -107,10 +128,7 @@ cp -r systems/orion systems/newsystem
 # Edit variables.nix, hardware.nix, add to flake.nix
 ```
 
-**New Module:**
-Create file in `modules/home/programs/` or `modules/system/`, follow existing patterns.
-
-See [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) for detailed system setup instructions.
+See **[FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md)** for detailed system setup instructions.
 
 ## � Rebuild Commands
 

@@ -1,6 +1,15 @@
 # NixOS Configuration Architecture
 
-**Detailed Module System Documentation**
+**Unified Feature Modules - Dendritic Pattern**
+
+> **⚠️ Important**: This configuration has migrated to a unified feature modules architecture.  
+> See **[DENDRITIC-MIGRATION.md](DENDRITIC-MIGRATION.md)** for complete documentation on the new structure.
+>
+> **Quick Summary:**
+> - Feature modules now live in `modules/features/` (30 unified modules)
+> - All features use `modules.features.*` namespace
+> - One file per feature (system + home config together)
+> - Old split `system/` and `home/` directories are for special-purpose modules only
 
 ---
 
