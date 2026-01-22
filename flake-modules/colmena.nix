@@ -88,13 +88,20 @@ in
         tags = hostCfg.tags or [ ];
       };
 
-      # Import the same modules as nixosConfigurations
-      imports = [ systemCfg.path ] ++ systemCfg.modules;
-
-      # Define hasSecrets directly to match what nixosConfigurations expects
-      _module.args = {
-        hasSecrets = systemCfg.hasSecrets;
-      };
+      # Import the same modules as nixosConfigurations, plus a module to inject hasSecrets
+      imports = [
+        systemCfg.path
+      ]
+      ++ systemCfg.modules
+      ++ [
+        # Inject hasSecrets as a module to avoid needing it in specialArgs
+        (
+          { lib, ... }:
+          {
+            _module.args.hasSecrets = lib.mkForce systemCfg.hasSecrets;
+          }
+        )
+      ];
     }
   ) fleetConfig.hosts;
 }
