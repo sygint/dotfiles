@@ -122,27 +122,27 @@ in
   '';
 
   modules = {
-    hardware = {
+    features = {
+      # Hardware
       bluetooth.enable = true;
       audio.enable = true;
       networking = {
         enable = true;
         hostName = "${hostName}";
       };
-    };
-
-    features = {
+      # Core
       zsh.enable = true;
       mullvad.enable = true; # Unified system + home config
+      # Hyprland ecosystem
       hyprland = {
         enable = true;
         packages.enable = true;
       };
-      # Hyprland ecosystem
       hyprpanel.enable = true;
       hypridle.enable = true;
       waybar.enable = false; # Disabled in favor of hyprpanel
       screenshots.enable = true;
+      wayland.enable = true;
       # Development tools
       git.enable = true;
       kitty.enable = true;
@@ -188,18 +188,10 @@ in
       flatpak.enable = true;
     };
 
-    services = {
-    };
-
     # Enable security module with sudo password requirement
     system.security = {
       enable = true; # Enable sudo with wheelNeedsPassword
     };
-
-    # Base security and program modules are enabled in base config
-
-    # Wayland-specific settings (Hyprland now in features.hyprland)
-    wayland.enable = true;
   };
 
   # ════════════════════════════════════════════════════════════════════════════

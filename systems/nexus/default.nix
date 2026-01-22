@@ -1,6 +1,13 @@
 # NixOS configuration for Nexus (Homelab)
 # Purpose: Centralized homelab services including media, monitoring, and automation
-{ config, pkgs, lib, hasSecrets, inputs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  hasSecrets,
+  inputs,
+  ...
+}:
 
 let
   systemVars = import ./variables.nix;
@@ -13,8 +20,18 @@ in
     ./hardware.nix
     ./disk-config.nix
     ../../modules/system.nix
-  ] ++ lib.optionals hasSecrets [
-    (import (inputs.nixos-secrets + "/default.nix") { inherit config lib pkgs inputs hasSecrets; })
+    ../../modules/features.nix
+  ]
+  ++ lib.optionals hasSecrets [
+    (import (inputs.nixos-secrets + "/default.nix") {
+      inherit
+        config
+        lib
+        pkgs
+        inputs
+        hasSecrets
+        ;
+    })
   ];
 
   # Essential boot configuration
@@ -31,13 +48,16 @@ in
   # ===== Secrets Management =====
   # Secrets are mandatory for this system
   assertions = [
-    { assertion = hasSecrets; message = "Secrets required—nixos-secrets submodule missing"; }
+    {
+      assertion = hasSecrets;
+      message = "Secrets required—nixos-secrets submodule missing";
+    }
   ];
 
   # The nixos-secrets module already sets defaultSopsFile, just configure what we need here
   sops = {
-    age.keyFile = lib.mkForce "/var/lib/sops-nix/key.txt";  # Override to use dedicated key file
-    
+    age.keyFile = lib.mkForce "/var/lib/sops-nix/key.txt"; # Override to use dedicated key file
+
     secrets."nexus/rescue_password_hash" = {
       neededForUsers = true;
     };
@@ -54,7 +74,7 @@ in
       group = "root";
       mode = "0400";
     };
-    
+
     secrets."nexus/grafana_admin_password" = {
       owner = "grafana";
       group = "grafana";
@@ -68,18 +88,18 @@ in
   fileSystems."/mnt/nas/movies" = {
     device = "192.168.1.136:/volume1/Media/Movies";
     fsType = "nfs";
-    options = [ 
-      "x-systemd.automount"  # Auto-mount on access
-      "noauto"               # Don't mount at boot
-      "x-systemd.idle-timeout=600"  # Unmount after 10min idle
-      "nfsvers=4"            # Use NFSv4
+    options = [
+      "x-systemd.automount" # Auto-mount on access
+      "noauto" # Don't mount at boot
+      "x-systemd.idle-timeout=600" # Unmount after 10min idle
+      "nfsvers=4" # Use NFSv4
     ];
   };
 
   fileSystems."/mnt/nas/tvshows" = {
     device = "192.168.1.136:/volume1/Media/TV Shows";
     fsType = "nfs";
-    options = [ 
+    options = [
       "x-systemd.automount"
       "noauto"
       "x-systemd.idle-timeout=600"
@@ -90,7 +110,7 @@ in
   fileSystems."/mnt/nas/music" = {
     device = "192.168.1.136:/volume1/Media/Music";
     fsType = "nfs";
-    options = [ 
+    options = [
       "x-systemd.automount"
       "noauto"
       "x-systemd.idle-timeout=600"
@@ -104,7 +124,12 @@ in
   users.users.${username} = {
     isNormalUser = true;
     description = "Remote deployment user (SSH key-only)";
-    extraGroups = [ "wheel" "networkmanager" "jellyfin" "grafana" ];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "jellyfin"
+      "grafana"
+    ];
     # SSH: Key-only authentication (no password set)
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMSdxXvx7Df+/2cPMe7C2TUSqRkYee5slatv7t3MG593 syg@nixos"
@@ -112,14 +137,14 @@ in
     # Password is explicitly locked - this user CANNOT login at console
     # This provides clear separation: SSH uses this user, console uses rescue user
     # Passwordless sudo via security.sudo.wheelNeedsPassword = false
-    hashedPassword = "!";  # Locked account - SSH key only
+    hashedPassword = "!"; # Locked account - SSH key only
   };
 
   # Rescue user: Console-only for physical/KVM emergency access (password-only, no SSH)
   users.users.rescue = {
     isNormalUser = true;
     description = "Emergency console access (password-only)";
-    extraGroups = [ "wheel" ];  # Can sudo for system repairs
+    extraGroups = [ "wheel" ]; # Can sudo for system repairs
     # Password for console/KVM access via secrets
     hashedPasswordFile = config.sops.secrets."nexus/rescue_password_hash".path;
     # No SSH keys - this user CANNOT login remotely
@@ -129,12 +154,17 @@ in
   # ===== Nix Configuration =====
   # Deploy user needs to be trusted for remote deployments
   nix.settings = {
-    trusted-users = [ "root" "deploy" ];
-    experimental-features = [ "nix-command" "flakes" ];
+    trusted-users = [
+      "root"
+      "deploy"
+    ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
   };
 
   # Ensure Jellyfin can read NAS mounts
-
 
   # ===== Security Configuration =====
 
@@ -155,12 +185,12 @@ in
     enable = true;
     ignoreIP = [
       "127.0.0.1"
-      "192.168.1.0/24"  # Local network
+      "192.168.1.0/24" # Local network
     ];
   };
 
   # ===== Core Services =====
-  
+
   # Jellyfin Media Server - Stream media from your NAS
   services.jellyfin = {
     enable = true;
@@ -171,7 +201,7 @@ in
   services.prometheus = {
     enable = true;
     port = 9090;
-    
+
     exporters = {
       node = {
         enable = true;
@@ -183,11 +213,13 @@ in
     scrapeConfigs = [
       {
         job_name = "nexus";
-        static_configs = [{
-          targets = [ 
-            "127.0.0.1:${toString config.services.prometheus.exporters.node.port}"
-          ];
-        }];
+        static_configs = [
+          {
+            targets = [
+              "127.0.0.1:${toString config.services.prometheus.exporters.node.port}"
+            ];
+          }
+        ];
       }
     ];
   };
@@ -207,7 +239,7 @@ in
         admin_password_file = config.sops.secrets."nexus/grafana_admin_password".path;
       };
     };
-    
+
     provision = {
       enable = true;
       datasources.settings.datasources = [
@@ -220,8 +252,6 @@ in
       ];
     };
   };
-
-
 
   # Create required directories for Leantime data persistence
   # Leantime storage directories
@@ -297,7 +327,7 @@ in
 
   # ===== Optional Services (disabled for now) =====
   # Uncomment these when you're ready to add them:
-  
+
   # Home Assistant - Smart home automation
   # services.home-assistant = {
   #   enable = true;
@@ -310,7 +340,7 @@ in
   #     };
   #   };
   # };
-  
+
   # Loki + Promtail - Log aggregation (like grep for all your logs)
   # services.loki.enable = true;
   # services.promtail.enable = true;
@@ -318,25 +348,25 @@ in
   # ===== Firewall Configuration =====
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ 
-      22      # SSH
-      3000    # Grafana
-      8080    # Leantime
-      8096    # Jellyfin HTTP
-      8920    # Jellyfin HTTPS
-      9090    # Prometheus (optional - can access via Grafana)
+    allowedTCPPorts = [
+      22 # SSH
+      3000 # Grafana
+      8080 # Leantime
+      8096 # Jellyfin HTTP
+      8920 # Jellyfin HTTPS
+      9090 # Prometheus (optional - can access via Grafana)
     ];
     allowedUDPPorts = [
-      1900    # DLNA/UPnP discovery
-      7359    # Jellyfin discovery
+      1900 # DLNA/UPnP discovery
+      7359 # Jellyfin discovery
     ];
   };
 
   # ===== Module Configuration =====
   modules = {
     hardware = {
-      bluetooth.enable = false;  # Headless server
-      audio.enable = false;      # No local audio needed
+      bluetooth.enable = false; # Headless server
+      audio.enable = false; # No local audio needed
       networking = {
         enable = true;
         hostName = "${hostName}";
@@ -344,20 +374,20 @@ in
     };
 
     services = {
-      containerization.enable = true;  # Podman for OCI containers
+      containerization.enable = true; # Podman for OCI containers
 
       syncthing = {
-        enable = false;  # Enable if needed
+        enable = false; # Enable if needed
       };
 
       printing = {
-        enable = false;  # Headless server
+        enable = false; # Headless server
       };
     };
 
     system.security = {
-      enable = true;  # Enable security module (sudo, polkit, etc.)
-      hardening.enable = true;  # Full server hardening profile (fail2ban, auditd, SSH, kernel, monitoring)
+      enable = true; # Enable security module (sudo, polkit, etc.)
+      hardening.enable = true; # Full server hardening profile (fail2ban, auditd, SSH, kernel, monitoring)
     };
   };
 
@@ -367,23 +397,23 @@ in
     jellyfin
     jellyfin-web
     jellyfin-ffmpeg
-    
+
     # Monitoring tools
     htop
     btop
-    
+
     # Network tools
     iftop
     nethogs
-    
+
     # System utilities
     tmux
     wget
     curl
     sqlite
-    
+
     # Jellyfin utilities
-    libva-utils  # Provides vainfo to check hardware video acceleration
+    libva-utils # Provides vainfo to check hardware video acceleration
   ];
 
   # ===== System State Version =====
