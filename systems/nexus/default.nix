@@ -364,30 +364,23 @@ in
 
   # ===== Module Configuration =====
   modules = {
-    hardware = {
+    features = {
+      # Hardware
       bluetooth.enable = false; # Headless server
       audio.enable = false; # No local audio needed
       networking = {
         enable = true;
         hostName = "${hostName}";
       };
-    };
-
-    services = {
+      # Services
       containerization.enable = true; # Podman for OCI containers
-
-      syncthing = {
-        enable = false; # Enable if needed
+      syncthing.enable = false; # Enable if needed
+      printing.enable = false; # Headless server
+      # Security
+      security = {
+        enable = true; # Enable security module (sudo, polkit, etc.)
+        hardening.enable = true; # Full server hardening profile (fail2ban, auditd, SSH, kernel, monitoring)
       };
-
-      printing = {
-        enable = false; # Headless server
-      };
-    };
-
-    system.security = {
-      enable = true; # Enable security module (sudo, polkit, etc.)
-      hardening.enable = true; # Full server hardening profile (fail2ban, auditd, SSH, kernel, monitoring)
     };
   };
 

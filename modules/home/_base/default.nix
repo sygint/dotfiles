@@ -18,12 +18,7 @@ in
   };
 
   # Base programs that every user should have regardless of system
-  modules = {
-    programs = {
-      # Core utilities - essential for everyone
-      # btop and git now managed by unified features modules in system configs
-    };
-  };
+  # Core utilities now managed by unified features modules in system configs
 
   programs = {
     home-manager.enable = true;

@@ -154,32 +154,26 @@ in
   '';
 
   modules = {
-    hardware = {
+    features = {
+      # Hardware
       bluetooth.enable = true;
       audio.enable = true;
       networking = {
         enable = true;
         hostName = "${hostName}";
       };
-    };
-
-    services = {
+      # Display server
+      wayland.enable = true;
+      # Services
       printing = {
         enable = false; # Usually not needed for Axon
         enableAutoDiscovery = false;
         enableSharing = false;
       };
-    };
-
-    # Wayland configuration for modern display management
-    wayland = {
-      enable = true;
-    };
-
-    # Hyprland disabled - using GNOME for Axon simplicity
-    features = {
-      hyprland.enable = false;
+      # Core features
       zsh.enable = true;
+      # Hyprland disabled - using GNOME for Axon simplicity
+      hyprland.enable = false;
     };
   };
 

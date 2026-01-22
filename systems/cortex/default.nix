@@ -118,13 +118,15 @@ in
   };
 
   # Security hardening and monitoring
-  modules.system.security = {
-    enable = true;
-    hardening.enable = true; # Enable fail2ban, auditd, SSH hardening, kernel hardening
-  };
+  modules = {
+    features.security = {
+      enable = true;
+      hardening.enable = true; # Enable fail2ban, auditd, SSH hardening, kernel hardening
+    };
 
-  # Enable AI services (Ollama with NVIDIA CUDA support)
-  modules.system.ai-services.enable = true;
+    # Enable AI services (Ollama with NVIDIA CUDA support)
+    system.ai-services.enable = true;
+  };
 
   security = {
     # Require password for sudo (production security)
