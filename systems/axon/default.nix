@@ -179,6 +179,7 @@ in
     # Hyprland disabled - using GNOME for Axon simplicity
     features = {
       hyprland.enable = false;
+      zsh.enable = true;
     };
   };
 

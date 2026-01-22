@@ -28,11 +28,7 @@
     remmina
     nemo-with-extensions
     alacritty
-    starship
-    zoxide
-    fzf
-    eza
-    bat
+    # Note: starship, zoxide, fzf, eza, bat provided by features.zsh module
   ];
 
   programs.git = {
@@ -45,23 +41,8 @@
     };
   };
 
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
-    shellAliases = {
-      ll = "eza -l";
-      la = "eza -la";
-      tree = "eza --tree";
-      cat = "bat";
-      cd = "z";
-    };
-    initContent = ''
-      eval "$(starship init zsh)"
-      eval "$(zoxide init zsh)"
-    '';
-  };
+  # Zsh configuration now managed by features.zsh module via dotfiles
+  # See: modules/features/zsh.nix and dotfiles/.config/zsh/
 
   programs.starship = {
     enable = true;
