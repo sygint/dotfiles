@@ -69,8 +69,11 @@ in
           fleetConfig
           ;
         fh = inputs.fh;
-        # Add a mapping of node names to their hasSecrets values
+        # For Colmena, we can't pass per-node specialArgs, so we pass nodeHasSecrets
+        # mapping and each system will need to look up its own value
         nodeHasSecrets = lib.mapAttrs (name: cfg: cfg.hasSecrets) systems;
+        # Also provide a default hasSecrets for compatibility
+        hasSecrets = false;
       };
     };
   }
@@ -90,20 +93,8 @@ in
         tags = hostCfg.tags or [ ];
       };
 
-      # Import the same modules as nixosConfigurations, plus a module to inject hasSecrets
-      imports = [
-        systemCfg.path
-      ]
-      ++ systemCfg.modules
-      ++ [
-        # Inject hasSecrets from the nodeHasSecrets mapping passed via specialArgs
-        (
-          { nodeHasSecrets, ... }:
-          {
-            _module.args.hasSecrets = nodeHasSecrets.${name};
-          }
-        )
-      ];
+      # Import the same modules as nixosConfigurations
+      imports = [ systemCfg.path ] ++ systemCfg.modules;
     }
   ) fleetConfig.hosts;
 }
