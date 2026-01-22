@@ -1,0 +1,9 @@
+# Auto-start Hyprland on tty1 after login
+# Only start if:
+# 1. We're on tty1
+# 2. Hyprland isn't already running
+# 3. We're not in a graphical session already
+
+if [[ -z "$DISPLAY" ]] && [[ -z "$WAYLAND_DISPLAY" ]] && [[ "$(tty)" == "/dev/tty1" ]]; then
+    exec Hyprland
+fi

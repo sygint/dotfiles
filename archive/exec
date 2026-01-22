@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# scripts/fleet/exec - Convenience wrapper to run remote commands via Colmena
+# Usage: scripts/fleet/exec <host|@tag|all> -- <command...>
+# Example: scripts/fleet/exec nexus -- "sudo podman ps -a"
+
+if [[ "$#" -lt 2 ]]; then
+  echo "Usage: $0 <host|@tag|all> -- <command>"
+  exit 2
+fi
+
+HOST="$1"
+shift
+
+if [[ "$1" == "--" ]]; then
+  shift
+fi
+
+if [[ "$#" -lt 1 ]]; then
+  echo "No command provided to execute on ${HOST}" >&2
+  exit 2
+fi
+
+
+# Determine the flake dir (assume running from repo root or script location)
+FLAKE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
+
+echo "Executing on ${HOST}: ${CMD}"
+
+# Use the local colmena flake if available, otherwise fallback to the node-local colmena via nix run
+cd "${FLAKE_DIR}"
+nix run .#colmena -- exec --on "${HOST}" -- "$@"
+
+exit $?

@@ -1,0 +1,16 @@
+# Nix
+.devenv/
+.direnv/
+devenv.lock
+result
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,8 @@
+# Allowlist literal substrings that may match high-risk patterns but are safe.
+# Each line treated as fixed string (not regex) for exclusion.
+
+example-password
+placeholder-token
+TEST_API_KEY
+FAKE_GITHUB_TOKEN
+demo-stripe-key
