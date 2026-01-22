@@ -138,6 +138,11 @@ in
         enable = true;
         packages.enable = true;
       };
+      # Hyprland ecosystem
+      hyprpanel.enable = true;
+      hypridle.enable = true;
+      waybar.enable = false; # Disabled in favor of hyprpanel
+      screenshots.enable = true;
     };
 
     services = {

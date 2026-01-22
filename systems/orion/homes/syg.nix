@@ -67,12 +67,8 @@
 
   modules.programs = {
     # hyprland now managed by unified features.hyprland module in system config
+    # hyprpanel, waybar, hypridle, screenshots now managed by unified features in system config
 
-    hyprpanel.enable = true; # Enable HyprPanel
-    waybar.enable = false; # Disable Waybar
-    hypridle.enable = true; # Enable Hypridle idle daemon
-
-    screenshots.enable = true;
     brave.enable = true;
     librewolf.enable = true;
     firefox.enable = true; # Standard Firefox for work/media (full device access)
