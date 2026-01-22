@@ -32,6 +32,21 @@
     ];
   };
 
+  # Shared infrastructure
+  infrastructure = {
+    # NAS/Storage configuration
+    nas = {
+      ip = "192.168.1.136";
+      hostname = "synology";
+      fqdn = "synology.home";
+      shares = {
+        movies = "/volume1/Media/Movies";
+        tvshows = "/volume1/Media/TV Shows";
+        music = "/volume1/Media/Music";
+      };
+    };
+  };
+
   # Host configurations
   hosts = {
     # Orion - Primary laptop/workstation
