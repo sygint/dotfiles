@@ -54,6 +54,10 @@
       hostname = "orion";
       fqdn = "orion.home";
       ip = "192.168.1.30"; # DHCP reservation on UDM Pro
+      tags = [
+        "workstation"
+        "local"
+      ];
 
       # Network interfaces
       interfaces = {
@@ -94,6 +98,12 @@
       hostname = "cortex";
       fqdn = "cortex.home";
       ip = "192.168.1.7"; # Static IP - AI/ML server
+      tags = [
+        "server"
+        "ai"
+        "remote"
+        "gpu"
+      ];
 
       # Network interfaces
       interfaces = {
@@ -134,6 +144,12 @@
       hostname = "nexus";
       fqdn = "nexus.home";
       ip = "192.168.1.22"; # Permanent static IP (DHCP reservation configured)
+      tags = [
+        "server"
+        "homelab"
+        "remote"
+        "services"
+      ];
 
       # Network interfaces
       interfaces = {
@@ -173,6 +189,11 @@
       hostname = "axon";
       fqdn = "axon.home";
       ip = "192.168.1.25"; # Media center system
+      tags = [
+        "media"
+        "htpc"
+        "remote"
+      ];
 
       # Network interfaces
       interfaces = {

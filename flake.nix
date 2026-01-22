@@ -49,7 +49,8 @@
       imports = [
         ./flake-modules/nixos-configurations.nix
         ./flake-modules/home-configurations.nix
-        ./flake-modules/deploy.nix
+        ./flake-modules/colmena.nix
+        # ./flake-modules/deploy.nix  # Fallback: uncomment if colmena has issues
       ];
 
       # Systems to support
@@ -78,6 +79,14 @@
               just
               inputs'.nixos-fleet.packages.fleet
             ];
+          };
+
+          # Colmena app wrapper for fleet CLI
+          apps.colmena = {
+            type = "app";
+            program = "${pkgs.writeShellScript "colmena-wrapper" ''
+              exec ${pkgs.colmena}/bin/colmena "$@"
+            ''}";
           };
         };
     };
