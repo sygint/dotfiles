@@ -248,10 +248,10 @@ This suggests the fleet naming convention ("constellation/neural network" theme)
 
 ## Recommendations
 
-### Immediate (Phase 7)
-1. **Delete VM images** - Remove `*.qcow2` files (1.4 GB savings)
+### Immediate (Phase 7) - COMPLETED
+1. ~~**Delete VM images** - Remove `*.qcow2` files (1.4 GB savings)~~ DONE
 2. **Clean stale branches** - Merge or delete feature branches
-3. **Fix deploy.nix** - Use fleet-config for all IPs
+3. ~~**Fix deploy.nix** - Use fleet-config for all IPs~~ DONE
 
 ### Short-term
 1. **Standardize git identity** - Consolidate author names
@@ -262,3 +262,56 @@ This suggests the fleet naming convention ("constellation/neural network" theme)
 1. **Regular maintenance** - Monthly cleanup sprints
 2. **Version tagging** - Tag stable states before major changes
 3. **Documentation sync** - Keep docs updated with each major change
+
+---
+
+## TODO: Remote Repository Size Optimization
+
+**Date Added**: 2026-01-22
+**Status**: Pending further analysis
+
+### Background
+
+After local cleanup, we discovered the `.git` directory was **6.3 GB** due to orphaned blob objects (likely VM images that were accidentally committed and then removed). Running `git gc --prune=now --aggressive` reduced local `.git` to **12 MB**.
+
+### Orphaned Objects Found
+
+| Object Hash | Size | Likely Source |
+|-------------|------|---------------|
+| `882b7d70...` | 1.73 GB | VM disk image (nexus.qcow2?) |
+| `8951683...` | 944 MB | VM disk image (orion.qcow2?) |
+
+These were **unreachable blobs** - not connected to any commit in history, but still stored in packfiles.
+
+### Local Fix Applied
+
+```bash
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+```
+
+Result: `.git` reduced from 6.3 GB to 12 MB locally.
+
+### Remote Considerations
+
+The GitHub remote may still have bloated packfiles. Options to investigate:
+
+1. **Do nothing** - GitHub runs periodic gc, may clean up automatically
+2. **Force push** - May trigger GitHub's repack process
+3. **Contact GitHub support** - Request manual gc if clone size remains large
+4. **Fresh repository** - Nuclear option: create new repo, push clean history
+
+### Before Taking Action
+
+1. Check current clone size: `git clone --bare <repo-url> && du -sh`
+2. Compare with local size to confirm remote bloat
+3. Review if any stale branches reference the large objects
+4. Consider if history rewriting is needed (would require force push)
+
+### Risk Assessment
+
+- Force push to main requires coordination (branch protection)
+- History rewriting affects all collaborators
+- May lose references needed for debugging old issues
+
+**Recommendation**: Check remote clone size first. If acceptable, no action needed.
