@@ -257,5 +257,5 @@ Some extensions are already configured but commented out. To enable them:
 ## 📋 Notes
 
 - Dotfiles are managed using Home Manager with live-updating symlinks
-- Monitor configuration is stored in `monitors.json`
+- Monitor configuration is stored in `systems/orion/monitors.json`
 - Additional notes in `notes.txt`

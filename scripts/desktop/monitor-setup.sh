@@ -4,7 +4,7 @@ set -euo pipefail
 # Configure monitors using Hyprland based on nixos/monitors.json mappings
 # Requires: hyprctl, jq
 
-MONITORS_JSON="$(dirname "${BASH_SOURCE[0]}")/../../monitors.json"
+MONITORS_JSON="$(dirname "${BASH_SOURCE[0]}")/../../systems/orion/monitors.json"
 
 # Exit cleanly if we're not in a graphical session (Wayland/X11) or
 # when this script runs in a build/container environment (e.g. during
