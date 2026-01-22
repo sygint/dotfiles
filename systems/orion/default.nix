@@ -187,11 +187,6 @@ in
       };
       flatpak.enable = true;
     };
-
-    # Enable security module with sudo password requirement
-    system.security = {
-      enable = true; # Enable sudo with wheelNeedsPassword
-    };
   };
 
   # ════════════════════════════════════════════════════════════════════════════
