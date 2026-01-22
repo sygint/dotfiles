@@ -12,6 +12,7 @@
 }:
 let
   systemVars = import ./variables.nix;
+  fleetConfig = import ../../fleet-config.nix;
   inherit (systemVars.system) hostName;
   inherit (systemVars.user) username;
 in
@@ -77,7 +78,8 @@ in
   };
 
   # Set your time zone.
-  time.timeZone = "America/Los_Angeles";
+  # Timezone from fleet config
+  time.timeZone = systemVars.system.timeZone;
 
   # Enable hardware video acceleration for media playback
   hardware.graphics = {
@@ -148,9 +150,8 @@ in
 
   # Network configuration with Jellyfin server access
   networking.extraHosts = ''
-    192.168.1.7 cortex.home cortex
-    # Add your Synology NAS IP here
-    # 192.168.1.X synology.home synology
+    ${fleetConfig.hosts.cortex.ip} cortex.home cortex
+    ${fleetConfig.infrastructure.nas.ip} ${fleetConfig.infrastructure.nas.fqdn} ${fleetConfig.infrastructure.nas.hostname}
   '';
 
   modules = {

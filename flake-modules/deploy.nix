@@ -1,26 +1,30 @@
 { self, inputs, ... }:
+let
+  fleetConfig = import ../fleet-config.nix;
+  hosts = fleetConfig.hosts;
+in
 {
   flake.deploy = {
     sshUser = "jarvis"; # Global SSH user for all nodes
 
     nodes = {
       cortex = {
-        hostname = "192.168.1.7"; # TODO: Switch to cortex.home when DNS is fixed
+        hostname = hosts.cortex.ip;
         profiles.system = {
           path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.cortex;
           user = "root"; # Activate as root (via sudo)
         };
       };
       nexus = {
-        hostname = "192.168.1.22"; # Nexus homelab services server
-        sshUser = "admin"; # Override global SSH user for Nexus
+        hostname = hosts.nexus.ip;
+        sshUser = hosts.nexus.ssh.user; # Override global SSH user for Nexus
         profiles.system = {
           path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nexus;
           user = "root"; # Activate as root (via sudo)
         };
       };
       axon = {
-        hostname = "192.168.1.11"; # TODO: Update with actual Axon IP
+        hostname = hosts.axon.ip;
         profiles.system = {
           path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.axon;
           user = "root"; # Activate as root (via sudo)

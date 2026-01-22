@@ -1,9 +1,12 @@
 # Future Fleet Management with Colmena
 
-**Reference guide for future Colmena integration and advanced fleet patterns.**
+> **⚡ Update 2026-01-22**: We built [nixos-fleet](https://github.com/sygint/nixos-fleet) to solve this!  
+> This tool wraps Colmena with a better CLI. See [TODO-NIXOS-FLEET-MIGRATION.md](planning/TODO-NIXOS-FLEET-MIGRATION.md) for migration plan.
 
-**Status:** 📋 Planning / Reference Only  
-**Target:** Month 3-4 (When Colmena supports newer flake syntax)
+**Reference guide for Colmena concepts and advanced fleet patterns.**
+
+**Status:** 📋 Reference / Historical  
+**Original Target:** Month 3-4 (When Colmena supports newer flake syntax)
 
 ---
 

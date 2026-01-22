@@ -25,6 +25,9 @@
     opencode.url = "github:anomalyco/opencode";
     devenv-bootstrap.url = "path:/home/syg/.config/nixos/archive/devenv-bootstrap";
     import-tree.url = "github:vic/import-tree";
+
+    # Fleet management with Colmena
+    nixos-fleet.url = "path:/home/syg/Projects/open-source/nixos-fleet";
   };
 
   nixConfig = {
@@ -73,6 +76,7 @@
               nixd
               nixpkgs-fmt
               just
+              inputs'.nixos-fleet.packages.fleet
             ];
           };
         };

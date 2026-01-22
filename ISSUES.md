@@ -143,7 +143,7 @@
   - Options: `nixos-rebuild build-vm`, `machinectl`, Proxmox VMs
   - Related: `machines` NixOS feature, `systemd-nspawn`
   - Tags: `testing`, `vms`, `dev-environment`
-  - See: [TODO-CHECKLIST.md](./docs/TODO-CHECKLIST.md) - Testing & Validation section
+  - See: [TODO-CHECKLIST.md](./docs/planning/TODO-CHECKLIST.md) - Testing & Validation section
 
 ### Security Tooling
 
@@ -162,7 +162,7 @@
   - Impact: Deep historical secret detection in git history
   - Solution: Available in devenv (v3.90.9), convenience script created
   - Usage: `./scripts/security-scan.sh [quick|full|history]`
-  - Documentation: `docs/SECURITY-SCANNING.md`
+  - Documentation: `docs/security/SECURITY-SCANNING.md`
   - Location: `devenv.nix`, `scripts/security-scan.sh`
   - Tags: `security`, `git`, `secrets`
 
@@ -255,7 +255,7 @@
   - Solution: Pre-commit hooks active, convenience script created, comprehensive documentation
   - Tools: git-secrets (pre-commit) + TruffleHog v3.90.9 (manual/CI)
   - Scripts: `scripts/security-scan.sh`, `scripts/git-hooks/pre-commit`
-  - Documentation: `docs/SECURITY-SCANNING.md`
+  - Documentation: `docs/security/SECURITY-SCANNING.md`
   - Impact: Prevents accidental secret commits and enables deep historical scanning
 
 ---
@@ -283,10 +283,10 @@
 
 ### Related Documentation
 
-- [TODO-CHECKLIST.md](./docs/TODO-CHECKLIST.md) - Implementation roadmap
+- [TODO-CHECKLIST.md](./docs/planning/TODO-CHECKLIST.md) - Implementation roadmap
 - [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - System architecture
 - [FLEET-MANAGEMENT.md](./FLEET-MANAGEMENT.md) - Deployment workflows
-- [SECURITY.md](./docs/SECURITY.md) - Security configuration
+- [SECURITY.md](./docs/security/SECURITY.md) - Security configuration
 
 ---
 
@@ -294,4 +294,4 @@
 - Review and update this file weekly
 - Move stale items to backlog or archive
 - Keep critical issues visible at the top
-- Cross-reference with TODO-CHECKLIST.md for implementation tasks
+- Cross-reference with docs/planning/TODO-CHECKLIST.md for implementation tasks

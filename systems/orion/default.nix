@@ -118,7 +118,7 @@ in
 
   # Add cortex to local hosts for DNS resolution (temporary until UDM DNS fixed)
   networking.extraHosts = ''
-    192.168.1.7 cortex.home cortex
+    ${fleetConfig.hosts.cortex.ip} cortex.home cortex
   '';
 
   modules = {
@@ -309,11 +309,6 @@ in
       "Oracle_VirtualBox_Extension_Pack"
       "vscode-extension-mhutchie-git-graph"
     ];
-
-  nix.settings.trusted-users = [
-    "root"
-    "syg"
-  ];
 
   # WiFi undock fix - passwordless sudo for driver reload
   security.sudo.extraRules = [

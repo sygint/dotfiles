@@ -83,10 +83,9 @@ in
 
   # ===== NAS Storage Mounts =====
   # Mount Synology NAS media shares via NFS
-  # NAS IP: 192.168.1.136
-  # Nexus will use static IP: 192.168.1.20 (configure in UDM Pro DHCP reservations)
+  # NAS configuration centralized in fleet-config.nix
   fileSystems."/mnt/nas/movies" = {
-    device = "192.168.1.136:/volume1/Media/Movies";
+    device = "${networkConfig.infrastructure.nas.ip}:${networkConfig.infrastructure.nas.shares.movies}";
     fsType = "nfs";
     options = [
       "x-systemd.automount" # Auto-mount on access
@@ -97,7 +96,7 @@ in
   };
 
   fileSystems."/mnt/nas/tvshows" = {
-    device = "192.168.1.136:/volume1/Media/TV Shows";
+    device = "${networkConfig.infrastructure.nas.ip}:${networkConfig.infrastructure.nas.shares.tvshows}";
     fsType = "nfs";
     options = [
       "x-systemd.automount"
@@ -108,7 +107,7 @@ in
   };
 
   fileSystems."/mnt/nas/music" = {
-    device = "192.168.1.136:/volume1/Media/Music";
+    device = "${networkConfig.infrastructure.nas.ip}:${networkConfig.infrastructure.nas.shares.music}";
     fsType = "nfs";
     options = [
       "x-systemd.automount"
