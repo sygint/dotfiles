@@ -70,15 +70,9 @@
     # hyprpanel, waybar, hypridle, screenshots now managed by unified features in system config
     # git, kitty, btop, devenv, vscode now managed by unified features in system config
     # brave, firefox, librewolf now managed by unified features in system config
+    # archiver, protonmail-bridge now managed by unified features in system config
 
     # mullvad-browser now managed by unified features.mullvad module in system config
-    archiver.enable = true; # Enable archive management with Nemo integration
-
-    protonmail-bridge = {
-      enable = true;
-      username = "admin";
-      password = "password";
-    };
   };
 
   # Declarative Flatpak management
