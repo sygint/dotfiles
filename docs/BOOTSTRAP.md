@@ -71,10 +71,10 @@ OPTIONAL:
 
 ### Centralized Configuration Pattern
 
-All host configurations use a centralized network topology defined in `network-config.nix`:
+All host configurations use a centralized network topology defined in `fleet-config.nix`:
 
 ```nix
-# network-config.nix - Central source of truth for all hosts
+# fleet-config.nix - Central source of truth for all hosts
 {
   hosts = {
     orion = {
@@ -102,16 +102,16 @@ All host configurations use a centralized network topology defined in `network-c
 ### System Variables Pattern
 
 Each host has a `systems/<hostname>/variables.nix` file that:
-- Imports from centralized `network-config.nix`
+- Imports from centralized `fleet-config.nix`
 - Defines machine-specific settings (user preferences, applications, etc.)
-- Re-exports network config for convenient access
+- Re-exports fleet config for convenient access
 
 **Example:**
 
 ```nix
 let
-  networkConfig = import ../../network-config.nix;
-  thisHost = networkConfig.hosts.orion;
+  fleetConfig = import ../../fleet-config.nix;
+  thisHost = fleetConfig.hosts.orion;
 in
 {
   system = {
@@ -389,7 +389,7 @@ The `fleet.sh` script auto-loads host configuration from your Nix config:
 
 ### Wake-on-LAN
 
-If configured in `network-config.nix`:
+If configured in `fleet-config.nix`:
 
 ```bash
 # Wake a sleeping host
@@ -576,7 +576,7 @@ ssh-add -l
    - Note the IP address
 
 2. **Configure the host**
-   - Add entry to `network-config.nix`
+   - Add entry to `fleet-config.nix`
    - Create `systems/<hostname>/` directory with configuration
    - Create `systems/<hostname>/variables.nix`
    - Create `systems/<hostname>/disk-config.nix`
@@ -680,6 +680,6 @@ done
 
 ---
 
-**Last Updated:** October 29, 2025  
+**Last Updated:** January 22, 2026
 **Pattern Source:** EmergentMind's nix-config  
 **Status:** Active deployment method for all fleet systems
