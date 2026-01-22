@@ -7,7 +7,7 @@ Complete guide to this NixOS configuration. Start here for navigation.
 **New to this config?** Start here:
 1. Read [README.md](README.md) - Project overview and quick start
 2. Check [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) - How to deploy systems
-3. Review [docs/SECURITY.md](docs/SECURITY.md) - Security baseline
+3. Review [docs/security/SECURITY.md](docs/security/SECURITY.md) - Security baseline
 
 ## 📚 Core Documentation
 
@@ -19,7 +19,7 @@ Complete guide to this NixOS configuration. Start here for navigation.
 | [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) | Deploy and manage multiple NixOS systems | Initial deployment, routine updates |
 | [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md) | Bootstrap new NixOS systems from scratch | Installing NixOS on new hardware |
 | [systems/cortex/AI-SERVICES.md](systems/cortex/AI-SERVICES.md) | AI/LLM infrastructure on Cortex (Ollama, NVIDIA) | Using AI services, GPU troubleshooting |
-| [docs/SECURITY.md](docs/SECURITY.md) | Security configuration (fail2ban, auditd, SSH) | Hardening systems, security audit |
+| [docs/security/SECURITY.md](docs/security/SECURITY.md) | Security configuration (fail2ban, auditd, SSH) | Hardening systems, security audit |
 | [SECRETS.md](SECRETS.md) | Complete secrets management guide with sops-nix | Managing passwords, API keys, certificates |
 
 ## � Planning & Implementation
@@ -29,7 +29,7 @@ Complete guide to this NixOS configuration. Start here for navigation.
 | [docs/PROJECT-OVERVIEW.md](docs/PROJECT-OVERVIEW.md) | Architecture, philosophy, system details | Understanding design decisions |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Implementation roadmap and timeline | Planning next features |
 | [docs/IMPLEMENTATION-GUIDE.md](docs/IMPLEMENTATION-GUIDE.md) | Step-by-step implementation guides | Adding new features |
-| [docs/TODO-CHECKLIST.md](docs/TODO-CHECKLIST.md) | Progress tracking and status | Tracking what's done |
+| [docs/planning/TODO-CHECKLIST.md](docs/planning/TODO-CHECKLIST.md) | Progress tracking and status | Tracking what's done |
 
 ## �🛠️ Troubleshooting & Reference
 
@@ -95,11 +95,18 @@ When updating documentation:
 │   ├── PROJECT-OVERVIEW.md       # Architecture & philosophy
 │   ├── ROADMAP.md                # Implementation timeline
 │   ├── IMPLEMENTATION-GUIDE.md   # Step-by-step guides
-│   ├── TODO-CHECKLIST.md         # Progress tracking
 │   ├── ARCHITECTURE.md           # Module system docs
-│   ├── SECURITY.md               # Security configuration
 │   ├── BOOTSTRAP.md              # Bootstrap new systems
 │   ├── FLEET-FUTURE.md           # Future fleet tools (Colmena)
+│   ├── planning/                 # Planning & tracking docs
+│   │   ├── TODO-CHECKLIST.md     # Progress tracking
+│   │   ├── CLEANUP-PRD.md        # Cleanup project details
+│   │   └── CLEANUP-CHECKLIST.md  # Cleanup tasks
+│   ├── security/                 # Security documentation
+│   │   ├── SECURITY.md           # Security configuration
+│   │   ├── SECURITY-ROADMAP.md   # Security roadmap
+│   │   ├── SECURITY-SCANNING.md  # Secret scanning
+│   │   └── CORTEX-SECURITY.md    # Cortex hardening
 │   ├── troubleshooting/          # Specific issue guides
 │   └── blog/                     # Learning journey posts
 └── systems/

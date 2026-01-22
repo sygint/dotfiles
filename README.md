@@ -16,7 +16,7 @@ Personal NixOS configuration with **unified feature modules** based on the dendr
 - **[docs/BOOTSTRAP.md](docs/BOOTSTRAP.md)** - Bootstrap new NixOS systems
 
 **Security & Secrets:**
-- **[docs/SECURITY.md](docs/SECURITY.md)** - Security configuration
+- **[docs/security/SECURITY.md](docs/security/SECURITY.md)** - Security configuration
 - **[SECRETS.md](SECRETS.md)** - Secrets management (sops-nix + age)
 
 ## 🚀 Quick Start
