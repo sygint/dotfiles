@@ -4,12 +4,31 @@
   lib,
   ...
 }:
+let
+  fleetConfig = import ../../../fleet-config.nix;
+in
 {
   imports = [
     ./networking.nix # Fleet-wide hosts configuration
   ];
 
   # Base NixOS configuration - essential settings for any system
+
+  # Localization - use fleet-config for consistency
+  i18n = {
+    defaultLocale = fleetConfig.global.locale;
+    extraLocaleSettings = {
+      LC_ADDRESS = fleetConfig.global.locale;
+      LC_IDENTIFICATION = fleetConfig.global.locale;
+      LC_MEASUREMENT = fleetConfig.global.locale;
+      LC_MONETARY = fleetConfig.global.locale;
+      LC_NAME = fleetConfig.global.locale;
+      LC_NUMERIC = fleetConfig.global.locale;
+      LC_PAPER = fleetConfig.global.locale;
+      LC_TELEPHONE = fleetConfig.global.locale;
+      LC_TIME = fleetConfig.global.locale;
+    };
+  };
 
   # Essential boot configuration
   boot = {
