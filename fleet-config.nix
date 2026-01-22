@@ -135,7 +135,6 @@
       deploy = {
         enabled = true;
         remoteBuild = true; # Build on remote to avoid signature issues
-        method = "deploy-rs";
       };
     };
 
@@ -180,7 +179,6 @@
       deploy = {
         enabled = true;
         remoteBuild = false; # Build locally, deploy remotely
-        method = "deploy-rs";
       };
     };
 
@@ -224,7 +222,6 @@
       deploy = {
         enabled = false; # Local system, not a remote deploy target
         remoteBuild = false;
-        method = "deploy-rs";
       };
     };
 
@@ -260,7 +257,6 @@
     #   deploy = {
     #     enabled = false;
     #     remoteBuild = false;
-    #     method = "deploy-rs";
     #   };
     # };
   };

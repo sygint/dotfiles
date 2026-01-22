@@ -80,7 +80,6 @@ in
     # Essential development tools
     git
     just # Task automation for NixOS config management
-    deploy-rs # Remote NixOS deployment tool
 
     # Essential system tools
     home-manager
@@ -96,7 +95,7 @@ in
       "flakes"
     ];
     # Allow all wheel group users to push unsigned paths to nix store
-    # This enables passwordless deploy-rs deployments via SSH authentication
+    # This enables passwordless Colmena deployments via SSH authentication
     trusted-users = [
       "root"
       "@wheel"

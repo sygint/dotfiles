@@ -1,14 +1,16 @@
-{ pkgs ? import <nixpkgs> {} }:
+{
+  pkgs ? import <nixpkgs> { },
+}:
 
 pkgs.mkShell {
   name = "nixos-dotfiles-dev";
-  
+
   buildInputs = with pkgs; [
     # Core development tools
     git
     git-secrets
     trufflehog
-    
+
     # Utilities for scripts
     jq
     gnugrep
@@ -16,21 +18,20 @@ pkgs.mkShell {
     gnumake
     bashInteractive
     openssh
-    deno  # Deno for Kanboard API scripts
-    
+    deno # Deno for Kanboard API scripts
+
     # NixOS-specific tools
     nixos-rebuild
     nixfmt
     nix-tree
-    
+
     # Deployment and bootstrap tools
-    deploy-rs
     nixos-anywhere
     sops
     ssh-to-age
-    yq-go  # YAML processor
+    yq-go # YAML processor
   ];
-  
+
   shellHook = ''
     echo "🔧 NixOS Dotfiles Development Environment"
     echo "=========================================="
@@ -39,7 +40,7 @@ pkgs.mkShell {
     echo "  • git-secrets: $(command -v git-secrets >/dev/null && echo 'available' || echo 'not found')"
     echo "  • trufflehog: $(trufflehog --version 2>&1 | head -1)"
     echo
-    
+
     # Auto-configure git-secrets patterns if not already done
     if [ -d .git ] && ! git config --local --get secrets.providers >/dev/null 2>&1; then
       echo "🔐 Configuring git-secrets patterns..."
@@ -62,7 +63,7 @@ pkgs.mkShell {
       
       echo "✓ git-secrets configured"
     fi
-    
+
     echo
     echo "Available Commands:"
     echo "  • ./scripts/deployment/fleet.sh - Fleet management"

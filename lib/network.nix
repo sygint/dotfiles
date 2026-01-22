@@ -87,7 +87,7 @@ let
     attrNames networkConfig.hosts
   );
 
-  # Generate deploy-rs node configuration for a host
+  # Generate deployment node configuration for a host (legacy - consider using Colmena directly)
   # Usage: mkDeployNode "cortex"
   mkDeployNode =
     hostName: activatePath:
