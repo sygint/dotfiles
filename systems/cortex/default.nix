@@ -17,6 +17,8 @@ in
     ../../modules/system/base
     # Import all other system modules (includes ai-services via import-tree)
     ../../modules/system.nix
+    # Import unified feature modules
+    ../../modules/features.nix
   ]
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {

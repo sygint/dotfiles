@@ -22,7 +22,7 @@
   # Base system settings
   modules = {
     system.security.enable = true;
-    programs.nix-helpers.enable = true;
+    features.nix-helpers.enable = true;
     # Monitor tools are enabled; the monitor setup script is now resilient
     # to non-graphical / build environments and won't fail activations.
     programs.monitor-tools.enable = true;
