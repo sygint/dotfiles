@@ -269,6 +269,7 @@ in
 
       # Enhanced development tools (base has basic git)
       act # gh actions cli
+      gh # GitHub CLI for PR and repo management
       direnv
       lazygit
 
