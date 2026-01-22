@@ -164,33 +164,31 @@ in
         username = "admin";
         password = "password";
       };
-    };
-
-    services = {
+      # System services
       # xserver.enable = true;
-
       syncthing = {
         enable = true;
         username = "${username}";
         # Password now managed by sops-nix secrets
       };
-
       virtualization = {
         enable = true;
         service = "qemu"; # Temporarily using QEMU (VirtualBox build failing)
         username = "${username}";
       };
-
       containerization = {
         enable = true;
         service = "podman";
       };
-
       printing = {
         enable = true;
         enableAutoDiscovery = true;
         enableSharing = false;
       };
+      flatpak.enable = true;
+    };
+
+    services = {
     };
 
     # Enable security module with sudo password requirement
