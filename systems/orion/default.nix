@@ -243,17 +243,13 @@ in
 
     systemPackages = with pkgs; [
       # Enhanced CLI applications (base has basic set)
-      bat
-      eza
+      # Note: bat, eza, fd, fzf, zoxide provided by features.zsh module
       fastfetch
-      fd
-      fzf
       tealdeer
       tree
       usbutils
       yazi
       zellij
-      zoxide
 
       # Desktop applications
       element-desktop
