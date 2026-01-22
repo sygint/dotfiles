@@ -17,7 +17,6 @@
     };
     fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz";
     disko.url = "github:nix-community/disko";
-    deploy-rs.url = "github:serokell/deploy-rs";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     nixos-secrets.url = "path:/home/syg/.config/nixos-secrets";
@@ -50,7 +49,6 @@
         ./flake-modules/nixos-configurations.nix
         ./flake-modules/home-configurations.nix
         ./flake-modules/colmena.nix
-        # ./flake-modules/deploy.nix  # Fallback: uncomment if colmena has issues
       ];
 
       # Systems to support
