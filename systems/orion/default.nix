@@ -143,6 +143,16 @@ in
       hypridle.enable = true;
       waybar.enable = false; # Disabled in favor of hyprpanel
       screenshots.enable = true;
+      # Development tools
+      git.enable = true;
+      kitty.enable = true;
+      btop.enable = true;
+      devenv.enable = true;
+      vscode = {
+        enable = true;
+        variant = "fhs"; # FHS environment for imperative extension management
+        copilotPrompts.enable = true;
+      };
     };
 
     services = {

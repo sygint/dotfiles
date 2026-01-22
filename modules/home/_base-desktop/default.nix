@@ -8,5 +8,5 @@
     recursive = true;
   };
 
-  modules.programs.kitty.enable = true;
+  # kitty now managed by unified features.kitty module in system config
 }

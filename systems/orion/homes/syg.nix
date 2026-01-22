@@ -68,16 +68,12 @@
   modules.programs = {
     # hyprland now managed by unified features.hyprland module in system config
     # hyprpanel, waybar, hypridle, screenshots now managed by unified features in system config
+    # git, kitty, btop, devenv, vscode now managed by unified features in system config
 
     brave.enable = true;
     librewolf.enable = true;
     firefox.enable = true; # Standard Firefox for work/media (full device access)
     # mullvad-browser now managed by unified features.mullvad module in system config
-    devenv.enable = true; # Development environment manager
-    vscode-fhs = {
-      enable = true;
-      copilotPrompts.enable = true; # Enable curated GitHub Copilot Chat prompts
-    };
     archiver.enable = true; # Enable archive management with Nemo integration
 
     protonmail-bridge = {

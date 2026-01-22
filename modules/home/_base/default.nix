@@ -21,8 +21,7 @@ in
   modules = {
     programs = {
       # Core utilities - essential for everyone
-      btop.enable = true;
-      git.enable = true;
+      # btop and git now managed by unified features modules in system configs
     };
   };
 
