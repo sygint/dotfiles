@@ -77,7 +77,8 @@ in
   };
 
   # Set your time zone.
-  time.timeZone = "America/Los_Angeles";
+  # Timezone from fleet config
+  time.timeZone = systemVars.system.timeZone;
 
   # Enable hardware video acceleration for media playback
   hardware.graphics = {
