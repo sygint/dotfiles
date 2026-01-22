@@ -65,15 +65,12 @@
     executable = true;
   };
 
-  modules.programs = {
-    # hyprland now managed by unified features.hyprland module in system config
-    # hyprpanel, waybar, hypridle, screenshots now managed by unified features in system config
-    # git, kitty, btop, devenv, vscode now managed by unified features in system config
-    # brave, firefox, librewolf now managed by unified features in system config
-    # archiver, protonmail-bridge now managed by unified features in system config
-
-    # mullvad-browser now managed by unified features.mullvad module in system config
-  };
+  # All programs now managed by unified features modules in system config
+  # - hyprland, hyprpanel, waybar, hypridle, screenshots
+  # - git, kitty, btop, devenv, vscode
+  # - brave, firefox, librewolf
+  # - archiver, protonmail-bridge
+  # - mullvad
 
   # Declarative Flatpak management
   services.flatpak = {
