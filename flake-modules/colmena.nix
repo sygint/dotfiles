@@ -69,6 +69,8 @@ in
           fleetConfig
           ;
         fh = inputs.fh;
+        # Add a mapping of node names to their hasSecrets values
+        nodeHasSecrets = lib.mapAttrs (name: cfg: cfg.hasSecrets) systems;
       };
     };
   }
@@ -94,11 +96,11 @@ in
       ]
       ++ systemCfg.modules
       ++ [
-        # Inject hasSecrets as a module to avoid needing it in specialArgs
+        # Inject hasSecrets from the nodeHasSecrets mapping passed via specialArgs
         (
-          { lib, ... }:
+          { nodeHasSecrets, ... }:
           {
-            _module.args.hasSecrets = lib.mkForce systemCfg.hasSecrets;
+            _module.args.hasSecrets = nodeHasSecrets.${name};
           }
         )
       ];
