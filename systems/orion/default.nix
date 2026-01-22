@@ -157,6 +157,13 @@ in
       brave.enable = true;
       firefox.enable = true;
       librewolf.enable = true;
+      # Utilities
+      archiver.enable = true;
+      protonmail-bridge = {
+        enable = true;
+        username = "admin";
+        password = "password";
+      };
     };
 
     services = {
