@@ -89,14 +89,12 @@ in
       };
 
       # Import the same modules as nixosConfigurations
-      imports = [
-        systemCfg.path
-      ]
-      ++ systemCfg.modules
-      ++ [
-        # Pass hasSecrets as a module option to avoid infinite recursion
-        { config._module.args.hasSecrets = systemCfg.hasSecrets; }
-      ];
+      imports = [ systemCfg.path ] ++ systemCfg.modules;
+
+      # Define hasSecrets directly to match what nixosConfigurations expects
+      _module.args = {
+        hasSecrets = systemCfg.hasSecrets;
+      };
     }
   ) fleetConfig.hosts;
 }
