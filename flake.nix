@@ -3,6 +3,10 @@
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
+    dotfiles = {
+      url = "path:./dotfiles";
+      flake = false;
+    };
     nix-snapd.url = "https://flakehub.com/f/io12/nix-snapd/0.1.47.tar.gz";
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url = "github:nixos/nixpkgs?shallow=1&ref=nixos-unstable";

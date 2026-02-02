@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -37,8 +38,7 @@ in
         let
           inherit (config.lib.file) mkOutOfStoreSymlink;
 
-          configRoot = "/home/${userVars.username}/.config/nixos";
-          dotfilesDir = "${configRoot}/dotfiles";
+          dotfilesDir = "${inputs.dotfiles.outPath}";
           configZshDir = "${dotfilesDir}/.config/zsh";
         in
         {

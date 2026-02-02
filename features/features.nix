@@ -1,6 +1,35 @@
 { inputs, ... }:
 {
   imports = [
-    (inputs.import-tree ./)
+    ./audio.nix
+    ./archiver.nix
+    ./bluetooth.nix
+    ./btop.nix
+    ./containerization.nix
+    ./devenv.nix
+    ./firefox.nix
+    ./flatpak.nix
+    ./git.nix
+    ./hypridle.nix
+    ./hyprland.nix
+    ./hyprpanel.nix
+    ./kitty.nix
+    ./librewolf.nix
+    ./monitor-tools.nix
+    ./mullvad.nix
+    ./networking.nix
+    ./nix-helpers.nix
+    ./printing.nix
+    ./protonmail-bridge.nix
+    ./screenshots.nix
+    ./security.nix
+    ./syncthing.nix
+    ./virtualization.nix
+    ./vscode.nix
+    ./waybar.nix
+    ./wayland.nix
+    ./xserver.nix
+    ./zsh.nix
+    ./brave.nix
   ];
 }

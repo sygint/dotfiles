@@ -3,6 +3,7 @@
   lib,
   pkgs,
   userVars,
+  inputs,
   ...
 }:
 
@@ -123,9 +124,9 @@ in
           {
             # Symlink entire directories to access all chatmodes and prompts
             ".config/Code/User/instructions".source =
-              mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/instructions";
+              mkOutOfStoreSymlink "${inputs.dotfiles.outPath}/.config/Code/User/instructions";
             ".config/Code/User/prompts".source =
-              mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts";
+              mkOutOfStoreSymlink "${inputs.dotfiles.outPath}/.config/Code/User/prompts";
           }
         );
       };

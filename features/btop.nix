@@ -3,6 +3,7 @@
   lib,
   pkgs,
   userVars,
+  inputs,
   ...
 }:
 
@@ -25,7 +26,7 @@ in
         home.packages = [ pkgs.btop ];
 
         home.file.".config/btop/btop.conf" = {
-          source = mkOutOfStoreSymlink "${configRoot}/dotfiles/.config/btop/btop.conf";
+          source = mkOutOfStoreSymlink "${inputs.dotfiles.outPath}/.config/btop/btop.conf";
           force = true;
         };
       };

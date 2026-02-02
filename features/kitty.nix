@@ -3,6 +3,7 @@
   lib,
   pkgs,
   userVars,
+  inputs,
   ...
 }:
 
@@ -21,8 +22,7 @@ in
         home =
           let
             inherit (config.lib.file) mkOutOfStoreSymlink;
-            configRoot = "/home/${userVars.username}/.config/nixos";
-            configKittyDir = "${configRoot}/dotfiles/.config/kitty";
+            configKittyDir = "${inputs.dotfiles.outPath}/.config/kitty";
           in
           {
             packages = [ pkgs.kitty ];

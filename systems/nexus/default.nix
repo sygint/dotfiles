@@ -20,7 +20,7 @@ in
     ./hardware.nix
     ./disk-config.nix
     ../../modules/system.nix
-    ../../modules/features.nix
+    ../../features/features.nix
   ]
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {

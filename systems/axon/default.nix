@@ -25,7 +25,7 @@ in
     # Import all other system modules
     ../../modules/system.nix
     # Import unified feature modules
-    ../../modules/features.nix
+    ../../features/features.nix
   ]
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {

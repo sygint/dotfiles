@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -26,8 +27,7 @@ in
         }:
         let
           inherit (config.lib.file) mkOutOfStoreSymlink;
-          configRoot = "/home/${userVars.username}/.config/nixos";
-          configHyprpanelDir = "${configRoot}/dotfiles/.config/hyprpanel";
+          configHyprpanelDir = "${inputs.dotfiles.outPath}/.config/hyprpanel";
         in
         {
           # Install hyprpanel from nixpkgs

@@ -74,14 +74,17 @@ in
         let
           inherit (config.lib.file) mkOutOfStoreSymlink;
 
-          configRoot = "/home/${userVars.username}/.config/nixos";
-          configDotfilesDir = "${configRoot}/dotfiles/.config";
+          configDotfilesDir = "${inputs.dotfiles.outPath}/.config";
           hyprland = userVars.hyprland;
           barCfg = hyprland.bar or "hyprpanel";
           hostName = userVars.hostName or "orion";
+          configRoot = "/home/${userVars.username}/.config/nixos";
           scriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
           # Generate hyprland.conf from template with variable substitution
+          # Uses the template from dotfiles which contains @placeholder@ variables
+          hyprlandConfTemplate = builtins.readFile "${configDotfilesDir}/hypr/hyprland.conf";
+
           hyprlandConf = pkgs.writeText "hyprland.conf" (
             lib.replaceStrings
               [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@systemBarScript@" "@monitorHandler@" ]
@@ -100,7 +103,7 @@ in
                 )
                 ("${scriptsDir}/monitor-handler.sh --fast --bar=" + barCfg)
               ]
-              (builtins.readFile ../../dotfiles/.config/hypr/hyprland.conf)
+              hyprlandConfTemplate
           );
 
           # Determine which packages to auto-install

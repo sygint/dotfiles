@@ -3,6 +3,7 @@
   lib,
   userVars,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -11,6 +12,7 @@ let
   gitUsername = userVars.git.username;
   gitEmail = userVars.git.email;
   cfg = config.modules.features.git;
+  gitConfigNixPath = "${inputs.dotfiles.outPath}/.config/git/config.nix";
 in
 {
   options.modules.features.git.enable =
@@ -21,7 +23,17 @@ in
       home.packages = [ pkgs.git ];
 
       xdg.configFile."git/config" = {
-        text = import ../../dotfiles/.config/git/config.nix { inherit gitUsername gitEmail; };
+        text =
+          if builtins.pathExists gitConfigNixPath then
+            import gitConfigNixPath { inherit gitUsername gitEmail; }
+          else
+            ''
+              [user]
+                name = ${gitUsername}
+                email = ${gitEmail}
+              [core]
+                editor = nano
+            '';
       };
     };
   };

@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -26,8 +27,7 @@ in
         }:
         let
           inherit (config.lib.file) mkOutOfStoreSymlink;
-          configRoot = "/home/${userVars.username}/.config/nixos";
-          configWaybarDir = "${configRoot}/dotfiles/.config/waybar";
+          configWaybarDir = "${inputs.dotfiles.outPath}/.config/waybar";
         in
         {
           home.packages = with pkgs; [
