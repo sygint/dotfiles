@@ -32,6 +32,7 @@ in
         {
           home.packages = with pkgs; [
             waybar
+            mako # Notification daemon (waybar doesn't have built-in notifications)
             # Waybar dependencies
             font-awesome
             pavucontrol
@@ -71,6 +72,32 @@ in
               source = mkOutOfStoreSymlink "${configWaybarDir}/style.css";
               force = true;
             };
+          };
+
+          # Waybar needs mako for notifications (it doesn't have built-in notifications)
+          services.mako = {
+            enable = true;
+            settings = lib.mkForce {
+              default-timeout = 3000;
+              anchor = "top-right";
+              background-color = "#1e1e2e";
+              text-color = "#cdd6f4";
+              border-color = "#89b4fa";
+              border-size = 2;
+              border-radius = 10;
+              font = "Inter 11";
+              width = 300;
+              height = 100;
+              margin = "10";
+              padding = "10";
+              max-visible = 5;
+              group-by = "app-name";
+              actions = 1;
+            };
+            extraConfig = ''
+              [app-name=volume-control]
+              format=%s\n%b
+            '';
           };
         }
       )

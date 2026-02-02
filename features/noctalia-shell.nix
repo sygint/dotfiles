@@ -1,12 +1,30 @@
-{ lib, ... }:
 {
-  options.modules.features.noctalia-shell = lib.mkOption {
-    type = lib.types.attrs;
-    default = { };
-    description = "Noctalia Shell - Minimal Quickshell-based desktop shell for Wayland";
+  config,
+  lib,
+  inputs,
+  pkgs,
+  ...
+}:
+
+let
+  inherit (lib) mkEnableOption mkIf;
+  cfg = config.modules.features.noctalia-shell;
+in
+{
+  options.modules.features.noctalia-shell = {
+    enable = mkEnableOption "Noctalia Shell - Minimal Quickshell-based desktop shell for Wayland";
   };
 
-  config.modules.features.noctalia-shell = {
-    enable = lib.mkDefault false;
+  config = mkIf cfg.enable {
+    # Home-manager configuration
+    home-manager.sharedModules = [
+      {
+        programs.noctalia-shell = {
+          enable = true;
+          package = inputs.noctalia-shell.packages.${pkgs.system}.default;
+          systemd.enable = true;
+        };
+      }
+    ];
   };
 }

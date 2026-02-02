@@ -76,32 +76,22 @@ in
 
           configDotfilesDir = "${inputs.dotfiles.outPath}/.config";
           hyprland = userVars.hyprland;
-          barCfg = hyprland.bar or "hyprpanel";
           hostName = userVars.hostName or "orion";
           configRoot = "/home/${userVars.username}/.config/nixos";
           scriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
           # Generate hyprland.conf from template with variable substitution
-          # Uses the template from dotfiles which contains @placeholder@ variables
           hyprlandConfTemplate = builtins.readFile "${configDotfilesDir}/hypr/hyprland.conf";
 
           hyprlandConf = pkgs.writeText "hyprland.conf" (
             lib.replaceStrings
-              [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@systemBarScript@" "@monitorHandler@" ]
+              [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@monitorHandler@" ]
               [
                 (hyprland.terminal or "ghostty")
                 (hyprland.fileManager or "nemo")
                 (hyprland.webBrowser or "brave")
                 (hyprland.menu or "rofi")
-                (
-                  if barCfg == "waybar" then
-                    "${scriptsDir}/start-waybar.sh"
-                  else if barCfg == "hyprpanel" then
-                    "${scriptsDir}/start-hyprpanel.sh"
-                  else
-                    ""
-                )
-                ("${scriptsDir}/monitor-handler.sh --fast --bar=" + barCfg)
+                "${scriptsDir}/monitor-handler.sh --fast"
               ]
               hyprlandConfTemplate
           );
@@ -119,8 +109,7 @@ in
             defaultBrowserPkg
             defaultFileMgrPkg
           ]
-          ++ cfg.packages.extra
-          ++ lib.optionals (barCfg == "waybar") [ pkgs.mako ];
+          ++ cfg.packages.extra;
 
         in
         {
@@ -142,32 +131,6 @@ in
               source = mkOutOfStoreSymlink "${configDotfilesDir}/rofi/config.rasi";
               force = true;
             };
-          };
-
-          # Start mako notification daemon only when using waybar
-          services.mako = mkIf (barCfg == "waybar") {
-            enable = true;
-            settings = lib.mkForce {
-              default-timeout = 3000;
-              anchor = "top-right";
-              background-color = "#1e1e2e";
-              text-color = "#cdd6f4";
-              border-color = "#89b4fa";
-              border-size = 2;
-              border-radius = 10;
-              font = "Inter 11";
-              width = 300;
-              height = 100;
-              margin = "10";
-              padding = "10";
-              max-visible = 5;
-              group-by = "app-name";
-              actions = 1;
-            };
-            extraConfig = ''
-              [app-name=volume-control]
-              format=%s\n%b
-            '';
           };
         }
       )

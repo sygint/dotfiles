@@ -1,5 +1,5 @@
 # System-specific configuration for Orion
-# 
+#
 # This file contains machine-specific settings like user preferences,
 # application choices, and local configuration.
 #
@@ -12,7 +12,7 @@ let
 in
 {
   system = {
-    hostName = thisHost.hostname;  # From fleet-config.nix
+    hostName = thisHost.hostname; # From fleet-config.nix
     # Machine-specific settings
     # Add other system-level configs here
   };
@@ -30,7 +30,6 @@ in
       fileManager = "nemo";
       webBrowser = "brave";
       menu = "rofi -show drun";
-      bar = "hyprpanel";  # or "waybar"
     };
   };
 
