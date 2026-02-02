@@ -60,6 +60,8 @@ in
     # Disable stylix librewolf target to suppress warning
     sharedModules = [
       inputs.nix-flatpak.homeManagerModules.nix-flatpak
+      inputs.dank-material-shell.homeModules.dank-material-shell
+      inputs.noctalia-shell.homeModules.default
       {
         stylix.targets.librewolf.enable = false;
       }
@@ -133,14 +135,18 @@ in
       # Core
       zsh.enable = true;
       mullvad.enable = true; # Unified system + home config
+      # Niri compositor ecosystem
+      niri = {
+        enable = true;
+        packages.enable = true;
+      };
+      noctalia-shell.enable = true;
       # Hyprland ecosystem
       hyprland = {
         enable = true;
         packages.enable = true;
       };
-      hyprpanel.enable = true;
       hypridle.enable = true;
-      waybar.enable = false; # Disabled in favor of hyprpanel
       screenshots.enable = true;
       wayland.enable = true;
       # Development tools

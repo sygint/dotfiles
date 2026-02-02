@@ -31,6 +31,14 @@
 
     # Fleet management with Colmena
     nixos-fleet.url = "path:/home/syg/Projects/open-source/nixos-fleet";
+
+    # Dank Material Shell - Quickshell-based desktop shell for Wayland
+    dank-material-shell.url = "github:AvengeMedia/DankMaterialShell";
+    dank-material-shell.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Noctalia Shell - Minimal Quickshell-based desktop shell
+    noctalia-shell.url = "github:noctalia-dev/noctalia-shell";
+    noctalia-shell.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   nixConfig = {

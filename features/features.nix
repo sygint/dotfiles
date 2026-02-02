@@ -18,7 +18,9 @@
     ./monitor-tools.nix
     ./mullvad.nix
     ./networking.nix
+    ./niri.nix
     ./nix-helpers.nix
+    ./noctalia-shell.nix
     ./printing.nix
     ./protonmail-bridge.nix
     ./screenshots.nix
