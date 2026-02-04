@@ -29,7 +29,7 @@ in
       terminal = "ghostty";
       fileManager = "nemo";
       webBrowser = "brave";
-      menu = "rofi -show drun";
+      menu = "noctalia-shell ipc call launcher toggle";
     };
   };
 

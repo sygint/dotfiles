@@ -25,6 +25,7 @@
     ./protonmail-bridge.nix
     ./screenshots.nix
     ./security.nix
+    ./swhkd.nix
     ./syncthing.nix
     ./virtualization.nix
     ./vscode.nix

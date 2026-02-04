@@ -39,6 +39,10 @@
     # Noctalia Shell - Minimal Quickshell-based desktop shell
     noctalia-shell.url = "github:noctalia-dev/noctalia-shell";
     noctalia-shell.inputs.nixpkgs.follows = "nixpkgs";
+
+    # swhkd - Simple Wayland HotKey Daemon for compositor-agnostic keybindings
+    swhkd.url = "github:waycrate/swhkd";
+    swhkd.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   nixConfig = {

@@ -14,10 +14,13 @@ STEP="${2:-5}"
 # Use a unique tag for volume notifications to prevent stacking
 MSG_TAG="volume-control"
 
-# Check if hyprpanel is running - if so, skip all notifications (hyprpanel has its own OSD)
-HYPRPANEL_RUNNING=false
+# Check if a shell with its own OSD is running - skip notifications if so
+SKIP_NOTIFICATIONS=false
 if pgrep -f hyprpanel >/dev/null 2>&1; then
-    HYPRPANEL_RUNNING=true
+    SKIP_NOTIFICATIONS=true
+elif pgrep -f "quickshell.*noctalia" >/dev/null 2>&1; then
+    # noctalia-shell has its own volume/notification OSD
+    SKIP_NOTIFICATIONS=true
 fi
 
 # Get current default sink - prioritize actual audio devices over webcams
@@ -28,7 +31,7 @@ if [[ -z "$SINK_ID" ]]; then
     SINK_ID=$(wpctl status | grep -A 20 "Sinks:" | grep -B 20 "Sources:" | grep "\*" | head -1 | grep -o "[0-9]\+" | head -1)
 fi
 
-if [[ -z "$SINK_ID" ]] && [[ "$HYPRPANEL_RUNNING" == "false" ]]; then
+if [[ -z "$SINK_ID" ]] && [[ "$SKIP_NOTIFICATIONS" == "false" ]]; then
     notify-send -t 2000 -i dialog-error "Audio Error" "No audio device found"
     exit 1
 fi
@@ -62,7 +65,7 @@ case "$ACTION" in
         NEW_VOLUME_PERCENT=$(awk "BEGIN {printf \"%.0f\", $NEW_VOLUME * 100}")
         
         # If volume didn't change (hit limit), show different message
-        if [[ "$OLD_VOLUME_PERCENT" == "$NEW_VOLUME_PERCENT" ]] && [[ "$HYPRPANEL_RUNNING" == "false" ]]; then
+        if [[ "$OLD_VOLUME_PERCENT" == "$NEW_VOLUME_PERCENT" ]] && [[ "$SKIP_NOTIFICATIONS" == "false" ]]; then
             notify-send -t 1500 -i "audio-volume-high" -h "int:value:$NEW_VOLUME_PERCENT" -h "string:x-dunst-stack-tag:$MSG_TAG" -a "volume-control" "$DISPLAY_NAME" "Volume: ${NEW_VOLUME_PERCENT}% (Max)"
             # Update waybar if it's running
             pkill -RTMIN+8 waybar 2>/dev/null || true
@@ -81,7 +84,7 @@ case "$ACTION" in
         NEW_VOLUME_PERCENT=$(awk "BEGIN {printf \"%.0f\", $NEW_VOLUME * 100}")
         
         # If volume didn't change (hit minimum), show different message
-        if [[ "$OLD_VOLUME_PERCENT" == "$NEW_VOLUME_PERCENT" ]] && [[ "$HYPRPANEL_RUNNING" == "false" ]]; then
+        if [[ "$OLD_VOLUME_PERCENT" == "$NEW_VOLUME_PERCENT" ]] && [[ "$SKIP_NOTIFICATIONS" == "false" ]]; then
             notify-send -t 1500 -i "audio-volume-low" -h "int:value:$NEW_VOLUME_PERCENT" -h "string:x-dunst-stack-tag:$MSG_TAG" -a "volume-control" "$DISPLAY_NAME" "Volume: ${NEW_VOLUME_PERCENT}% (Min)"
             # Update waybar if it's running
             pkill -RTMIN+8 waybar 2>/dev/null || true
@@ -142,12 +145,12 @@ case "$ACTION" in
 esac
 
 # Send notification with progress bar - only if hyprpanel is not running
-if [[ "$HYPRPANEL_RUNNING" == "false" ]]; then
+if [[ "$SKIP_NOTIFICATIONS" == "false" ]]; then
     notify-send -t 1500 -i "$ICON" -h "int:value:$PROGRESS" -h "string:x-dunst-stack-tag:$MSG_TAG" -a "volume-control" "$DISPLAY_NAME" "$MESSAGE"
 fi
 
 
 # Update waybar if it's running, but only if systemBar is waybar
-if [[ "$HYPRPANEL_RUNNING" == "false" ]]; then
+if [[ "$SKIP_NOTIFICATIONS" == "false" ]]; then
     pkill -RTMIN+8 waybar 2>/dev/null || true
 fi

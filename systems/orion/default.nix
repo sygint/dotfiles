@@ -148,6 +148,7 @@ in
       };
       hypridle.enable = true;
       screenshots.enable = true;
+      swhkd.enable = true; # Compositor-agnostic keybindings
       wayland.enable = true;
       # Development tools
       git.enable = true;

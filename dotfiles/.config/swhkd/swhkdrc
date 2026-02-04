@@ -1,0 +1,113 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# SWHKD Configuration - Compositor-agnostic system keybindings
+# ═══════════════════════════════════════════════════════════════════════════════
+# This file handles keybindings that work regardless of compositor (Hyprland, Niri, etc.)
+# Window management keybindings remain in the compositor config.
+#
+# Syntax is sxhkd-compatible: https://man.archlinux.org/man/sxhkd.1
+
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Application Launchers
+# ─────────────────────────────────────────────────────────────────────────────────
+
+# Terminal
+super + Return
+    ghostty
+
+# Application menu
+super + d
+    noctalia-shell ipc call launcher toggle
+
+# File manager
+super + e
+    nemo
+
+# Web browser
+super + w
+    brave
+
+# Brave with optimizations
+super + b
+    $HOME/.config/nixos/scripts/browser/brave-optimized.sh
+
+# Wallpaper picker
+super + alt + w
+    waypaper
+
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Screenshots
+# ─────────────────────────────────────────────────────────────────────────────────
+
+# Full screenshot
+super + ctrl + s
+    $HOME/.config/nixos/scripts/desktop/screenshot.sh full
+
+# Area screenshot
+super + ctrl + shift + s
+    $HOME/.config/nixos/scripts/desktop/screenshot.sh area
+
+# macOS-style: full screenshot
+super + ctrl + shift + 3
+    $HOME/.config/nixos/scripts/desktop/screenshot.sh full
+
+# macOS-style: area screenshot
+super + ctrl + shift + 4
+    $HOME/.config/nixos/scripts/desktop/screenshot.sh area
+
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# System Controls
+# ─────────────────────────────────────────────────────────────────────────────────
+
+# Screen lock (hyprlock for Hyprland, swaylock for others)
+super + ctrl + q
+    hyprlock
+
+# Monitor handler
+super + ctrl + shift + m
+    $HOME/.config/nixos/systems/orion/scripts/monitor-handler.sh --fast
+
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Media Keys
+# ─────────────────────────────────────────────────────────────────────────────────
+
+# Volume controls
+XF86AudioRaiseVolume
+    $HOME/.config/nixos/scripts/desktop/volume-control.sh up
+
+XF86AudioLowerVolume
+    $HOME/.config/nixos/scripts/desktop/volume-control.sh down
+
+XF86AudioMute
+    $HOME/.config/nixos/scripts/desktop/volume-control.sh mute
+
+XF86AudioMicMute
+    wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Brightness Keys
+# ─────────────────────────────────────────────────────────────────────────────────
+
+XF86MonBrightnessUp
+    brightnessctl s 10%+
+
+XF86MonBrightnessDown
+    brightnessctl s 10%-
+
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Media Playback
+# ─────────────────────────────────────────────────────────────────────────────────
+
+XF86AudioPlay
+    playerctl play-pause
+
+XF86AudioNext
+    playerctl next
+
+XF86AudioPrev
+    playerctl previous

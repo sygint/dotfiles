@@ -1296,6 +1296,7 @@
         "opencode": "opencode",
         "sops-nix": "sops-nix_2",
         "stylix": "stylix",
+        "swhkd": "swhkd",
         "zen-browser": "zen-browser"
       }
     },
@@ -1402,6 +1403,26 @@
       "original": {
         "owner": "danth",
         "repo": "stylix",
+        "type": "github"
+      }
+    },
+    "swhkd": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1767635719,
+        "narHash": "sha256-KjuBy8RDy/5SqX5zZWfzYPcpfJ92Cohf2CrkMC6ZtjA=",
+        "owner": "waycrate",
+        "repo": "swhkd",
+        "rev": "0f8a2af6a605adcfb06ae0bcb5dce9353169b598",
+        "type": "github"
+      },
+      "original": {
+        "owner": "waycrate",
+        "repo": "swhkd",
         "type": "github"
       }
     },

@@ -16,9 +16,18 @@ in
   config = mkIf cfg.enable {
     hardware.bluetooth = {
       enable = true;
+      # Power on Bluetooth adapter at boot
+      powerOnBoot = true;
 
-      # Show battery charge of connected Bluetooth devices.
-      settings.general.experimental = true;
+      settings.General = {
+        # Show battery charge of connected Bluetooth devices
+        Experimental = true;
+        # Enable all Bluetooth profiles
+        Enable = "Source,Sink,Media,Socket";
+      };
     };
+
+    # Enable blueman service for GUI management
+    services.blueman.enable = true;
   };
 }
