@@ -38,5 +38,6 @@
   "git.path": "/run/current-system/sw/bin/git",
   "terminal.integrated.env.linux": {
     "PATH": "${env:PATH}:/run/current-system/sw/bin"
-  }
+  },
+  "explorer.confirmDelete": false
 }
