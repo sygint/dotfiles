@@ -45,6 +45,52 @@ in
         description = "Extra packages to install with Hyprland";
       };
     };
+
+    monitors = mkOption {
+      type = types.listOf (
+        types.submodule {
+          options = {
+            name = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Monitor connector name (e.g., eDP-1, DP-2). Prefer 'desc' for stability.";
+            };
+            desc = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Monitor description for stable matching (e.g., 'Acer Technologies ED343CUR V'). Use `hyprctl monitors` to find.";
+            };
+            resolution = mkOption {
+              type = types.str;
+              default = "preferred";
+              description = "Resolution and refresh rate (e.g., 1920x1080@60)";
+            };
+            position = mkOption {
+              type = types.str;
+              default = "auto";
+              description = "Position (e.g., 0x0, auto)";
+            };
+            scale = mkOption {
+              type = types.str;
+              default = "1";
+              description = "Scale factor";
+            };
+            transform = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Transform (0-7, null for no rotation). 1=90°, 2=180°, 3=270°";
+            };
+            extra = mkOption {
+              type = types.str;
+              default = "";
+              description = "Extra options to append";
+            };
+          };
+        }
+      );
+      default = [ ];
+      description = "Monitor configurations. Use 'desc' for stable matching across reboots.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -80,18 +126,60 @@ in
           configRoot = "/home/${userVars.username}/.config/nixos";
           scriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
+          # Generate monitor configuration lines from Nix
+          monitorConfigs = userVars.monitors or [ ];
+          monitorLines = lib.concatMapStringsSep "\n" (
+            m:
+            let
+              # Use desc: prefix for description matching, otherwise use name
+              # desc matching is more stable across reboots and port changes
+              identifier =
+                if (m.desc or null) != null then
+                  "desc:${m.desc}"
+                else if (m.name or null) != null then
+                  m.name
+                else
+                  throw "Monitor must have either 'name' or 'desc' set";
+              base = "monitor = ${identifier}, ${m.resolution or "preferred"}, ${m.position or "auto"}, ${m.scale or "1"}";
+              transform = m.transform or null;
+              extra = m.extra or "";
+              withTransform = if transform != null then "${base}, transform, ${transform}" else base;
+              withExtra = if extra != "" then "${withTransform}, ${extra}" else withTransform;
+            in
+            withExtra
+          ) monitorConfigs;
+
+          # Fallback for unknown monitors
+          monitorSection =
+            if monitorLines != "" then
+              ''
+                # ═══════════════════════════════════════════════════════════════════════════════
+                # MONITORS - Generated from Nix configuration
+                # ═══════════════════════════════════════════════════════════════════════════════
+                ${monitorLines}
+
+                # Fallback for any other monitors
+                monitor = , preferred, auto, 1
+              ''
+            else
+              ''
+                # No monitors configured in Nix - using auto-detection
+                monitor = , preferred, auto, 1
+              '';
+
           # Generate hyprland.conf from template with variable substitution
           hyprlandConfTemplate = builtins.readFile "${configDotfilesDir}/hypr/hyprland.conf";
 
           hyprlandConf = pkgs.writeText "hyprland.conf" (
             lib.replaceStrings
-              [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@monitorHandler@" ]
+              [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@monitorHandler@" "@monitors@" ]
               [
                 (hyprland.terminal or "ghostty")
                 (hyprland.fileManager or "nemo")
                 (hyprland.webBrowser or "brave")
                 (hyprland.menu or "rofi")
                 "${scriptsDir}/monitor-handler.sh --fast"
+                monitorSection
               ]
               hyprlandConfTemplate
           );

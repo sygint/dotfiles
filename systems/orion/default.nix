@@ -48,6 +48,7 @@ in
       inherit inputs;
       userVars = systemVars.user // {
         inherit hostName;
+        monitors = systemVars.monitors or [ ];
       };
       opencode = inputs.opencode.packages.${pkgs.system};
     };
