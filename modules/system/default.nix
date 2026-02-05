@@ -39,6 +39,18 @@ in
     };
   };
 
+  # Secure-by-default: Enable firewall on all systems
+  # Individual systems can add allowed ports as needed
+  networking.firewall = {
+    enable = lib.mkDefault true; # mkDefault allows systems to override if needed
+    # Block all incoming connections by default
+    # Systems should explicitly allow only the ports they need
+    allowedTCPPorts = lib.mkDefault [ ];
+    allowedUDPPorts = lib.mkDefault [ ];
+    # Allow local network traffic (trusted)
+    trustedInterfaces = lib.mkDefault [ "lo" ]; # Loopback interface
+  };
+
   # Base system settings
   modules = {
     features.security.enable = true;
