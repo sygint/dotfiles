@@ -1,8 +1,7 @@
 { pkgs, ... }:
 {
   imports = [
-    ../../../modules/home/_base-desktop
-    ../../../modules/home.nix
+    ../../../modules/home
     ./extra-programs.nix
   ];
 

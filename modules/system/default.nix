@@ -2,14 +2,17 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }:
 let
-  fleetConfig = import ../../../fleet-config.nix;
+  fleetConfig = import ../../fleet-config.nix;
 in
 {
   imports = [
     ./networking.nix # Fleet-wide hosts configuration
+    # Auto-import other system modules (like ai-services)
+    (inputs.import-tree ./.)
   ];
 
   # Base NixOS configuration - essential settings for any system

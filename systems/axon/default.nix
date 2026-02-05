@@ -18,14 +18,9 @@ let
 in
 {
   imports = [
-    # Include the results of the hardware scan.
     ./hardware.nix
-    # Import base system configuration
-    ../../modules/system/base
-    # Import all other system modules
-    ../../modules/system.nix
-    # Import unified feature modules
-    ../../features/features.nix
+    # Import all modules (features, system, home)
+    ../../modules
   ]
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {

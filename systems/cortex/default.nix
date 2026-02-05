@@ -13,12 +13,8 @@ in
 {
   imports = [
     ./disk-config.nix
-    # Import base system configuration
-    ../../modules/system/base
-    # Import all other system modules (includes ai-services via import-tree)
-    ../../modules/system.nix
-    # Import unified feature modules
-    ../../features/features.nix
+    # Import all modules (features, system, home)
+    ../../modules
   ]
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {

@@ -19,8 +19,8 @@ in
   imports = [
     ./hardware.nix
     ./disk-config.nix
-    ../../modules/system.nix
-    ../../features/features.nix
+    # Import all modules (features, system, home)
+    ../../modules
   ]
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {

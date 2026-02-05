@@ -5,22 +5,20 @@ let
   actualUser = if (builtins.getEnv "USER") != "" then (builtins.getEnv "USER") else username;
 in
 {
-  imports = [
-    # Import the main home modules barrel file
-    ../../home.nix
-  ];
-
   # Base Home Manager Settings - common for all users on all systems
   home = {
     username = actualUser;
     homeDirectory = "/home/${actualUser}";
     stateVersion = "24.11";
+
+    # Desktop-specific: wallpapers symlink
+    # Only applies to desktop systems; server systems ignore this
+    file.wallpapers = {
+      source = ../../wallpapers;
+      recursive = true;
+    };
   };
 
-  # Base programs that every user should have regardless of system
-  # Core utilities now managed by unified features modules in system configs
-
-  programs = {
-    home-manager.enable = true;
-  };
+  # Enable home-manager to manage itself
+  programs.home-manager.enable = true;
 }
