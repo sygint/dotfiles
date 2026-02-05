@@ -139,7 +139,14 @@ check_security() {
     if command -v jq >/dev/null 2>&1 && nix flake show --json >/dev/null 2>&1; then
         systems=$(nix flake show --json | jq -r '.nixosConfigurations? // {} | keys[]' 2>/dev/null || true)
         for sys in $systems; do
-            # Evaluate both SSH settings in a single nix eval call using JSON
+            # First check if SSH is enabled
+            ssh_enabled=$(nix eval --json ".#nixosConfigurations.\"$sys\".config.services.openssh.enable" 2>/dev/null || echo "false")
+            if [ "$ssh_enabled" != "true" ]; then
+                # SSH is disabled, skip security checks for this system
+                continue
+            fi
+
+            # Evaluate SSH settings (only if SSH is enabled)
             ssh_settings=$(nix eval --json ".#nixosConfigurations.\"$sys\".config.services.openssh.settings" 2>/dev/null || echo '{}')
             
             # Check PasswordAuthentication
