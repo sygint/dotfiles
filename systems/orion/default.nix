@@ -206,6 +206,16 @@ in
   # Set keyboard layout for TTY console
   console.keyMap = "us";
 
+  # Power management / hibernation
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend-then-hibernate";
+    HandleLidSwitchExternalPower = "suspend";
+    HandlePowerKey = "hibernate";
+  };
+  systemd.sleep.extraConfig = ''
+    HibernateDelaySec=30min
+  '';
+
   fonts.packages = with pkgs; [
     pkgs.nerd-fonts.fira-code
     pkgs.nerd-fonts.droid-sans-mono
