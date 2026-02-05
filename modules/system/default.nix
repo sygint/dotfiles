@@ -11,8 +11,6 @@ in
 {
   imports = [
     ./networking.nix # Fleet-wide hosts configuration
-    # Auto-import other system modules (like ai-services)
-    (inputs.import-tree ./.)
   ];
 
   # Base NixOS configuration - essential settings for any system

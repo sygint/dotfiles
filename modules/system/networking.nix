@@ -9,7 +9,7 @@
 
 let
   # Import the fleet configuration
-  fleetConfig = import ../../../fleet-config.nix;
+  fleetConfig = import ../../fleet-config.nix;
 
   # Generate hosts entries from fleet config
   # Maps each host's IP to its hostname and fqdn

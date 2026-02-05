@@ -9,10 +9,10 @@
 }:
 
 let
-  cfg = config.modules.system.ai-services;
+  cfg = config.modules.features.ai-services;
 in
 {
-  options.modules.system.ai-services = {
+  options.modules.features.ai-services = {
     enable = lib.mkEnableOption "AI services with Ollama and NVIDIA CUDA support";
   };
 

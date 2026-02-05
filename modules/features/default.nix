@@ -1,6 +1,7 @@
 { inputs, ... }:
 {
   imports = [
+    ./ai-services
     ./audio.nix
     ./archiver.nix
     ./bluetooth.nix

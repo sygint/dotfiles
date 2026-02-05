@@ -120,8 +120,8 @@ in
       hardening.enable = true; # Enable fail2ban, auditd, SSH hardening, kernel hardening
     };
 
-    # Enable AI services (Ollama with NVIDIA CUDA support)
-    system.ai-services.enable = true;
+    # Enable AI services (Ollama, NVIDIA, CUDA, etc.)
+    features.ai-services.enable = true;
   };
 
   security = {
