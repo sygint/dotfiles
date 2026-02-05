@@ -23,45 +23,45 @@ elif pgrep -f "quickshell.*noctalia" >/dev/null 2>&1; then
     SKIP_NOTIFICATIONS=true
 fi
 
-# Get current default sink - prioritize actual audio devices over webcams
-SINK_ID=$(wpctl status | grep -A 20 "Sinks:" | grep -B 20 "Sources:" | grep "\*" | grep -v -E "(Webcam|V4L2)" | head -1 | grep -o "[0-9]\+" | head -1)
+# Use the proper WirePlumber default sink reference
+SINK="@DEFAULT_AUDIO_SINK@"
 
-# Fallback to any default sink if no non-webcam device found
-if [[ -z "$SINK_ID" ]]; then
-    SINK_ID=$(wpctl status | grep -A 20 "Sinks:" | grep -B 20 "Sources:" | grep "\*" | head -1 | grep -o "[0-9]\+" | head -1)
-fi
-
-if [[ -z "$SINK_ID" ]] && [[ "$SKIP_NOTIFICATIONS" == "false" ]]; then
-    notify-send -t 2000 -i dialog-error "Audio Error" "No audio device found"
+# Check if default sink exists
+if ! wpctl get-volume "$SINK" >/dev/null 2>&1; then
+    if [[ "$SKIP_NOTIFICATIONS" == "false" ]]; then
+        notify-send -t 2000 -i dialog-error "Audio Error" "No audio device found"
+    fi
     exit 1
 fi
 
-# Get device info for notification
-SINK_INFO=$(wpctl status | grep -A 20 "Sinks:" | grep -B 20 "Sources:" | grep "\*" | grep "$SINK_ID" | head -1)
-DEVICE_NAME=$(echo "$SINK_INFO" | sed 's/^[[:space:]]*\*[[:space:]]*[0-9]*\. //' | sed 's/ \[.*$//')
+# Get device name for notification
+DEVICE_NAME=$(wpctl inspect "$SINK" 2>/dev/null | grep "node.description" | sed 's/.*= "\(.*\)"/\1/' | head -1)
+if [[ -z "$DEVICE_NAME" ]]; then
+    DEVICE_NAME=$(wpctl inspect "$SINK" 2>/dev/null | grep "node.nick" | sed 's/.*= "\(.*\)"/\1/' | head -1)
+fi
 
 # Simplify device name
 case "$DEVICE_NAME" in
-    *"TOZO Open EarRing"*) DISPLAY_NAME="🎧 TOZO Earbuds" ;;
-    *"SteelSeries Arctis"*) DISPLAY_NAME="🎮 SteelSeries Headset" ;;
-    *"HD Audio Controller Analog"*) DISPLAY_NAME="🔊 Built-in Speakers" ;;
-    *"HD Audio Controller Digital"*) DISPLAY_NAME="📺 HDMI Audio" ;;
-    *"PCM2912A Audio Codec"*) DISPLAY_NAME="🎵 USB Audio" ;;
+    *"TOZO"*) DISPLAY_NAME="🎧 TOZO Earbuds" ;;
+    *"SteelSeries"*|*"Arctis"*) DISPLAY_NAME="🎮 SteelSeries Headset" ;;
+    *"Analog Stereo"*) DISPLAY_NAME="🔊 Built-in Speakers" ;;
+    *"HDMI"*|*"Digital Stereo"*) DISPLAY_NAME="📺 HDMI Audio" ;;
+    *"PCM2912A"*|*"USB Audio"*) DISPLAY_NAME="🎵 USB Audio" ;;
     *"Webcam"*) DISPLAY_NAME="📹 Webcam Audio" ;;
-    *) DISPLAY_NAME="🔈 Audio Device" ;;
+    *) DISPLAY_NAME="🔈 ${DEVICE_NAME:-Audio Device}" ;;
 esac
 
 # Perform action
 case "$ACTION" in
     "up")
         # Get volume before change
-        OLD_VOLUME=$(wpctl get-volume "$SINK_ID" | grep -o "[0-9.]*" | head -1)
+        OLD_VOLUME=$(wpctl get-volume "$SINK" | grep -o "[0-9.]*" | head -1)
         OLD_VOLUME_PERCENT=$(awk "BEGIN {printf \"%.0f\", $OLD_VOLUME * 100}")
         
-        wpctl set-volume -l 1.0 "$SINK_ID" "${STEP}%+"
+        wpctl set-volume -l 1.0 "$SINK" "${STEP}%+"
         
         # Get volume after change to detect if it actually changed
-        NEW_VOLUME=$(wpctl get-volume "$SINK_ID" | grep -o "[0-9.]*" | head -1)
+        NEW_VOLUME=$(wpctl get-volume "$SINK" | grep -o "[0-9.]*" | head -1)
         NEW_VOLUME_PERCENT=$(awk "BEGIN {printf \"%.0f\", $NEW_VOLUME * 100}")
         
         # If volume didn't change (hit limit), show different message
@@ -74,13 +74,13 @@ case "$ACTION" in
         ;;
     "down")
         # Get volume before change
-        OLD_VOLUME=$(wpctl get-volume "$SINK_ID" | grep -o "[0-9.]*" | head -1)
+        OLD_VOLUME=$(wpctl get-volume "$SINK" | grep -o "[0-9.]*" | head -1)
         OLD_VOLUME_PERCENT=$(awk "BEGIN {printf \"%.0f\", $OLD_VOLUME * 100}")
         
-        wpctl set-volume "$SINK_ID" "${STEP}%-"
+        wpctl set-volume "$SINK" "${STEP}%-"
         
         # Get volume after change to detect if it actually changed
-        NEW_VOLUME=$(wpctl get-volume "$SINK_ID" | grep -o "[0-9.]*" | head -1)
+        NEW_VOLUME=$(wpctl get-volume "$SINK" | grep -o "[0-9.]*" | head -1)
         NEW_VOLUME_PERCENT=$(awk "BEGIN {printf \"%.0f\", $NEW_VOLUME * 100}")
         
         # If volume didn't change (hit minimum), show different message
@@ -92,11 +92,11 @@ case "$ACTION" in
         fi
         ;;
     "mute")
-        wpctl set-mute "$SINK_ID" toggle
+        wpctl set-mute "$SINK" toggle
         ;;
     "get")
         # Just get volume without notification
-        VOLUME=$(wpctl get-volume "$SINK_ID" | grep -o "[0-9.]*" | head -1)
+        VOLUME=$(wpctl get-volume "$SINK" | grep -o "[0-9.]*" | head -1)
         VOLUME_PERCENT=$(awk "BEGIN {printf \"%.0f\", $VOLUME * 100}")
         echo "${VOLUME_PERCENT}%"
         exit 0
@@ -108,9 +108,9 @@ case "$ACTION" in
 esac
 
 # Get new volume and mute state
-VOLUME=$(wpctl get-volume "$SINK_ID" | grep -o "[0-9.]*" | head -1)
+VOLUME=$(wpctl get-volume "$SINK" | grep -o "[0-9.]*" | head -1)
 VOLUME_PERCENT=$(awk "BEGIN {printf \"%.0f\", $VOLUME * 100}")
-MUTED=$(wpctl get-volume "$SINK_ID" | grep -q "MUTED" && echo "true" || echo "false")
+MUTED=$(wpctl get-volume "$SINK" | grep -q "MUTED" && echo "true" || echo "false")
 
 # Choose icon and message
 if [[ "$MUTED" == "true" ]]; then
