@@ -20,6 +20,10 @@ in
   user = {
     username = "syg";
 
+    # Which compositor to auto-start on TTY1 login
+    # Options: "Hyprland", "niri"
+    compositor = "Hyprland";
+
     git = {
       username = "sygint";
       email = "sygint@users.noreply.github.com";

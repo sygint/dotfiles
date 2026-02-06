@@ -52,6 +52,10 @@ in
           scriptsDir = "${configRoot}/scripts";
           hostScriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
+          # Lock screen — detect compositor at runtime:
+          # hyprlock for Hyprland, swaylock for everything else
+          lockCmd = if (userVars.compositor or "Hyprland") == "Hyprland" then "hyprlock" else "swaylock";
+
           # Generate swhkdrc content
           swhkdConfig = ''
             # ═══════════════════════════════════════════════════════════════════════════════
@@ -119,7 +123,7 @@ in
 
             # Screen lock (hyprlock for Hyprland, swaylock for others)
             super + ctrl + q
-                hyprlock
+                ${lockCmd}
 
             # Monitor handler
             super + ctrl + shift + m
