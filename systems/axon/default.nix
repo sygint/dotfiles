@@ -93,16 +93,7 @@ in
     ];
   };
 
-  # Audio configuration optimized for Axon
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    jack.enable = true;
-  };
+  # Audio handled by modules.features.audio.enable below
 
   # User configuration
   users.users.axon = {
@@ -374,6 +365,5 @@ in
     ];
   };
 
-  # System State Version
-  system.stateVersion = "24.11"; # Don't change this
+  # System State Version handled by modules/system/default.nix
 }

@@ -34,13 +34,8 @@ in
     })
   ];
 
-  # Essential boot configuration
-  boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
-  };
+  # Boot configuration handled by modules/system/default.nix
+  # (systemd-boot, EFI, stateVersion are set there)
 
   networking.hostName = hostName;
   time.timeZone = networkConfig.global.timeZone;
@@ -408,6 +403,5 @@ in
     libva-utils # Provides vainfo to check hardware video acceleration
   ];
 
-  # ===== System State Version =====
-  system.stateVersion = "24.11"; # Don't change this
+  # System State Version handled by modules/system/default.nix
 }
