@@ -14,14 +14,18 @@ in
   system = {
     hostName = thisHost.hostname; # From fleet-config.nix
     timeZone = fleetConfig.global.timeZone; # From fleet-config.nix
-    # Machine-specific settings
   };
 
   user = {
     username = "axon";
-    name = "axon";
-    email = "axon@example.com";
-    # Add any other user-specific variables here
+
+    git = {
+      username = "axon";
+      email = "axon@axon.home";
+    };
+
+    # No Hyprland on this system (uses GNOME)
+    hyprland = { };
   };
 
   # Re-export network config for this host (optional, for convenience)

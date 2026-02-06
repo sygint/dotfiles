@@ -1,5 +1,5 @@
 # System-specific configuration for Nexus
-# 
+#
 # This file contains machine-specific settings like user preferences,
 # application choices, and local configuration.
 #
@@ -12,16 +12,19 @@ let
 in
 {
   system = {
-    hostName = thisHost.hostname;  # From fleet-config.nix
-    # Machine-specific settings
-    # Add other system-level configs here
+    hostName = thisHost.hostname; # From fleet-config.nix
   };
 
   user = {
     username = "deploy";
-    name = "Deployment User";
-    email = "deploy@nexus.home";
-    # Add any other user-specific variables here
+
+    git = {
+      username = "deploy";
+      email = "deploy@nexus.home";
+    };
+
+    # No desktop environment on this server
+    hyprland = { };
   };
 
   # Network and host re-export for convenience

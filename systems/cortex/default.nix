@@ -28,13 +28,8 @@ in
     })
   ];
 
-  # Essential boot configuration
-  boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
-  };
+  # Boot configuration handled by modules/system/default.nix
+  # (systemd-boot, EFI, stateVersion are set there)
 
   networking.hostName = "cortex";
 
@@ -261,6 +256,5 @@ in
   # Note: System hardening sysctl settings are configured in the security module
   # (modules/system/system/security.nix) via security.hardening.enable = true;
 
-  # Set state version
-  system.stateVersion = "24.11";
+  # System State Version handled by modules/system/default.nix
 }

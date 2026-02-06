@@ -30,6 +30,7 @@ in
       fileManager = "nemo";
       webBrowser = "brave";
       menu = "noctalia-shell ipc call launcher toggle";
+      bar = "hyprpanel"; # or "waybar"
     };
   };
 
