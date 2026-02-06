@@ -170,18 +170,37 @@ in
           # Generate hyprland.conf from template with variable substitution
           hyprlandConfTemplate = builtins.readFile "${configDotfilesDir}/hypr/hyprland.conf";
 
+          # Default wallpaper — use the first wallpaper in the repo
+          wallpaperPath = "${configRoot}/wallpapers/wallpaperflare.com_wallpaper-1.jpg";
+          lockWallpaper = "${configRoot}/wallpapers/wallpaperflare.com_wallpaper-6.jpg";
+
           hyprlandConf = pkgs.writeText "hyprland.conf" (
             lib.replaceStrings
-              [ "@terminal@" "@fileManager@" "@webBrowser@" "@menu@" "@monitorHandler@" "@monitors@" ]
+              [
+                "@terminal@"
+                "@fileManager@"
+                "@webBrowser@"
+                "@menu@"
+                "@monitorHandler@"
+                "@wallpaperPath@"
+                "@monitors@"
+              ]
               [
                 (hyprland.terminal or "ghostty")
                 (hyprland.fileManager or "nemo")
                 (hyprland.webBrowser or "brave")
                 (hyprland.menu or "rofi")
                 "${scriptsDir}/monitor-handler.sh --fast"
+                wallpaperPath
                 monitorSection
               ]
               hyprlandConfTemplate
+          );
+
+          # Generate hyprlock.conf from template with variable substitution
+          hyprlockConfTemplate = builtins.readFile "${configDotfilesDir}/hypr/hyprlock.conf";
+          hyprlockConf = pkgs.writeText "hyprlock.conf" (
+            lib.replaceStrings [ "@lockWallpaper@" ] [ lockWallpaper ] hyprlockConfTemplate
           );
 
           # Determine which packages to auto-install
@@ -218,8 +237,7 @@ in
 
           home.file = {
             ".config/hypr/hyprlock.conf" = {
-              source = mkOutOfStoreSymlink "${configDotfilesDir}/hypr/hyprlock.conf";
-              force = true;
+              source = hyprlockConf;
             };
             ".config/hypr/hyprland.conf" = {
               source = hyprlandConf;
