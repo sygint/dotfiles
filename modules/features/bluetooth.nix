@@ -27,6 +27,22 @@ in
       };
     };
 
+    environment.systemPackages = with pkgs; [
+      bluetuith # Modern TUI Bluetooth manager with mouse support
+      bluez-tools # For bluetoothctl and bluetooth TUI
+    ];
+
+    # Ensure bluetooth is not soft-blocked by rfkill on boot
+    systemd.services.bluetooth-rfkill-unblock = {
+      description = "Unblock Bluetooth via rfkill";
+      after = [ "bluetooth.service" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.util-linux}/bin/rfkill unblock bluetooth";
+      };
+    };
+
     # Enable blueman service for GUI management
     services.blueman.enable = true;
   };

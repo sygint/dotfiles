@@ -36,5 +36,9 @@ in
         allowedTCPPorts = [ ]; # No TCP ports open to internet
       };
     };
+
+    environment.systemPackages = with pkgs; [
+      networkmanagerapplet # nm-connection-editor for advanced network settings
+    ];
   };
 }

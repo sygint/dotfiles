@@ -37,19 +37,6 @@ in
             font-awesome
             pavucontrol
             wlogout
-
-            # Network and Bluetooth TUI tools
-            networkmanager # For nmtui terminal interface
-            bluetuith # Modern TUI Bluetooth manager with mouse support
-            bluez-tools # For bluetoothctl and bluetooth TUI
-
-            # Keep minimal GUI options for fallback
-            networkmanagerapplet # nm-connection-editor for advanced network settings
-            blueman # For advanced Bluetooth settings
-
-            # Cursor theme
-            adwaita-icon-theme
-            gnome-themes-extra
           ];
 
           # GTK and cursor theme settings for waybar
