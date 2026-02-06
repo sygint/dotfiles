@@ -246,10 +246,6 @@ in
               source = mkOutOfStoreSymlink "${configDotfilesDir}/hypr/mocha.conf";
               force = true;
             };
-            ".config/rofi/config.rasi" = {
-              source = mkOutOfStoreSymlink "${configDotfilesDir}/rofi/config.rasi";
-              force = true;
-            };
           };
         }
       )
