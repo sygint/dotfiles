@@ -24,6 +24,16 @@ in
       default = userVars.username;
       description = "Username for running Syncthing service and GUI access";
     };
+
+    lanInterfaces = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "Network interfaces to open Syncthing ports on (LAN only). If empty, no per-interface firewall rules are created.";
+      example = [
+        "wlp1s0"
+        "enp0s0"
+      ];
+    };
   };
 
   config = mkIf cfg.enable {
@@ -43,23 +53,15 @@ in
       };
     };
 
-    # Open Syncthing ports only for LAN interfaces
-    networking.firewall.interfaces = {
-      "eth0" = {
+    # Open Syncthing ports only for specified LAN interfaces
+    networking.firewall.interfaces = lib.mkIf (cfg.lanInterfaces != [ ]) (
+      lib.genAttrs cfg.lanInterfaces (_: {
         allowedTCPPorts = [ 22000 ]; # Syncthing transfer protocol
         allowedUDPPorts = [
           22000
           21027
         ]; # Syncthing transfer and discovery
-      };
-      "wlp1s0" = {
-        allowedTCPPorts = [ 22000 ]; # Syncthing transfer protocol
-        allowedUDPPorts = [
-          22000
-          21027
-        ]; # Syncthing transfer and discovery
-      };
-      # Not exposed to internet - LAN interfaces only
-    };
+      })
+    );
   };
 }
