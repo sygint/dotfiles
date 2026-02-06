@@ -46,6 +46,12 @@ in
           webBrowser = hyprCfg.webBrowser or "brave";
           menu = hyprCfg.menu or "rofi -show drun";
 
+          # Derived paths — no more hardcoded $HOME/.config/nixos/...
+          hostName = userVars.hostName or "orion";
+          configRoot = "/home/${userVars.username}/.config/nixos";
+          scriptsDir = "${configRoot}/scripts";
+          hostScriptsDir = "${configRoot}/systems/${hostName}/scripts";
+
           # Generate swhkdrc content
           swhkdConfig = ''
             # ═══════════════════════════════════════════════════════════════════════════════
@@ -79,7 +85,7 @@ in
 
             # Brave with optimizations
             super + b
-                $HOME/.config/nixos/scripts/browser/brave-optimized.sh
+                ${scriptsDir}/browser/brave-optimized.sh
 
             # Wallpaper picker
             super + alt + w
@@ -92,19 +98,19 @@ in
 
             # Full screenshot
             super + ctrl + s
-                $HOME/.config/nixos/scripts/desktop/screenshot.sh full
+                ${scriptsDir}/desktop/screenshot.sh full
 
             # Area screenshot
             super + ctrl + shift + s
-                $HOME/.config/nixos/scripts/desktop/screenshot.sh area
+                ${scriptsDir}/desktop/screenshot.sh area
 
             # macOS-style: full screenshot
             super + ctrl + shift + 3
-                $HOME/.config/nixos/scripts/desktop/screenshot.sh full
+                ${scriptsDir}/desktop/screenshot.sh full
 
             # macOS-style: area screenshot
             super + ctrl + shift + 4
-                $HOME/.config/nixos/scripts/desktop/screenshot.sh area
+                ${scriptsDir}/desktop/screenshot.sh area
 
 
             # ─────────────────────────────────────────────────────────────────────────────────
@@ -117,7 +123,7 @@ in
 
             # Monitor handler
             super + ctrl + shift + m
-                $HOME/.config/nixos/systems/orion/scripts/monitor-handler.sh --fast
+                ${hostScriptsDir}/monitor-handler.sh --fast
 
 
             # ─────────────────────────────────────────────────────────────────────────────────
@@ -126,13 +132,13 @@ in
 
             # Volume controls
             XF86AudioRaiseVolume
-                $HOME/.config/nixos/scripts/desktop/volume-control.sh up
+                ${scriptsDir}/desktop/volume-control.sh up
 
             XF86AudioLowerVolume
-                $HOME/.config/nixos/scripts/desktop/volume-control.sh down
+                ${scriptsDir}/desktop/volume-control.sh down
 
             XF86AudioMute
-                $HOME/.config/nixos/scripts/desktop/volume-control.sh mute
+                ${scriptsDir}/desktop/volume-control.sh mute
 
             XF86AudioMicMute
                 wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
@@ -185,6 +191,7 @@ in
               # swhks daemonizes itself (forks to background), so use forking type
               Type = "forking";
               ExecStart = "${inputs.swhkd.packages.${pkgs.system}.default}/bin/swhks";
+              PIDFile = "%t/swhks_%U.pid";
               Restart = "on-failure";
               RestartSec = 1;
             };
