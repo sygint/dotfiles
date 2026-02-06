@@ -3,51 +3,9 @@ let
   inherit (inputs.nixpkgs) lib;
   fleetConfig = import ../fleet-config.nix;
 
-  # Import shared constants (same as nixos-configurations.nix)
+  # Import shared constants and system definitions — same source as nixos-configurations.nix
   shared = import ./lib.nix { inherit inputs; };
-  inherit (shared) system userVars;
-
-  # Re-import the systems definition from nixos-configurations.nix
-  # This ensures we use the same module lists
-  systems = {
-    orion = {
-      path = ../systems/orion;
-      modules = [
-        inputs.stylix.nixosModules.stylix
-        inputs.nix-snapd.nixosModules.default
-        inputs.nixos-hardware.nixosModules.framework-13-7040-amd
-        inputs.home-manager.nixosModules.home-manager
-        inputs.sops-nix.nixosModules.sops
-      ];
-      hasSecrets = true;
-    };
-    cortex = {
-      path = ../systems/cortex;
-      modules = [
-        inputs.disko.nixosModules.disko
-        inputs.home-manager.nixosModules.home-manager
-        inputs.sops-nix.nixosModules.sops
-      ];
-      hasSecrets = true;
-    };
-    nexus = {
-      path = ../systems/nexus;
-      modules = [
-        inputs.disko.nixosModules.disko
-        inputs.home-manager.nixosModules.home-manager
-        inputs.sops-nix.nixosModules.sops
-      ];
-      hasSecrets = true;
-    };
-    axon = {
-      path = ../systems/axon;
-      modules = [
-        inputs.stylix.nixosModules.stylix
-        inputs.home-manager.nixosModules.home-manager
-      ];
-      hasSecrets = false;
-    };
-  };
+  inherit (shared) system systems hostVars;
 in
 {
   # Generate Colmena hive configuration
@@ -65,12 +23,11 @@ in
           self
           system
           inputs
-          userVars
-          fleetConfig
           ;
         fh = inputs.fh;
-        # For Colmena, we can't pass per-node specialArgs, so we pass nodeHasSecrets
-        # mapping and each system will need to look up its own value
+        fleetConfig = fleetConfig;
+        # For Colmena, we can't pass per-node specialArgs easily, so we pass
+        # nodeHasSecrets mapping and each system will look up its own value
         nodeHasSecrets = lib.mapAttrs (name: cfg: cfg.hasSecrets) systems;
         # Also provide a default hasSecrets for compatibility
         hasSecrets = false;
@@ -81,6 +38,7 @@ in
     name: hostCfg:
     let
       systemCfg = systems.${name};
+      vars = hostVars.${name};
     in
     {
       # Deployment configuration from fleet-config.nix
@@ -91,6 +49,12 @@ in
         # Use buildOnTarget based on fleet-config's deploy.remoteBuild setting
         buildOnTarget = hostCfg.deploy.remoteBuild or false;
         tags = hostCfg.tags or [ ];
+      };
+
+      # Per-node specialArgs so modules can access host-specific settings
+      _module.args = {
+        userVars = vars.user;
+        hasSecrets = systemCfg.hasSecrets;
       };
 
       # Import the same modules as nixosConfigurations

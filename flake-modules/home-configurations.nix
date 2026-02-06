@@ -2,9 +2,15 @@
 let
   # Import shared constants
   shared = import ./lib.nix { inherit inputs; };
-  inherit (shared) system userVars systemVars;
+  inherit (shared) system hostVars;
 
   inherit (inputs.nixpkgs.legacyPackages.${system}) pkgs;
+
+  # Default to orion for standalone home-manager configurations
+  # (these are used when running `home-manager switch` outside of NixOS)
+  orionVars = hostVars.orion;
+  userVars = orionVars.user;
+  systemVars = orionVars.system;
 
   mkHomeConfiguration =
     _userVars:
