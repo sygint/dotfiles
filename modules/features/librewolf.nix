@@ -98,7 +98,7 @@ in
               (extension "multi-account-containers" "@testpilot-containers") # Firefox Multi-Account Containers
               (extension "pay-by-privacy" "privacy@privacy.com")
               (extension "keepassxc-browser" "keepassxc-browser@keepassxc.org")
-              (extension "ublock-origin" "keepassxc-browser@keepassxc.org")
+              (extension "ublock-origin" "uBlock0@raymondhill.net")
               # Additional popular extensions (uncomment to enable):
               # (extension "tree-style-tab" "treestyletab@piro.sakura.ne.jp")
               # (extension "tabliss" "extension@tabliss.io")
