@@ -163,16 +163,16 @@ in
       librewolf.enable = true;
       # Utilities
       archiver.enable = true;
-      protonmail-bridge = {
-        enable = true;
-        username = "admin";
-        password = "password";
-      };
+      protonmail-bridge.enable = true;
       # System services
       # xserver.enable = true;
       syncthing = {
         enable = true;
         username = "${username}";
+        lanInterfaces = [
+          fleetConfig.hosts.orion.interfaces.wifi.name
+          fleetConfig.hosts.orion.interfaces.ethernet.name
+        ];
         # Password now managed by sops-nix secrets
       };
       virtualization = {
