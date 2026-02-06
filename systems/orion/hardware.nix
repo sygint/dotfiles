@@ -54,10 +54,9 @@
   # Resume device is the partition containing the swap file
   boot.resumeDevice = "/dev/disk/by-uuid/031d313c-b2ae-4f1f-aa24-0c3efee4d42c";
 
-  # IMPORTANT: After first rebuild, get the resume_offset by running:
-  #   sudo filefrag -v /swapfile | awk '$1=="0:" {print substr($4, 1, length($4)-2)}'
-  # Then uncomment and set the value below:
-  # boot.kernelParams = [ "resume_offset=XXXXX" ];
+  # resume_offset for swapfile hibernation (from: sudo filefrag -v /swapfile)
+  # If /swapfile is ever recreated, this value must be re-queried and updated.
+  boot.kernelParams = [ "resume_offset=173766656" ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
