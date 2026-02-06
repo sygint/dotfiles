@@ -15,7 +15,7 @@ SYSTEM="${1:-}"
 ACTION="${2:-help}"
 CONTAINER_NAME="test-${SYSTEM}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 usage() {
     echo "Usage: $0 <system-name> <action>"

@@ -1,39 +1,18 @@
 { inputs, ... }:
+let
+  # Auto-discover all .nix files and directories in this folder
+  entries = builtins.readDir ./.;
+  isModule =
+    name: type:
+    # Skip default.nix and files starting with _ (templates)
+    name != "default.nix"
+    && builtins.substring 0 1 name != "_"
+    && (
+      (type == "regular" && builtins.match ".*\\.nix" name != null)
+      || (type == "directory" && builtins.pathExists (./. + "/${name}/default.nix"))
+    );
+  moduleNames = builtins.filter (n: isModule n entries.${n}) (builtins.attrNames entries);
+in
 {
-  imports = [
-    ./ai-services
-    ./audio.nix
-    ./archiver.nix
-    ./bluetooth.nix
-    ./btop.nix
-    ./containerization.nix
-    ./devenv.nix
-    ./firefox.nix
-    ./flatpak.nix
-    ./git.nix
-    ./hypridle.nix
-    ./hyprland.nix
-    ./hyprpanel.nix
-    ./kitty.nix
-    ./librewolf.nix
-    ./monitor-tools.nix
-    ./mullvad.nix
-    ./networking.nix
-    ./niri.nix
-    ./nix-helpers.nix
-    ./noctalia-shell.nix
-    ./printing.nix
-    ./protonmail-bridge.nix
-    ./screenshots.nix
-    ./security.nix
-    ./swhkd.nix
-    ./syncthing.nix
-    ./virtualization.nix
-    ./vscode.nix
-    ./waybar.nix
-    ./wayland.nix
-    ./xserver.nix
-    ./zsh.nix
-    ./brave.nix
-  ];
+  imports = map (name: ./. + "/${name}") moduleNames;
 }

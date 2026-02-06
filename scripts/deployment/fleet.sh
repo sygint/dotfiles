@@ -16,7 +16,7 @@ success() { echo -e "${GREEN}✓ $*${NC}"; }
 warn() { echo -e "${YELLOW}⚠ $*${NC}"; }
 error() { echo -e "${RED}✗ $*${NC}"; exit 1; }
 
-FLAKE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+FLAKE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 # Auto-discover systems from flake.nix
 
