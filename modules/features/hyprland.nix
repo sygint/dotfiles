@@ -203,6 +203,19 @@ in
         {
           home.packages = [ pkgs.hyprland ] ++ (if cfg.packages.enable then hyprlandPkgs else [ ]);
 
+          # Hyprland session target — started by exec-once in hyprland.conf,
+          # pulls in graphical-session.target so all WantedBy services
+          # (noctalia-shell, swhks, swhkd, hypridle, etc.) start automatically.
+          systemd.user.targets.hyprland-session = {
+            Unit = {
+              Description = "Hyprland compositor session";
+              Documentation = [ "man:systemd.special(7)" ];
+              BindsTo = [ "graphical-session.target" ];
+              Wants = [ "graphical-session-pre.target" ];
+              After = [ "graphical-session-pre.target" ];
+            };
+          };
+
           home.file = {
             ".config/hypr/hyprlock.conf" = {
               source = mkOutOfStoreSymlink "${configDotfilesDir}/hypr/hyprlock.conf";
