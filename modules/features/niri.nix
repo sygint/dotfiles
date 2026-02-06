@@ -1,15 +1,30 @@
-{ lib, ... }:
 {
-  options.modules.features.niri = lib.mkOption {
-    type = lib.types.attrs;
-    default = { };
-    description = "Niri compositor feature configuration";
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+
+let
+  inherit (lib)
+    mkEnableOption
+    mkOption
+    mkIf
+    types
+    ;
+  cfg = config.modules.features.niri;
+in
+{
+  options.modules.features.niri = {
+    enable = mkEnableOption "Niri scrollable tiling compositor";
+
+    packages = {
+      enable = mkEnableOption "Install Niri-related packages";
+    };
   };
 
-  config.modules.features.niri = {
-    enable = lib.mkDefault true;
-    packages = {
-      enable = lib.mkDefault true;
-    };
+  config = mkIf cfg.enable {
+    # Niri compositor configuration goes here
+    # Add packages, services, etc. as needed
   };
 }
