@@ -36,7 +36,7 @@ input {
     }
 
     // Focus window when mouse enters it
-    // focus-follows-mouse max-scroll-amount="0%"
+    focus-follows-mouse max-scroll-amount="0%"
 }
 
 
@@ -102,7 +102,7 @@ layout {
 // Import environment variables and start niri-session.target
 // This mirrors the Hyprland pattern: services with WantedBy=graphical-session.target
 // start automatically (noctalia-shell, swhks, swhkd, etc.)
-spawn-at-startup "sh" "-c" "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE && systemctl --user start niri-session.target"
+spawn-at-startup "sh" "-c" "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE PATH NIRI_SOCKET && systemctl --user start niri-session.target"
 
 // Wallpaper
 spawn-at-startup "swww-daemon"

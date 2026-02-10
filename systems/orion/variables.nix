@@ -51,25 +51,27 @@ in
   #     └───────────────────────┘ └──────┘
   #
   # Using description matching for stable identification across reboots/ports
-  # Run `hyprctl monitors` to see descriptions
+  # Full "manufacturer model serial" from EDID — works for both compositors:
+  #   Niri: exact match on "manufacturer model serial" (run `niri msg outputs`)
+  #   Hyprland: substring match with `desc:` prefix (run `hyprctl monitors`)
   monitors = [
     # Laptop display (BOE panel)
     {
-      desc = "BOE 0x0BCA";
+      desc = "BOE 0x0BCA Unknown";
       resolution = "2256x1504@60";
       position = "0x0";
       scale = "1";
     }
     # Acer ultrawide - below laptop
     {
-      desc = "Acer Technologies ED343CUR V";
+      desc = "Acer Technologies ED343CUR V 1326001BF2X00";
       resolution = "3440x1440@60";
       position = "0x1504";
       scale = "1";
     }
     # Sceptre portrait monitor - right side, bottom-aligned with ultrawide
     {
-      desc = "Sceptre Tech Inc Sceptre M24";
+      desc = "Sceptre Tech Inc Sceptre M24 00";
       resolution = "1920x1080@165";
       position = "3440x1024";
       scale = "1";

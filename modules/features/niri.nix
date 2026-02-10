@@ -128,15 +128,13 @@ in
           monitorBlocks = lib.concatMapStringsSep "\n\n" (
             m:
             let
-              # Niri uses connector names for output matching (e.g., "eDP-1")
-              # desc matching requires niri 25.05+ — use name if desc not available
+              # Niri matches outputs by "manufacturer model serial" (exact match)
+              # desc should contain the full identifier from `niri msg outputs`
               identifier =
-                if (m.name or null) != null then
-                  m.name
-                else if (m.desc or null) != null then
-                  # For desc-based matching, we still need the connector name for niri
-                  # Fall back to a placeholder — user should set name for niri
+                if (m.desc or null) != null then
                   m.desc
+                else if (m.name or null) != null then
+                  m.name
                 else
                   throw "Monitor must have either 'name' or 'desc' set";
               resolution = m.resolution or "preferred";
