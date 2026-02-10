@@ -22,7 +22,7 @@ in
 
     # Which compositor to auto-start on TTY1 login
     # Options: "Hyprland", "niri"
-    compositor = "Hyprland";
+    compositor = "niri";
 
     git = {
       username = "sygint";
