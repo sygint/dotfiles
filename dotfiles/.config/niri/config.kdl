@@ -209,40 +209,25 @@ binds {
     Mod+Tab { focus-workspace-previous; }
 
 
-    // ── Move Windows ─────────────────────────────────────────────────────
+    // ── Move Windows (matches Hyprland: Mod+Shift) ────────────────────
 
-    Mod+Ctrl+H { move-column-left; }
-    Mod+Ctrl+J { move-window-down; }
-    Mod+Ctrl+K { move-window-up; }
-    Mod+Ctrl+L { move-column-right; }
-
-    Mod+Ctrl+Left  { move-column-left; }
-    Mod+Ctrl+Down  { move-window-down; }
-    Mod+Ctrl+Up    { move-window-up; }
-    Mod+Ctrl+Right { move-column-right; }
+    Mod+Shift+H { move-column-left; }
+    Mod+Shift+J { move-window-down; }
+    Mod+Shift+K { move-window-up; }
+    Mod+Shift+L { move-column-right; }
 
 
-    // ── Monitor Focus & Movement ─────────────────────────────────────────
+    // ── Monitor Focus & Movement (Mod+Alt) ──────────────────────────────
 
-    Mod+Shift+H { focus-monitor-left; }
-    Mod+Shift+J { focus-monitor-down; }
-    Mod+Shift+K { focus-monitor-up; }
-    Mod+Shift+L { focus-monitor-right; }
+    Mod+Alt+H { focus-monitor-left; }
+    Mod+Alt+J { focus-monitor-down; }
+    Mod+Alt+K { focus-monitor-up; }
+    Mod+Alt+L { focus-monitor-right; }
 
-    Mod+Shift+Left  { focus-monitor-left; }
-    Mod+Shift+Down  { focus-monitor-down; }
-    Mod+Shift+Up    { focus-monitor-up; }
-    Mod+Shift+Right { focus-monitor-right; }
-
-    Mod+Shift+Ctrl+H { move-column-to-monitor-left; }
-    Mod+Shift+Ctrl+J { move-column-to-monitor-down; }
-    Mod+Shift+Ctrl+K { move-column-to-monitor-up; }
-    Mod+Shift+Ctrl+L { move-column-to-monitor-right; }
-
-    Mod+Shift+Ctrl+Left  { move-column-to-monitor-left; }
-    Mod+Shift+Ctrl+Down  { move-column-to-monitor-down; }
-    Mod+Shift+Ctrl+Up    { move-column-to-monitor-up; }
-    Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
+    Mod+Alt+Shift+H { move-column-to-monitor-left; }
+    Mod+Alt+Shift+J { move-column-to-monitor-down; }
+    Mod+Alt+Shift+K { move-column-to-monitor-up; }
+    Mod+Alt+Shift+L { move-column-to-monitor-right; }
 
 
     // ── Workspaces ───────────────────────────────────────────────────────
@@ -257,22 +242,24 @@ binds {
     Mod+8 { focus-workspace 8; }
     Mod+9 { focus-workspace 9; }
 
-    Mod+Ctrl+1 { move-column-to-workspace 1; }
-    Mod+Ctrl+2 { move-column-to-workspace 2; }
-    Mod+Ctrl+3 { move-column-to-workspace 3; }
-    Mod+Ctrl+4 { move-column-to-workspace 4; }
-    Mod+Ctrl+5 { move-column-to-workspace 5; }
-    Mod+Ctrl+6 { move-column-to-workspace 6; }
-    Mod+Ctrl+7 { move-column-to-workspace 7; }
-    Mod+Ctrl+8 { move-column-to-workspace 8; }
-    Mod+Ctrl+9 { move-column-to-workspace 9; }
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
 
     // Workspace scroll (relative)
+    Mod+Ctrl+J     { focus-workspace-down; }
+    Mod+Ctrl+K     { focus-workspace-up; }
     Mod+Page_Down { focus-workspace-down; }
     Mod+Page_Up   { focus-workspace-up; }
 
-    Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
-    Mod+Ctrl+Page_Up   { move-column-to-workspace-up; }
+    Mod+Ctrl+Shift+J    { move-column-to-workspace-down; }
+    Mod+Ctrl+Shift+K    { move-column-to-workspace-up; }
 
     // Mouse wheel workspace switching
     Mod+WheelScrollDown      cooldown-ms=150 { focus-workspace-down; }
@@ -290,9 +277,12 @@ binds {
     Mod+Period       { expel-window-from-column; }
 
     // Column width presets (cycle 1/3, 1/2, 2/3)
-    Mod+R       { switch-preset-column-width; }
-    Mod+Shift+R { switch-preset-window-height; }
-    Mod+Ctrl+R  { reset-window-height; }
+    Mod+R            { switch-preset-column-width; }
+    Mod+Alt+R { switch-preset-window-height; }
+    Mod+Ctrl+R       { reset-window-height; }
+
+    // Reload config
+    Mod+Shift+R { spawn "niri" "msg" "action" "load-config-file"; }
 
     // Fine-grained resize
     Mod+Minus { set-column-width "-10%"; }
@@ -323,6 +313,9 @@ binds {
 
     // Power off monitors
     Mod+Shift+P { power-off-monitors; }
+
+    // Show hotkey overlay
+    Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Escape hatch for keyboard shortcut inhibitors
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
