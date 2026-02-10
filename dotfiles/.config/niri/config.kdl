@@ -90,6 +90,17 @@ layout {
         color "#00000050"
     }
 
+    tab-indicator {
+        on
+        position "top"
+        width 4
+        gap 4
+        place-within-column
+        hide-when-single-tab
+        active-color "#89b4fa"    // Catppuccin blue
+        inactive-color "#45475a"  // Catppuccin surface1
+    }
+
     struts {
     }
 }
@@ -297,7 +308,7 @@ binds {
     Mod+Ctrl+F { expand-column-to-available-width; }
 
     // Tabbed column display
-    Mod+W { toggle-column-tabbed-display; }
+    Mod+T { toggle-column-tabbed-display; }
 
     // First/last column
     Mod+Home      { focus-column-first; }
