@@ -33,6 +33,9 @@ let
         inputs.disko.nixosModules.disko
         inputs.home-manager.nixosModules.home-manager
         inputs.sops-nix.nixosModules.sops
+        inputs.buildbot-nix.nixosModules.buildbot-master
+        inputs.buildbot-nix.nixosModules.buildbot-worker
+        inputs.harmonia.nixosModules.harmonia
       ];
       hasSecrets = true;
     };

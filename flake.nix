@@ -43,6 +43,13 @@
     # swhkd - Simple Wayland HotKey Daemon for compositor-agnostic keybindings
     swhkd.url = "github:waycrate/swhkd";
     swhkd.inputs.nixpkgs.follows = "nixpkgs";
+
+    # CI/CD - Buildbot-nix for Nix flake builds
+    buildbot-nix.url = "github:nix-community/buildbot-nix";
+
+    # Binary cache - Harmonia for serving build artifacts
+    harmonia.url = "github:nix-community/harmonia";
+    harmonia.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   nixConfig = {

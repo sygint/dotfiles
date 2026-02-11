@@ -21,6 +21,10 @@ in
     ./disk-config.nix
     # Import all modules (features, system, home)
     ../../modules
+    # These require upstream flake modules (buildbot-nix, harmonia)
+    # that are only imported on nexus via flake-modules/lib.nix
+    ../../modules/features/_buildbot-nix
+    ../../modules/features/_binary-cache
   ]
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {
@@ -349,6 +353,7 @@ in
       8096 # Jellyfin HTTP
       8920 # Jellyfin HTTPS
       9090 # Prometheus (optional - can access via Grafana)
+      # Forgejo, Buildbot, and Harmonia ports are opened by their respective modules
     ];
     allowedUDPPorts = [
       1900 # DLNA/UPnP discovery
@@ -374,6 +379,22 @@ in
       security = {
         enable = true; # Enable security module (sudo, polkit, etc.)
         hardening.enable = true; # Full server hardening profile (fail2ban, auditd, SSH, kernel, monitoring)
+      };
+      # CI/CD and Git Forge
+      forgejo = {
+        enable = true;
+        domain = "nexus.home";
+        httpPort = 3300;
+        sshPort = 3022;
+      };
+      buildbot-nix = {
+        enable = true;
+        domain = "nexus.home"; # Buildbot web UI served via nginx
+        topic = "build-with-buildbot"; # Only build repos with this topic
+      };
+      binary-cache = {
+        enable = true;
+        port = 5000;
       };
     };
   };
