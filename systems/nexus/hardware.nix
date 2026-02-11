@@ -48,6 +48,8 @@
   # Networking
   networking.useDHCP = lib.mkDefault true;
 
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+
   # HP EliteDesk G4 has Intel CPU - enable microcode updates
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 

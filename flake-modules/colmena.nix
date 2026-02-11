@@ -5,7 +5,7 @@ let
 
   # Import shared constants and system definitions — same source as nixos-configurations.nix
   shared = import ./lib.nix { inherit inputs; };
-  inherit (shared) system systems hostVars;
+  inherit (shared) systems hostVars;
 in
 {
   # Generate Colmena hive configuration
@@ -21,7 +21,6 @@ in
       specialArgs = {
         inherit
           self
-          system
           inputs
           ;
         fh = inputs.fh;

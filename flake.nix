@@ -101,6 +101,7 @@
             program = "${pkgs.writeShellScript "colmena-wrapper" ''
               exec ${pkgs.colmena}/bin/colmena "$@"
             ''}";
+            meta.description = "Colmena deployment tool for NixOS fleet management";
           };
         };
     };

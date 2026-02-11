@@ -46,7 +46,7 @@ in
         inherit hostName;
         monitors = systemVars.monitors or [ ];
       };
-      opencode = inputs.opencode.packages.${pkgs.system};
+      opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system};
     };
     # Auto back up files that would be clobbered by Home Manager so that
     # unmanaged files are not lost during activation. This prevents

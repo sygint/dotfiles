@@ -21,7 +21,7 @@ in
       {
         programs.noctalia-shell = {
           enable = true;
-          package = inputs.noctalia-shell.packages.${pkgs.system}.default;
+          package = inputs.noctalia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default;
           systemd.enable = true;
 
           settings = {

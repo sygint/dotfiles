@@ -937,8 +937,8 @@
         "sops-nix": "sops-nix"
       },
       "locked": {
-        "lastModified": 1770783141,
-        "narHash": "sha256-Rb6moHe+LJWkXjTjt4GHGuJHMrJExeobuVFo/z3QiHs=",
+        "lastModified": 1770787286,
+        "narHash": "sha256-l+WmYCCj81F5Va47j5ESyhAt6J0RNxdOXw6XH8s40VE=",
         "path": "/home/syg/Projects/open-source/nixos-fleet",
         "type": "path"
       },
@@ -1217,11 +1217,11 @@
         "nixpkgs": "nixpkgs_7"
       },
       "locked": {
-        "lastModified": 1770774968,
-        "narHash": "sha256-jwWNOeB/FkKYVY4dxy8qZGBxp9LSFaIDqFj9qdzQ4dE=",
+        "lastModified": 1770787829,
+        "narHash": "sha256-XEgk/qqj1VzOYWtLTnusjk/lBP3nBFM9aBT+lZK/9uo=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "c6ec2f47efdc0aa7c4b22ae97d395eeab6215846",
+        "rev": "d98bd4bd523bd5ceb6411143020713c3ee4d7e7c",
         "type": "github"
       },
       "original": {

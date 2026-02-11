@@ -31,6 +31,8 @@ in
   # Boot configuration handled by modules/system/default.nix
   # (systemd-boot, EFI, stateVersion are set there)
 
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+
   networking.hostName = "cortex";
 
   # Simplified Marvel-themed user setup

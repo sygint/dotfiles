@@ -19,7 +19,7 @@ in
     # swhkd needs to run as root to read input devices
     # We use the setuid approach for better UX
     security.wrappers.swhkd = {
-      source = "${inputs.swhkd.packages.${pkgs.system}.default}/bin/swhkd";
+      source = "${inputs.swhkd.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/swhkd";
       owner = "root";
       group = "root";
       setuid = true;
@@ -175,7 +175,7 @@ in
         in
         {
           home.packages = [
-            inputs.swhkd.packages.${pkgs.system}.default
+            inputs.swhkd.packages.${pkgs.stdenv.hostPlatform.system}.default
           ];
 
           # Generate swhkd configuration from Nix
@@ -194,7 +194,7 @@ in
             Service = {
               # swhks daemonizes itself (forks to background), so use forking type
               Type = "forking";
-              ExecStart = "${inputs.swhkd.packages.${pkgs.system}.default}/bin/swhks";
+              ExecStart = "${inputs.swhkd.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/swhks";
               PIDFile = "%t/swhks_%U.pid";
               Restart = "on-failure";
               RestartSec = 1;
