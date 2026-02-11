@@ -77,5 +77,5 @@ When making security-related changes:
 ## Related Documentation
 
 - [../../SECRETS.md](../../SECRETS.md) - Secrets management guide
-- [../../FLEET-MANAGEMENT.md](../../FLEET-MANAGEMENT.md) - Secure deployment practices
+- [../../README.md](../../README.md) - Fleet management overview
 - [../BOOTSTRAP.md](../BOOTSTRAP.md) - Secure system bootstrap process

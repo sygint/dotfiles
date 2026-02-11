@@ -551,7 +551,7 @@ esac
 
 - [HTPC-SETUP.md](./HTPC-SETUP.md) - HTPC deployment guide
 - [BOOTSTRAP.md](./BOOTSTRAP.md) - System bootstrap procedures
-- [FLEET-MANAGEMENT.md](../FLEET-MANAGEMENT.md) - Fleet deployment
+- [README.md](../../README.md) - Fleet management overview
 - [NixOS Manual - NixOS Containers](https://nixos.org/manual/nixos/stable/#ch-containers)
 - [NixOS Manual - QEMU](https://nixos.org/manual/nixos/stable/#sec-qemu-guest)
 

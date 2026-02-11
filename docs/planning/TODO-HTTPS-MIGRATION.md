@@ -82,4 +82,4 @@ If services are truly internal-only and network is trusted, document the decisio
 
 - Security Audit: `docs/REPOSITORY-SECURITY-AUDIT.md` (when created)
 - Nexus Config: `systems/nexus/default.nix`
-- Fleet Management: `FLEET-MANAGEMENT.md`
+- Fleet Management: see [README.md](../../README.md)

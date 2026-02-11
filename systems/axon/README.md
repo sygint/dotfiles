@@ -41,4 +41,4 @@ Axon is the living room media center, running NixOS and optimized for streaming 
 
 ## References
 - [AXON-SETUP.md](../../docs/AXON-SETUP.md)
-- [Homelab Strategy](../../docs/planning/homelab-strategy.md)
+- [Homelab Strategy](../../docs/archive/homelab-strategy.md) (archived)

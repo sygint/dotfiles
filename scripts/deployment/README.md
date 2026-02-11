@@ -13,7 +13,7 @@ fleet push cortex         # Deploy updates
 fleet install cortex 192.168.1.7  # Fresh install (⚠️ wipes disk!)
 ```
 
-For complete documentation, see [FLEET-MANAGEMENT.md](../../FLEET-MANAGEMENT.md).
+For complete documentation, see the [README](../../README.md).
 
 ## Scripts
 Orchestrates pre-flight checks, deployment, and validation for safer deployments.
@@ -68,5 +68,5 @@ Or use the all-in-one safe deploy:
 ```
 
 ## See Also
-- [FLEET-MANAGEMENT.md](../../FLEET-MANAGEMENT.md)
-- [docs/IMPLEMENTATION-GUIDE.md](../../docs/IMPLEMENTATION-GUIDE.md)
+- [README](../../README.md) - Fleet management overview
+- [docs/BOOTSTRAP.md](../../docs/BOOTSTRAP.md) - Bootstrap new systems

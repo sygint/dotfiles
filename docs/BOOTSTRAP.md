@@ -175,7 +175,7 @@ This provides:
 - `nixos-anywhere` - Remote NixOS installation
 - `sops` - Secrets management
 - `ssh-to-age` - Age key extraction from SSH keys
-- `deploy-rs` - Declarative deployment tool
+- `fleet` - Fleet management CLI ([nixos-fleet](https://github.com/sygint/nixos-fleet))
 - `jq` - JSON processing
 - `yq` - YAML processing
 
@@ -187,7 +187,7 @@ Your target host configuration MUST include:
 # In systems/<hostname>/default.nix or modules/system/base/default.nix
 nix.settings = {
   experimental-features = [ "nix-command" "flakes" ];
-  trusted-users = [ "root" "@wheel" ];  # Critical for deploy-rs
+  trusted-users = [ "root" "@wheel" ];  # Required for remote deployment
 };
 
 # User must be in wheel group
@@ -227,7 +227,7 @@ The `bootstrap-automated.sh` script handles the complete deployment:
 - ✅ Saves age key to `nixos-secrets/keys/hosts/<hostname>.txt`
 
 **Phase 3: Full Deployment**
-- ✅ Deploys complete configuration via `deploy-rs`
+- ✅ Deploys complete configuration via `fleet push`
 - ✅ Includes all secrets and services
 
 **Phase 4: Validation**
@@ -657,12 +657,12 @@ done
 ### Documentation
 - [NixOS Manual](https://nixos.org/manual/nixos/stable/)
 - [nixos-anywhere](https://github.com/nix-community/nixos-anywhere)
-- [deploy-rs](https://github.com/serokell/deploy-rs)
+- [nixos-fleet](https://github.com/sygint/nixos-fleet) - Fleet management CLI
 - [disko](https://github.com/nix-community/disko)
 
 ### Related Docs
 - [SECRETS.md](../SECRETS.md) - Secrets management guide
-- [FLEET-MANAGEMENT.md](../FLEET-MANAGEMENT.md) - Multi-system deployment
+- [README.md](../README.md) - Fleet management overview
 - [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) - Overall architecture
 
 ### EmergentMind's Approach

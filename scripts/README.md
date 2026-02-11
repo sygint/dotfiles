@@ -119,7 +119,7 @@ fleet push cortex
 
 ## See Also
 
-- [FLEET-MANAGEMENT.md](../FLEET-MANAGEMENT.md) - Complete fleet management guide
+- [README.md](../README.md) - Fleet management overview
 - [docs/BOOTSTRAP.md](../docs/BOOTSTRAP.md) - Bootstrap documentation
 - [docs/VM-TESTING.md](../docs/VM-TESTING.md) - Testing framework details
 - [docs/SECURITY-SCANNING.md](../docs/SECURITY-SCANNING.md) - Security scanning guide

@@ -308,9 +308,8 @@ Before deploying a tested configuration to production hardware:
 ## Related Documentation
 
 - [VM Testing Guide](./VM-TESTING.md) - Detailed VM testing procedures
-- [Deployment Guide](./IMPLEMENTATION-GUIDE.md) - nixos-anywhere deployment
 - [Security Guide](./SECURITY.md) - Security hardening checklist
-- [Fleet Management](../FLEET-MANAGEMENT.md) - Multi-system deployment
+- [README](../../README.md) - Fleet management overview
 
 ## Troubleshooting
 

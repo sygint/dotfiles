@@ -352,7 +352,7 @@ Consider setting up automated backups with:
 - [Grafana NixOS Wiki](https://nixos.wiki/wiki/Grafana)
 - [Prometheus + Grafana + Loki on NixOS](https://xeiaso.net/blog/prometheus-grafana-loki-nixos-2020-11-20)
 - [NixOS Search - Service Options](https://search.nixos.org/options)
-- [Homelab Strategy](../../docs/planning/homelab-strategy.md)
+- [Homelab Strategy](../../docs/archive/homelab-strategy.md) (archived)
 
 ## Support
 For issues or questions:

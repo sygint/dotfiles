@@ -124,4 +124,4 @@ Other settings that could be centralized in `fleet-config.nix`:
 
 - [fleet-config.nix](../fleet-config.nix) - Centralized network and global settings
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture overview
-- [FLEET-MANAGEMENT.md](../FLEET-MANAGEMENT.md) - Managing multiple systems
+- [README.md](../README.md) - Fleet management overview

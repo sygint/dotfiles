@@ -1,54 +1,36 @@
 # NixOS Configuration
 
-Personal NixOS configuration with **unified feature modules** based on the dendritic pattern.
-
-## 📚 Documentation
-
-**New here?** See [DOCS.md](DOCS.md) for complete navigation.
-
-**Architecture:**
-- **[docs/DENDRITIC-MIGRATION.md](docs/DENDRITIC-MIGRATION.md)** - Unified feature modules guide ⭐ **START HERE**
-- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Detailed module system documentation
-- **[FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md)** - Deploy and manage systems
-
-**System-Specific:**
-- **[systems/cortex/AI-SERVICES.md](systems/cortex/AI-SERVICES.md)** - AI/LLM infrastructure on Cortex
-- **[docs/BOOTSTRAP.md](docs/BOOTSTRAP.md)** - Bootstrap new NixOS systems
-
-**Security & Secrets:**
-- **[docs/security/SECURITY.md](docs/security/SECURITY.md)** - Security configuration
-- **[SECRETS.md](SECRETS.md)** - Secrets management (sops-nix + age)
+Unified NixOS fleet configuration using the dendritic pattern — one feature module per concern, composable across systems.
 
 ## Quick Start
 
-**Deploy to existing system:**
 ```bash
+# Deploy to a remote system
 fleet push cortex
-```
 
-**Update all systems:**
-```bash
+# Rebuild locally
+nos                    # alias for 'nh os switch'
+
+# Deploy to all systems
 fleet push all
+
+# Check system health before deploying
+fleet check cortex
 ```
 
-**Local rebuild:**
-```bash
-sudo nixos-rebuild switch --flake .#orion
-```
+## Architecture Overview
 
-See [FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md) for complete deployment guide.
-
-## 🏗️ Architecture Overview
-
-**Unified Feature Modules** - One file per feature, containing both system and user configuration.
+**Unified Feature Modules** — one file per feature, containing both system and user configuration.
 
 ```
 modules/
-├── features/           # ⭐ PRIMARY: 30 unified feature modules
-│   ├── hyprland.nix   # Wayland compositor + config
+├── features/           # PRIMARY: 30+ unified feature modules
+│   ├── hyprland.nix   # Wayland compositor (legacy)
+│   ├── niri.nix       # Wayland compositor (current)
+│   ├── noctalia-shell.nix # Desktop shell
 │   ├── mullvad.nix    # VPN service + browser
 │   ├── git.nix        # Git + user config
-│   └── ...            # All features in one place!
+│   └── ...            # All features in one place
 ├── system/            # Special-purpose system modules
 │   ├── base/          # Essential base configuration
 │   └── ai-services/   # Cortex-specific AI services
@@ -63,22 +45,21 @@ modules/
 # systems/orion/default.nix
 modules.features = {
   # Desktop environment
-  hyprland.enable = true;
-  hyprpanel.enable = true;
-  
+  niri.enable = true;
+  noctalia-shell.enable = true;
+
   # Development tools
   git.enable = true;
   vscode.enable = true;
-  kitty.enable = true;
-  
+
   # Web browsers
   brave.enable = true;
   firefox.enable = true;
-  
+
   # Services
   mullvad.enable = true;
   syncthing.enable = true;
-  
+
   # Infrastructure
   audio.enable = true;
   bluetooth.enable = true;
@@ -87,175 +68,144 @@ modules.features = {
 ```
 
 **Benefits:**
-- 🎯 **Single source of truth**: One file per feature
-- 🔧 **Consistent interface**: All use `modules.features.*`
-- 📦 **Complete configuration**: System + home together
-- 🧩 **Composable**: Mix and match across systems
+- **Single source of truth** — one file per feature
+- **Consistent interface** — all use `modules.features.*`
+- **Complete configuration** — system + home together
+- **Composable** — mix and match across systems
 
-See **[docs/DENDRITIC-MIGRATION.md](docs/DENDRITIC-MIGRATION.md)** for complete details.
+See [docs/DENDRITIC-MIGRATION.md](docs/DENDRITIC-MIGRATION.md) for the full architecture guide.
 
-## 🎯 Design Principles
+## Fleet
 
-1. **One Feature, One File** - All configuration for a feature in a single place
-2. **Unified Namespace** - All features use `modules.features.*`
-3. **Explicit Configuration** - Features never auto-enable
-4. **Composability** - Mix and match features across systems
-5. **Parameterization** - Configure via `userVars`/`systemVars`
+### Systems
 
-See **[docs/DENDRITIC-MIGRATION.md](docs/DENDRITIC-MIGRATION.md)** for the migration story and detailed architecture.
+| System | Type | Hardware | IP | User | Status |
+|--------|------|----------|----|------|--------|
+| **Orion** | Workstation | Framework 13 (AMD 7040) | local | syg | ✅ Active |
+| **Cortex** | AI Server | RTX 5090 (32GB VRAM) | 192.168.1.7 | jarvis | ✅ Active |
+| **Nexus** | Homelab Server | HP EliteDesk 800 G4 | — | admin | ✅ Active |
+| **Axon** | HTPC | Streaming client | — | — | ✅ Active |
 
-## ➕ Adding Components
+### Architecture
 
-**New Feature Module:**
-```bash
-# 1. Create file in modules/features/
-touch modules/features/myfeature.nix
-
-# 2. Define module (see template in docs/DENDRITIC-MIGRATION.md)
-
-# 3. Enable in system
-# systems/orion/default.nix
-modules.features.myfeature.enable = true;
-
-# 4. Test and apply
-nix flake check
-sudo nixos-rebuild switch --flake .#orion
+```
+┌────────────────────────────────┐
+│    Orion (Workstation)         │
+│  ┌──────────────────────────┐  │
+│  │  NixOS Config Repo       │  │
+│  │  - flake.nix             │  │
+│  │  - systems/              │  │
+│  │  - modules/              │  │
+│  └──────────────────────────┘  │
+└────────────────────────────────┘
+          │
+          │ fleet push
+          ↓
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│   Cortex     │  │    Nexus     │  │    Axon      │
+│  AI Server   │  │   Homelab    │  │    HTPC      │
+│ 192.168.1.7  │  │              │  │              │
+└──────────────┘  └──────────────┘  └──────────────┘
 ```
 
-**New System:**
+Fleet management is provided by the `fleet` CLI from [nixos-fleet](https://github.com/sygint/nixos-fleet). Migration to Colmena for parallel deployment and tag-based targeting is in progress.
+
+## Adding New Systems
+
+### 1. Create system directory
+
 ```bash
-cp -r systems/orion systems/newsystem
-# Edit variables.nix, hardware.nix, add to flake.nix
+mkdir -p systems/newsystem
 ```
 
-See **[FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md)** for detailed system setup instructions.
+Create `systems/newsystem/variables.nix`:
 
-## � Rebuild Commands
-
-**System (requires sudo):**
-```bash
-sudo nixos-rebuild switch --flake .#orion
+```nix
+{
+  system = {
+    hostname = "newsystem";
+  };
+  user = {
+    username = "admin";
+  };
+  network = {
+    hostname = "newsystem";
+    ip = "192.168.1.50";
+    ssh = {
+      user = "admin";
+      port = 22;
+    };
+  };
+}
 ```
 
-**Home Manager (as NixOS module - default):**
-```bash
-# Rebuilt automatically with system
-sudo nixos-rebuild switch --flake .#orion
+Then create `default.nix` and `hardware.nix` (or copy from an existing system and modify).
+
+### 2. Add to flake.nix
+
+```nix
+nixosConfigurations = {
+  # ... existing systems ...
+  newsystem = nixpkgs.lib.nixosSystem {
+    system = "x86_64-linux";
+    specialArgs = {
+      inherit self system inputs fh userVars hasSecrets;
+    };
+    modules = withOptionalSecrets [
+      ./systems/newsystem
+    ];
+  };
+};
 ```
 
-**Home Manager (standalone):**
+### 3. Deploy
+
 ```bash
-home-manager switch --flake .#syg
+nix build .#nixosConfigurations.newsystem.config.system.build.toplevel
+fleet push newsystem
 ```
 
-**Using nh (alternative):**
-```bash
-nh os switch    # System rebuild
-nh home switch  # Home Manager rebuild
-```
+See [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md) for bootstrapping NixOS on new hardware.
 
-## � Current Systems
+## Secrets
 
-| System | Type | Hardware | Purpose |
-|--------|------|----------|---------|
-| **Orion** | Workstation | Framework 13 (AMD 7040) | Development, daily driver |
-| **Cortex** | Server | RTX 5090 (32GB VRAM) | AI/LLM inference, compute |
+Secrets are managed with [sops-nix](https://github.com/Mic92/sops-nix) and age encryption. Host keys derive age keys automatically, and `fleet push` syncs secrets as part of deployment. See [SECRETS.md](SECRETS.md) for the complete guide including key setup, editing secrets, and rekeying.
 
-## 🔧 Configuration Files
+## Troubleshooting
 
-- **Hyprland**: `dotfiles/.config/hypr/`
-- **VS Code**: `dotfiles/.config/Code/User/`
-- **Git**: `dotfiles/.config/git/`
-- **Wallpapers**: `wallpapers/`
+### Connection Issues
 
-## 📚 Learn More
+Can't reach a remote system: verify with `ping <ip>`, then test SSH directly with `ssh user@host "echo ok"`. If SSH fails, check that your key is loaded (`ssh-add -l`) and that `sshd` is running on the target.
 
-- **[DOCS.md](DOCS.md)** - Complete documentation index
-- **[FLEET-MANAGEMENT.md](FLEET-MANAGEMENT.md)** - Deployment guide
-- **[systems/cortex/AI-SERVICES.md](systems/cortex/AI-SERVICES.md)** - AI infrastructure on Cortex
-- **Community**: [NixOS Discourse](https://discourse.nixos.org/), [r/NixOS](https://reddit.com/r/NixOS)
+### Build Failures
 
----
+Configuration won't build: run `nix flake check` for syntax errors, then build with `--show-trace` for detailed output:
+`nix build .#nixosConfigurations.<system>.config.system.build.toplevel --show-trace`
 
-*Configuration managed with [Nix Flakes](https://nixos.wiki/wiki/Flakes). Dotfiles symlinked by [Home Manager](https://github.com/nix-community/home-manager).*
+### Deployment Failures
 
-## �🌐 LibreWolf Extensions (Reference)
+Deployment hangs or fails: run `fleet check <system>` for pre-flight diagnostics. Check target logs with `ssh user@host "journalctl -xe"`. If the system is in a bad state, roll back with `ssh user@host "sudo nixos-rebuild switch --rollback"`.
 
-### Adding Extensions
+### Secrets Issues
 
-#### Method 1: Enable Existing Extensions
-Some extensions are already configured but commented out. To enable them:
+Secrets not decrypting on target: verify the host key exists (`/etc/ssh/ssh_host_ed25519_key`), check `systemctl status sops-nix`, and rekey if needed with `fleet secrets rekey`.
 
-1. Edit `modules/home/programs/librewolf.nix`
-2. Uncomment the desired extension by removing the `#` symbol
-3. Rebuild with `home-manager switch --flake .`
+## Documentation
 
-#### Method 2: Add New Extensions
+- [docs/DENDRITIC-MIGRATION.md](docs/DENDRITIC-MIGRATION.md) — Feature modules architecture
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Module system reference
+- [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md) — Bootstrap new NixOS systems
+- [docs/PROJECT-OVERVIEW.md](docs/PROJECT-OVERVIEW.md) — Project architecture and philosophy
+- [SECRETS.md](SECRETS.md) — Secrets management (sops-nix + age)
+- [docs/security/SECURITY.md](docs/security/SECURITY.md) — Security configuration
+- [docs/security/CORTEX-SECURITY.md](docs/security/CORTEX-SECURITY.md) — Cortex hardening
+- [systems/cortex/AI-SERVICES.md](systems/cortex/AI-SERVICES.md) — AI/LLM infrastructure
+- [CONTRIBUTING.md](CONTRIBUTING.md) — Contributing guidelines
 
-1. **Find the extension** on [addons.mozilla.org](https://addons.mozilla.org)
-2. **Get the short ID** from the URL:
-   ```
-   https://addons.mozilla.org/en-US/firefox/addon/SHORT_ID/
-   ```
-3. **Get the UUID** (extension ID) using one of these methods:
-   - **Method A**: Download the XPI file, unzip it, and run:
-     ```bash
-     jq .browser_specific_settings.gecko.id manifest.json
-     ```
-   - **Method B**: Install manually in LibreWolf → `about:addons` → extension details → copy ID
+## Design Principles
 
-4. **Add to configuration**:
-   ```nix
-   (extension "short-id" "uuid@example.com")
-   ```
-
-5. **Where to get the required information:**
-
-   - **Short ID:**
-     - This is the last part of the add-on’s URL on [addons.mozilla.org](https://addons.mozilla.org).
-     - Example: For `https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/`, the short ID is `ublock-origin`.
-
-   - **UUID (Extension ID):**
-     - **Method 1:** Download the `.xpi` file from the add-on page, unzip it, and look for the `id` in `manifest.json`:
-       ```bash
-       unzip addon.xpi -d addon
-       jq .browser_specific_settings.gecko.id addon/manifest.json
-       ```
-     - **Method 2:** Install the extension in LibreWolf, go to `about:support`, and look for the Extension ID under Extensions.
-
-   - **Example entry:**
-     ```nix
-     (extension "ublock-origin" "uBlock0@raymondhill.net")
-     ```
-
-### Popular Extension UUIDs
-
-| Extension | Short ID | UUID |
-|-----------|----------|------|
-| uBlock Origin | `ublock-origin` | `uBlock0@raymondhill.net` |
-| Bitwarden | `bitwarden-password-manager` | `{446900e4-71c2-419f-a6a7-df9c091e268b}` |
-| Privacy Badger | `privacy-badger17` | `jid1-MnnxcxisBPnSXQ@jetpack` |
-| DuckDuckGo Privacy Essentials | `duckduckgo-for-firefox` | `jid1-ZAdIEUB7XOzOJw@jetpack` |
-| Decentraleyes | `decentraleyes` | `jid1-BoFifL9Vbdl2zQ@jetpack` |
-| ClearURLs | `clearurls` | `{74145f27-f039-47ce-a470-a662b129930a}` |
-| Dark Reader | `darkreader` | `addon@darkreader.org` |
-| Tree Style Tab | `tree-style-tab` | `treestyletab@piro.sakura.ne.jp` |
-| Violentmonkey | `violentmonkey` | `{aecec67f-0d10-4fa7-b7c7-609a2db280cf}` |
-| Multi-Account Containers | `multi-account-containers` | `@testpilot-containers` |
-
-## 🔧 Other Configurations
-
-### Hyprland
-- Configuration: `dotfiles/.config/hypr/`
-- Wallpapers: `wallpapers/`
-- Scripts: `scripts/`
-
-### Development
-- VS Code settings: `dotfiles/.config/Code/User/settings.json`
-- Git configuration: `dotfiles/.config/git/`
-
-## 📋 Notes
-
-- Dotfiles are managed using Home Manager with live-updating symlinks
-- Monitor configuration is stored in `systems/orion/monitors.json`
-- Additional notes in `notes.txt`
+1. **One Feature, One File** — all configuration for a feature in a single place
+2. **Unified Namespace** — all features use `modules.features.*`
+3. **Explicit Configuration** — features never auto-enable
+4. **Composability** — mix and match features across systems
+5. **Parameterization** — configure via `userVars`/`systemVars`

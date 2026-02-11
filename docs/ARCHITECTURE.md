@@ -665,7 +665,7 @@ config = mkIf cfg.enable {
 
 - [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) - High-level project documentation
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - Development workflow
-- [FLEET-MANAGEMENT.md](../FLEET-MANAGEMENT.md) - Multi-system deployment
+- [README.md](../README.md) - Fleet management overview
 - [SECRETS.md](../SECRETS.md) - Secrets management guide
 
 ---

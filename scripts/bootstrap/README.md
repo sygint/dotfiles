@@ -40,4 +40,4 @@ Sets up the development environment with all necessary tools and dependencies.
 
 ## See Also
 - [docs/BOOTSTRAP.md](../../docs/BOOTSTRAP.md) - Complete bootstrap documentation
-- [FLEET-MANAGEMENT.md](../../FLEET-MANAGEMENT.md) - Fleet management guide
+- [README.md](../../README.md) - Fleet management overview
