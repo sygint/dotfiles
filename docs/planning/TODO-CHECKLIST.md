@@ -224,6 +224,15 @@ Use this checklist to track your progress implementing improvements from the ana
 
 ## 🟢 Month 2-3: Nice to Have
 
+### Example Repositories
+
+Create public example/template repositories so others can use nixos-fleet and adopt a similar NixOS config structure:
+
+- [ ] Create `nixos-fleet-example` repo -- minimal working example showing `lib.mkFleet` usage with 2-3 hosts, fleet-config, Colmena integration, and secrets setup
+- [ ] Create `nixos-config-example` repo -- stripped-down reference NixOS config demonstrating the fleet architecture (multi-host, modules, home-manager, sops-nix)
+- [ ] Add links from nixos-fleet README to the example repo
+- [ ] Consider using `nix flake init -t` templates in nixos-fleet for bootstrapping
+
 ### Month 2-3: Medium Priority Improvements
 
 **Custom Library:**
