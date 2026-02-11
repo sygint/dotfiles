@@ -32,8 +32,8 @@ Test full deployment workflow for a NixOS configuration:
   1. Build and launch VM with SSH access
   2. Wait for system to boot
   3. Verify SSH key authentication
-  4. Test deploy-rs can deploy to the VM
-  5. Validate deployment succeeded
+   4. Test fleet push can deploy to the VM
+   5. Validate deployment succeeded
 
 Arguments:
   system-name  System to test (required)
@@ -233,56 +233,21 @@ fi
 
 echo
 
-# Step 5: Test deploy-rs deployment (if enabled)
+# Step 5: Test fleet push deployment (if enabled)
 if [ "$DEPLOY_TEST" = "true" ]; then
-    echo -e "${BOLD}${BLUE}[Step 5/6] Testing Deploy-rs Deployment${NC}"
+    echo -e "${BOLD}${BLUE}[Step 5/6] Testing Fleet Push Deployment${NC}"
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     
     # Get current generation before deployment
     BEFORE_GEN=$(ssh $SSH_OPTS -p $SSH_PORT deploy@localhost "readlink /nix/var/nix/profiles/system | grep -oP 'system-\K[0-9]+' || echo '0'" 2>/dev/null)
     echo -e "${CYAN}Current system generation: $BEFORE_GEN${NC}"
     
-    # Create temporary flake for VM deployment
-    echo -e "${CYAN}Setting up temporary deployment configuration...${NC}"
-    TEMP_FLAKE=$(mktemp -d)
-    
-    # Copy flake to temp location and modify for VM
-    cp -r "$REPO_ROOT"/* "$TEMP_FLAKE/" 2>/dev/null || true
-    cp "$REPO_ROOT/.gitignore" "$TEMP_FLAKE/" 2>/dev/null || true
-    
-    # Modify deploy configuration to target the VM
-    cat > "$TEMP_FLAKE/test-deploy.nix" <<EOF
-# Temporary deploy configuration for VM testing
-{
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    deploy-rs.url = "github:serokell/deploy-rs";
-  };
-  
-  outputs = { self, nixpkgs, deploy-rs, ... }:
-    let
-      mainFlake = import ./flake.nix;
-    in
-    {
-      deploy.nodes.${SYSTEM} = {
-        hostname = "localhost";
-        sshUser = "deploy";
-        sshOpts = [ "-p" "${SSH_PORT}" "-o" "StrictHostKeyChecking=no" "-o" "UserKnownHostsFile=/dev/null" ];
-        profiles.system = {
-          path = deploy-rs.lib.x86_64-linux.activate.nixos mainFlake.nixosConfigurations.${SYSTEM};
-          user = "root";
-        };
-      };
-    };
-}
-EOF
-    
     echo -e "${CYAN}Attempting deployment to VM...${NC}"
     echo -e "${YELLOW}Note: This may show warnings about SSH host keys - this is expected for test VMs${NC}"
     echo
     
-    # Try deployment using deploy-rs
-    if cd "$REPO_ROOT" && deploy --ssh-opts="-p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --hostname "localhost" --ssh-user "deploy" ".#${SYSTEM}" -- --impure 2>&1 | tee /tmp/${SYSTEM}-deploy.log; then
+    # Deploy using fleet push with SSH port override
+    if cd "$REPO_ROOT" && fleet push "$SYSTEM" --ssh-opts="-p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" 2>&1 | tee /tmp/${SYSTEM}-deploy.log; then
         echo
         echo -e "${GREEN}✅ Deployment command completed${NC}"
         
@@ -299,7 +264,7 @@ EOF
     else
         echo
         echo -e "${YELLOW}⚠️  Deployment had issues - checking if this is expected...${NC}"
-        echo -e "${YELLOW}   For VMs, deploy-rs may not work perfectly due to testing environment${NC}"
+        echo -e "${YELLOW}   For VMs, fleet push may not work perfectly due to testing environment${NC}"
         echo -e "${YELLOW}   Check logs: /tmp/${SYSTEM}-deploy.log${NC}"
         
         # Check if system is still accessible
@@ -309,11 +274,8 @@ EOF
             echo -e "${RED}❌ System not accessible after deployment attempt${NC}"
         fi
     fi
-    
-    # Cleanup temp flake
-    rm -rf "$TEMP_FLAKE"
 else
-    echo -e "${BOLD}${BLUE}[Step 5/6] Skipping Deploy-rs Test${NC}"
+    echo -e "${BOLD}${BLUE}[Step 5/6] Skipping Fleet Push Test${NC}"
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${YELLOW}Deploy test disabled (DEPLOY_TEST=false)${NC}"
 fi

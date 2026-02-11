@@ -28,7 +28,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 # Step 2: Deploy
-echo "Step 2: Deploying with deploy-rs"
+echo "Step 2: Deploying with fleet push"
 echo ""
 
 # Record current generation before deploy
@@ -36,8 +36,8 @@ BEFORE_GEN=$(ssh $USER@$IP "readlink /nix/var/nix/profiles/system" 2>/dev/null |
 echo "Current generation: $BEFORE_GEN"
 echo ""
 
-# Run deploy-rs
-if deploy --skip-checks .#$HOST -- --impure; then
+# Run fleet push
+if fleet push $HOST; then
   echo ""
   echo "✅ Deploy command completed"
 else

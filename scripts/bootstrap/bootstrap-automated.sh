@@ -17,7 +17,7 @@
 # - nixos-anywhere
 # - sops
 # - ssh-to-age
-# - deploy-rs
+# - fleet (nixos-fleet CLI)
 # - jq, yq (for YAML manipulation)
 
 set -euo pipefail
@@ -83,7 +83,7 @@ echo ""
 log_step "Validating prerequisites..."
 
 # Check required tools
-REQUIRED_TOOLS=("nixos-anywhere" "sops" "ssh-to-age" "deploy" "jq" "yq")
+REQUIRED_TOOLS=("nixos-anywhere" "sops" "ssh-to-age" "fleet" "jq" "yq")
 for tool in "${REQUIRED_TOOLS[@]}"; do
     if ! command -v "$tool" &> /dev/null; then
         error_exit "Required tool not found: $tool"
@@ -312,8 +312,8 @@ echo -e "${GREEN}PHASE 3: Deploying Full Configuration${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-log_step "Deploying with deploy-rs..."
-if deploy --targets ".#$HOST"; then
+log_step "Deploying with fleet push..."
+if fleet push "$HOST"; then
     log_success "Deployment successful"
 else
     log_error "Deployment failed"
