@@ -70,7 +70,8 @@ in
               force = true;
             };
             # .zlogin is a processed template (compositor substitution)
-            ".zlogin" = {
+            # Must be in ZDOTDIR (.config/zsh) since .zprofile sets ZDOTDIR there
+            ".config/zsh/.zlogin" = {
               source = zloginProcessed;
             };
             ".config/zsh/.zshrc" = {

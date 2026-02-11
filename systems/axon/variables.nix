@@ -19,11 +19,6 @@ in
   user = {
     username = "axon";
 
-    git = {
-      username = "axon";
-      email = "axon@axon.home";
-    };
-
     # No Hyprland on this system (uses GNOME)
     hyprland = { };
   };

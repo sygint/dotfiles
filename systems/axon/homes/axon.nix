@@ -31,16 +31,6 @@
     # Note: starship, zoxide, fzf, eza, bat provided by features.zsh module
   ];
 
-  programs.git = {
-    enable = true;
-    settings = {
-      user = {
-        name = userVars.name;
-        email = userVars.email;
-      };
-    };
-  };
-
   # Zsh configuration now managed by features.zsh module via dotfiles
   # See: modules/features/zsh.nix and dotfiles/.config/zsh/
 
