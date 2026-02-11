@@ -7,6 +7,8 @@ status: published
 
 # Fixing Deployment Hell: NixOS Week 1 Day 1
 
+> **Update (Feb 2026):** deploy-rs and the justfile described below have since been replaced by the `fleet` CLI (nixos-fleet). The safety patterns described here are still in use -- they've been integrated into fleet's deployment workflow. See `examples/fleet-cli-integration.md`.
+
 ## The Problem
 
 I've been running NixOS on two systems (Orion laptop, Cortex AI rig) for a while now, but deployment has been my #1 pain point.

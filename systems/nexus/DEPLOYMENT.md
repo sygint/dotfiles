@@ -191,9 +191,6 @@ git commit -m "Add Nexus configuration for HP EliteDesk G4 800"
 
     # Deploy!
 fleet push nexus
-
-# Or use deploy-rs directly:
-nix run github:serokell/deploy-rs -- --targets .#nexus
 ```
 
 ## Post-Deployment

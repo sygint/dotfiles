@@ -9,7 +9,7 @@
 
 ## Overview
 
-This repository should be using **nixos-fleet** (`~/Projects/open-source/nixos-fleet`) for deployment, but is currently using **deploy-rs** directly. nixos-fleet provides a unified CLI and uses Colmena under the hood.
+This repository should be using **nixos-fleet** (`~/Projects/open-source/nixos-fleet`) for deployment. The `fleet` CLI is already in use, and **deploy-rs has been fully removed** from the flake. The remaining work is completing the Colmena backend integration for parallel deployments.
 
 **Progress:**
 - ✅ Justfile removed (all commands covered by `fleet` CLI)
@@ -33,15 +33,15 @@ This repository should be using **nixos-fleet** (`~/Projects/open-source/nixos-f
 ## Current State
 
 ### What We Have Now
-- **Deployment**: `deploy-rs` via `flake-modules/deploy.nix`
-- **Fleet Management**: `fleet` CLI from nixos-fleet (justfile and fleet.sh removed)
-- **Fleet Config**: `fleet-config.nix` (good - compatible with nixos-fleet)
+- **Deployment**: `fleet` CLI from nixos-fleet (deploy-rs fully removed)
+- **Fleet Management**: `fleet push`, `fleet install`, `fleet check`, `fleet sync`
+- **Fleet Config**: `fleet-config.nix` (compatible with nixos-fleet)
 - **Systems**: Orion, Cortex, Nexus, Axon
 
-### What's Missing
-- nixos-fleet not yet added as flake input
-- No Colmena configuration
-- deploy-rs still used for actual deployments
+### What's Remaining
+- Colmena backend configuration (for parallel deployments)
+- nixos-fleet modules (fleet-hosts, fleet-deploy-user) not yet enabled
+- deploy-rs removed -- no longer available as fallback
 
 ---
 
@@ -224,7 +224,8 @@ Add nixos-fleet modules to systems:
 ### What Needs Adjustment
 - ⚠️ Custom `deploy.nix` needs Colmena configuration
 - ✅ ~~`scripts/deployment/fleet.sh`~~ → Removed, `fleet` CLI in use
-- ⚠️ deploy-rs usage → Colmena usage (pending)
+- ⚠️ Colmena configuration not yet enabled (for parallel deploys)
+- ⚠️ fleet push uses nixos-rebuild fallback until Colmena is wired up
 
 ---
 
@@ -265,10 +266,10 @@ If migration fails:
    nix flake lock
    ```
 
-2. **Use old deploy-rs**:
-   ```bash
-   nix run github:serokell/deploy-rs -- .#<host>
-   ```
+2. **Use fleet push (current method)**:
+    ```bash
+    fleet push <host>
+    ```
 
 ---
 
@@ -289,8 +290,8 @@ If migration fails:
 
 ## Benefits After Migration
 
-1. **Simplified Deployment**: `fleet push cortex` instead of `nix run github:serokell/deploy-rs -- .#cortex`
-2. **Parallel Deploys**: `fleet push --tag server` deploys Cortex + Nexus simultaneously
+1. **Simplified Deployment**: `fleet push cortex` handles everything
+2. **Parallel Deploys**: `fleet push --tag server` deploys Cortex + Nexus simultaneously (once Colmena is wired)
 3. **Better Tooling**: Built-in health checks, secrets management
 4. **Dogfooding**: Use your own project in production
 5. **Unified Workflow**: Same commands across all operations
@@ -328,5 +329,6 @@ If migration fails:
 
 ## Updates
 
+**2026-02-11**: deploy-rs fully removed from flake.nix. All references updated to fleet CLI.
 **2026-02-10**: Removed justfile, fleet.sh, and `just` package. Updated all docs to reference `fleet` CLI.
 **2026-01-22**: Initial migration plan created. Currently using deploy-rs directly.

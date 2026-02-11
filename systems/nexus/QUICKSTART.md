@@ -113,11 +113,11 @@ cd ~/.config/nixos
 # Build first to check for errors
 nix build .#nixosConfigurations.nexus.config.system.build.toplevel
 
-# Deploy
-nix run github:serokell/deploy-rs -- .#nexus
-```
+    # Deploy
+    fleet push nexus
+    ```
 
-### Method 2: Deploy-rs from Orion (If NixOS already installed)
+### Method 2: Fleet Push from Orion (If NixOS already installed)
 
 ```bash
 # From Orion
@@ -127,12 +127,12 @@ cd ~/.config/nixos
 nix build .#nixosConfigurations.nexus.config.system.build.toplevel
 
 # Deploy to Nexus
-nix run github:serokell/deploy-rs -- .#nexus
+fleet push nexus
 
 # Follow prompts, confirm deployment
 ```
 
-### Method 3: Manual Deploy (If deploy-rs has issues)
+### Method 3: Manual Deploy (If fleet push has issues)
 
 ```bash
 # On Orion - copy config to Nexus
@@ -312,7 +312,7 @@ docker ps  # Check port bindings
 # Update system
 cd ~/.config/nixos
 git pull
-nix run github:serokell/deploy-rs -- .#nexus
+fleet push nexus
 
 # Check system status
 ssh admin@nexus.home

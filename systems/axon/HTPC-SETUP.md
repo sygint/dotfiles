@@ -42,8 +42,8 @@ This configuration sets up a NixOS-based HTPC (Home Theater PC) optimized for st
 # From your main NixOS machine (orion):
 sudo nixos-rebuild switch --flake .#htpc --target-host root@<htpc-ip>
 
-# Or using deploy-rs for fleet management:
-nix run github:serokell/deploy-rs -- --targets .#htpc
+# Or using fleet push for fleet management:
+fleet push axon
 ```
 
 ### 4. Post-Installation Setup

@@ -70,7 +70,7 @@ Documentation/
 ├── Cortex-SECURITY.md            # Detailed security implementation guide
 ├── SECRETS.md                    # Secrets management with sops-nix
 └── examples/
-    └── deploy-rs-integration.md  # Deploy-rs setup guide
+    └── fleet-cli-integration.md  # Fleet CLI setup guide
 
 Deployment Scripts/
 ├── scripts/deploy-cortex.sh            # Deploy cortex system
@@ -118,13 +118,13 @@ nix flake check --no-build
 # - Apply all security hardening
 ```
 
-#### Option B: Using deploy-rs (Ongoing Updates)
+#### Option B: Using fleet push (Ongoing Updates)
 
-First, set up deploy-rs (see `examples/deploy-rs-integration.md`):
+See `examples/fleet-cli-integration.md` for setup details:
 
 ```bash
 # Deploy updates to an existing system
-nix run github:serokell/deploy-rs -- .#cortex
+fleet push cortex
 ```
 
 #### Option C: Manual Deployment
@@ -286,7 +286,7 @@ nix build --show-trace .#nixosConfigurations.cortex.config.system.build.toplevel
 - **[Cortex-SECURITY.md](../../Cortex-SECURITY.md)** - Comprehensive security implementation guide
 - **[SECRETS.md](../../SECRETS.md)** - Complete secrets management guide with sops-nix
 - **[SECURITY-COMPARISON.md](../../SECURITY-COMPARISON.md)** - Security features comparison
-- **[examples/deploy-rs-integration.md](../../examples/deploy-rs-integration.md)** - Deploy-rs setup
+- **[examples/fleet-cli-integration.md](../../examples/fleet-cli-integration.md)** - Fleet CLI setup
 
 ## 🤝 Contributing
 

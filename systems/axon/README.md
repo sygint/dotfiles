@@ -19,8 +19,8 @@ Axon is the living room media center, running NixOS and optimized for streaming 
 - Build and deploy with:
   ```bash
   nixos-rebuild switch --flake .#axon --target-host root@<axon-ip>
-  # Or with deploy-rs:
-  nix run github:serokell/deploy-rs -- --targets .#axon
+  # Or with fleet push:
+  fleet push axon
   ```
 - Hardware config in `hardware.nix`
 - User config in `homes/axon.nix` and `homes/kiosk.nix`

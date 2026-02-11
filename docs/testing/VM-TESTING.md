@@ -317,9 +317,9 @@ sudo nixos-rebuild switch --flake .#htpc \
   --target-host root@<vm-ip> \
   --build-host localhost
 
-# Or use deploy-rs
-# Add VM to flake.nix deploy.nodes first
-nix run github:serokell/deploy-rs -- .#htpc-vm
+# Or use fleet push
+# Add VM to fleet-config.nix first
+fleet push htpc-vm
 ```
 
 ### VM Snapshots

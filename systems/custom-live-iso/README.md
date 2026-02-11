@@ -8,7 +8,7 @@ This ISO enables the following workflow:
 1. **Boot**: Insert USB drive and boot target machine
 2. **Connect**: ISO automatically enables SSH with your authorized keys
 3. **Provision**: Run `nixos-anywhere` from your workstation to install NixOS
-4. **Manage**: Use `deploy-rs` for all subsequent updates
+4. **Manage**: Use `fleet push` for all subsequent updates
 
 ## Setup
 
@@ -72,7 +72,7 @@ nixos-anywhere --flake '.#your-host' root@<target-ip>
 
 ### Subsequent Updates
 
-After initial provisioning, use `deploy-rs`:
+After initial provisioning, use `fleet push`:
 
 ```bash
 fleet push your-host

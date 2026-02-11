@@ -204,7 +204,7 @@ The systems vs modules separation is crystal clear:
 
 **Tools Stack:**
 ```
-nixos-fleet CLI → Colmena (parallel) + deploy-rs (backup)
+nixos-fleet CLI → Colmena (parallel, in progress)
     ↓
 fleet-config.nix (single source of truth)
     ↓

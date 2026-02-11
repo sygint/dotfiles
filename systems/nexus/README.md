@@ -95,12 +95,9 @@ Nexus is the centralized homelab services server, providing media streaming (Jel
     # Build configuration locally
    nix build .#nixosConfigurations.nexus.config.system.build.toplevel
    
-   # Deploy to Nexus
-   fleet push nexus
-   
-   # Or use deploy-rs directly
-   nix run github:serokell/deploy-rs -- --targets .#nexus
-   ```
+    # Deploy to Nexus
+    fleet push nexus
+    ```
 
 ### Remote Deployment
 
@@ -115,9 +112,6 @@ nix flake check
 
 # Build and deploy
 fleet push nexus
-
-# Or with deploy-rs
-nix run github:serokell/deploy-rs -- --targets .#nexus
 ```
 
 ## User Accounts

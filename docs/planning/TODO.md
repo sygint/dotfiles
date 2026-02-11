@@ -9,7 +9,7 @@ Future improvements and aspirational items. Not prioritized -- just captured so 
 - **Automated Borg backups** to Synology DS-920+ for all systems
 - **Monitoring stack on Nexus** -- AdGuard Home, Grafana, Prometheus, Loki
 - **HTTPS for internal services** -- reverse proxy with SSL termination (see [TODO-HTTPS-MIGRATION.md](TODO-HTTPS-MIGRATION.md))
-- **Colmena migration** -- replace deploy-rs with Colmena for parallel deployment (see [TODO-NIXOS-FLEET-MIGRATION.md](TODO-NIXOS-FLEET-MIGRATION.md))
+- **Colmena backend migration** -- complete nixos-fleet Colmena integration for parallel deployment (see [TODO-NIXOS-FLEET-MIGRATION.md](TODO-NIXOS-FLEET-MIGRATION.md))
 
 ## Security
 

@@ -56,8 +56,8 @@ Network security hardening through sysctl parameters:
 # From Orion, rebuild Cortex
 cd ~/.config/nixos
 
-# Option 1: Using deploy-rs (if configured)
-nix run github:serokell/deploy-rs -- .#cortex
+# Option 1: Using fleet push
+fleet push cortex
 
 # Option 2: Manual deployment
 nix build .#nixosConfigurations.cortex.config.system.build.toplevel
@@ -203,7 +203,7 @@ sudo journalctl _SYSTEMD_UNIT=sshd.service | grep -i failed
 # Update system (from Orion workstation)
 cd ~/.config/nixos
 git pull
-nix run github:serokell/deploy-rs -- .#cortex
+fleet push cortex
 ```
 
 ## Advanced Configuration
