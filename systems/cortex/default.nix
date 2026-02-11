@@ -119,6 +119,18 @@ in
 
     # Enable AI services (Ollama, NVIDIA, CUDA, etc.)
     features.ai-services.enable = true;
+
+    # Power management - suspend when idle, wake via WoL
+    features.power-management = {
+      enable = true;
+      wakeOnLan.interface = "enp3s0";
+      autoSuspend = {
+        enable = true;
+        idleMinutes = 30;
+        gpuAware = true; # Don't suspend if GPU is active
+        gpuThreshold = 5; # GPU util % threshold
+      };
+    };
   };
 
   security = {
