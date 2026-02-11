@@ -117,8 +117,8 @@ Use this checklist to track your progress implementing improvements from the ana
 - [ ] Move everything else to home/optional/
 - [ ] Update `systems/orion/default.nix` imports
 - [ ] Update `systems/cortex/default.nix` imports
-- [ ] Test rebuild Orion: `just rebuild-orion`
-- [ ] Test deploy Cortex: `just deploy-cortex`
+- [ ] Test rebuild Orion: `sudo nixos-rebuild switch --flake .#orion`
+- [ ] Test deploy Cortex: `fleet push cortex`
 - [ ] Verify no regressions (check systemctl status)
 - [ ] Commit: `git add -A && git commit -m "refactor: adopt core/optional architecture"`
 
@@ -150,12 +150,12 @@ Use this checklist to track your progress implementing improvements from the ana
 - [ ] Create `modules/system/optional/services/backup.nix` (from IMPLEMENTATION-GUIDE.md)
 - [ ] Add borg-passphrase to secrets.yaml
 - [ ] Enable backup on Orion in default.nix
-- [ ] Rebuild Orion: `just rebuild-orion`
+- [ ] Test rebuild Orion: `sudo nixos-rebuild switch --flake .#orion`
 - [ ] Verify service: `systemctl status borgbackup-job-synology.service`
 - [ ] Manually trigger: `systemctl start borgbackup-job-synology.service`
 - [ ] Check backup: `borg list borg@synology.local:/volume1/backups/orion`
 - [ ] Enable backup on Cortex in default.nix
-- [ ] Deploy to Cortex: `just deploy-cortex`
+- [ ] Deploy to Cortex: `fleet push cortex`
 - [ ] Verify Cortex backup service
 
 **Success Metric:** ✅ Automated daily backups configured on both systems

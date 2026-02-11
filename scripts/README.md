@@ -30,10 +30,11 @@ scripts/
 - **[bootstrap/bootstrap-devenv.sh](bootstrap/)** - Dev environment setup
 
 ### Deployment
-- **[deployment/fleet.sh](deployment/)** - Fleet management tool
 - **[deployment/safe-deploy.sh](deployment/)** - Safe deployment orchestration
 - **[deployment/pre-flight.sh](deployment/)** - Pre-deployment checks
 - **[deployment/validate.sh](deployment/)** - Post-deployment validation
+
+> **Note:** Fleet management is now handled by the `fleet` CLI ([nixos-fleet](https://github.com/sygint/nixos-fleet)) instead of a local script.
 
 ### Desktop
 - **[desktop/monitors.sh](desktop/)** - Monitor configuration
@@ -87,7 +88,7 @@ Each subdirectory contains its own README.md with detailed documentation:
 ./scripts/testing/test-vm.sh orion
 
 # Deploy to remote system
-just deploy cortex
+fleet push cortex
 # or
 ./scripts/deployment/safe-deploy.sh cortex 192.168.1.7 jarvis
 ```
@@ -95,13 +96,13 @@ just deploy cortex
 ### Fleet Management
 ```bash
 # List all systems
-./scripts/deployment/fleet.sh list
+fleet status
 
 # Check system health
-./scripts/deployment/fleet.sh check cortex
+fleet check cortex
 
 # Deploy updates
-./scripts/deployment/fleet.sh update cortex
+fleet push cortex
 ```
 
 ### Troubleshooting

@@ -318,10 +318,10 @@ sops updatekeys secrets.yaml
 
 ```bash
 # From nix-config root
-just deploy-<hostname>
+fleet push <hostname>
 
 # Example
-just deploy-cortex
+fleet push cortex
 ```
 
 ### 3. Verify System
@@ -362,29 +362,26 @@ sops secrets.yaml
 Deploy again to apply:
 
 ```bash
-just deploy-<hostname>
+fleet push <hostname>
 ```
 
 ---
 
 ## Fleet Management
 
-### Using the Fleet Script
+### Using the Fleet CLI
 
-The `fleet.sh` script auto-loads host configuration from your Nix config:
+The `fleet` CLI auto-loads host configuration from your Nix config:
 
 ```bash
 # List all systems
-./scripts/fleet.sh list
-
-# Build a system locally
-./scripts/fleet.sh build orion
+fleet status
 
 # Check system health (auto-loads IP and user from config)
-./scripts/fleet.sh check orion
+fleet check orion
 
-# Deploy updates (via deploy-rs)
-./scripts/fleet.sh update orion
+# Deploy updates (via Colmena)
+fleet push orion
 ```
 
 ### Wake-on-LAN
@@ -392,10 +389,8 @@ The `fleet.sh` script auto-loads host configuration from your Nix config:
 If configured in `fleet-config.nix`:
 
 ```bash
-# Wake a sleeping host
-just wake-orion
-# or
-just wake-cortex
+# Wake a sleeping host (via fleet or manual WoL)
+fleet ssh orion  # will attempt WoL if configured
 ```
 
 ---
@@ -413,18 +408,15 @@ Use `bootstrap-automated.sh` for first-time installation on bare metal or VM.
 
 ### Incremental Updates
 
-After bootstrap, use `deploy-rs` for updates:
+After bootstrap, use the `fleet` CLI for updates:
 
 ```bash
-# Via justfile (recommended)
-just deploy-orion
-just deploy-cortex
+# Via fleet CLI (recommended)
+fleet push orion
+fleet push cortex
 
-# Or via fleet script
-./scripts/fleet.sh update orion
-
-# Or directly
-deploy --targets ".#orion"
+# Or directly via Colmena
+nix run .#colmena -- apply --on orion
 ```
 
 **Best for:**

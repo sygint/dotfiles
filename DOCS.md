@@ -47,12 +47,12 @@ Complete guide to this NixOS configuration. Start here for navigation.
 
 **Deploy to a system:**
 ```bash
-./scripts/fleet.sh deploy cortex
+fleet push cortex
 ```
 
 **Update all systems:**
 ```bash
-./scripts/fleet-deploy.sh update --all
+fleet push all
 ```
 
 **Check AI services:**

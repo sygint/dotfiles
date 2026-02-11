@@ -458,7 +458,7 @@ cmd_rotate_host() {
         mv "$ENCRYPTED_TEMP" "$SECRETS_FILE"
         
         success "Rotated password for $host"
-        warn "Deploy to apply: cd $SECRETS_REPO/../nixos && ./scripts/deployment/fleet.sh update $host"
+        warn "Deploy to apply: fleet push $host"
     else
         error "Failed to re-encrypt secrets"
     fi

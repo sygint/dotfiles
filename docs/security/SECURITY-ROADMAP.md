@@ -170,154 +170,46 @@ services.borgbackup.jobs.synology = {
 2. **Cortex** - AI models, datasets, configurations
 3. **Nexus** - Homelab services data
 
-### Task Automation with Just
+### Task Automation with Fleet CLI
 
-**Goal:** Standardize common workflows with a task runner
+**Goal:** Standardize common workflows with a unified CLI
 
-**Why Just?**
-- Simpler syntax than Makefiles
-- Better error messages
-- Self-documenting (`just --list`)
-- Cross-platform (works on macOS for future Darwin configs)
+**Why Fleet CLI?**
+- Single binary for all fleet operations
+- Wraps Colmena for parallel deployments
+- Built-in secrets management
+- Self-documenting (`fleet --help`)
 
-**Comprehensive Justfile Example:**
-```just
-# Default: show all available commands
-default:
-    @just --list
-
-# ====== LOCAL OPERATIONS ======
-
-# Rebuild local system (use 'nos' alias or this)
-rebuild:
-    sudo nixos-rebuild switch --flake .
-
-# Rebuild specific host locally
-rebuild-host HOST:
-    sudo nixos-rebuild switch --flake .#{{HOST}}
-
-# Rebuild with full trace for debugging
-rebuild-trace HOST:
-    sudo nixos-rebuild switch --flake .#{{HOST}} --show-trace
-
-# Update all flake inputs
-update:
-    nix flake update
-
-# Update specific input
-update-input INPUT:
-    nix flake update {{INPUT}}
-
-# ====== FLEET OPERATIONS ======
-
-# List all systems
-fleet-list:
-    ./scripts/fleet.sh list
-
-# Deploy to remote system
-deploy SYSTEM:
-    ./scripts/fleet.sh deploy {{SYSTEM}}
-
-# Check system health
-check SYSTEM:
-    ./scripts/fleet.sh check {{SYSTEM}}
-
-# Build system configuration (no deploy)
-build SYSTEM:
-    ./scripts/fleet.sh build {{SYSTEM}}
-
-# ====== SECRETS MANAGEMENT ======
-
-# Edit secrets for a system
-edit-secrets SYSTEM:
-    sops ~/.config/nixos-secrets/secrets.yaml
-
-# Rekey all SOPS secrets after key changes
-rekey:
-    @echo "Rekeying secrets..."
-    cd ~/.config/nixos-secrets && \
-    sops updatekeys secrets.yaml && \
-    git add secrets.yaml && \
-    git commit -m "chore: rekey secrets" && \
-    git push
-
-# Update secrets flake input
-update-secrets:
-    nix flake lock --update-input nixos-secrets
-
-# ====== DEVELOPMENT ======
-
-# Validate all configurations build
-check:
-    nix flake check --show-trace
-
-# Format all Nix files
-fmt:
-    nixfmt **/*.nix
-
-# Show flake metadata and inputs
-info:
-    nix flake metadata
-
-# Clean old build artifacts
-clean:
-    rm -rf result
-    nix-collect-garbage -d
-
-# ====== GIT OPERATIONS ======
-
-# Git status with flake info
-status:
-    @git status
-    @echo "\n📦 Flake Inputs:"
-    @nix flake metadata | grep -A 10 "Inputs:"
-
-# Commit with conventional commit message
-commit MSG:
-    git add -A
-    git commit -m "{{MSG}}"
-
-# ====== QUICK ACCESS ======
-
-# SSH into cortex
-ssh-cortex:
-    ssh jarvis@cortex
-
-# SSH into orion
-ssh-orion:
-    ssh syg@orion
-```
-
-**Usage Examples:**
+**Common Commands:**
 ```bash
 # See all available commands
-just
+fleet --help
 
 # Local rebuild
-just rebuild
+sudo nixos-rebuild switch --flake .
 
 # Deploy to remote system
-just deploy cortex
+fleet push cortex
 
-# Update everything and rebuild
-just update
-just rebuild
+# Deploy to all servers
+fleet push --tag server
+
+# Check system health
+fleet check cortex
 
 # Manage secrets
-just edit-secrets cortex
-just rekey
+fleet secrets edit
+fleet secrets sync
 
-# Development workflow
-just check        # Validate configs
-just fmt          # Format code
-just commit "feat: add new module"
+# Fleet-wide operations
+fleet status
+fleet exec all -- uptime
 ```
 
 **Integration with Existing Tools:**
-- Wraps `fleet.sh` for common tasks
-- Standardizes `nos` and manual rebuilds
-- Simplifies secrets management
-- Provides memorable aliases for SSH
+- Wraps Colmena for deployment
+- Integrates with SOPS for secrets
+- Provides SSH shortcuts (`fleet ssh cortex`)
 
 ### Code Quality Automation
 

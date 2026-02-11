@@ -66,7 +66,7 @@ pkgs.mkShell {
 
     echo
     echo "Available Commands:"
-    echo "  • ./scripts/deployment/fleet.sh - Fleet management"
+    echo "  • fleet - Fleet management CLI (nixos-fleet)"
     echo "  • nixos-rebuild - Build/test configurations"
     echo
   '';

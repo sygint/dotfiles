@@ -75,7 +75,7 @@ nixos-anywhere --flake '.#your-host' root@<target-ip>
 After initial provisioning, use `deploy-rs`:
 
 ```bash
-./scripts/fleet.sh deploy your-host
+fleet push your-host
 ```
 
 ## Security Notes

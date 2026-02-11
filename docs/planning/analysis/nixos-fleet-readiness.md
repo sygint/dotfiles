@@ -148,11 +148,11 @@ All core features needed for dotfiles migration are implemented and working.
 ### This Week - 2-3 hours
 1. Implement Option A (full mkFleet migration) or Option B (gradual)
 2. Test `fleet push` on Axon (lowest risk)
-3. Update justfile to use `fleet` commands
+3. ✅ Justfile and fleet.sh removed, docs updated to reference `fleet` CLI
 
 ### This Month
 1. Migrate all hosts to fleet CLI
-2. Archive old fleet.sh script
+2. ✅ Old fleet.sh script deleted
 3. Add P0/P1 features to nixos-fleet (auto-detect, logs)
 
 ---
@@ -163,7 +163,7 @@ All core features needed for dotfiles migration are implemented and working.
 |------|----------------|------------------|
 | **Deploy Cortex** | `nix run github:serokell/deploy-rs -- .#cortex` | `fleet push cortex` |
 | **Deploy All Servers** | Manual: deploy Cortex, then Nexus | `fleet push --tag server` |
-| **Health Check** | `./scripts/deployment/fleet.sh check cortex` | `fleet check cortex` |
+| **Health Check** | `fleet check cortex` | `fleet check cortex` |
 | **Fresh Install** | `./scripts/bootstrap-automated.sh cortex 192.168.1.7` | `fleet install cortex` |
 | **Run Command** | `ssh jarvis@cortex 'systemctl status'` | `fleet exec cortex -- systemctl status` |
 | **Secrets** | Manual sops edit | `fleet secrets edit` |
@@ -208,7 +208,7 @@ All core features needed for dotfiles migration are implemented and working.
 - [ ] Archive old scripts
 
 ### Documentation Strategy
-- [ ] **DELETE**: `docs/FLEET-SECRETS-INTEGRATION.md` (outdated fleet.sh docs)
+- [x] **DELETE**: `docs/FLEET-SECRETS-INTEGRATION.md` (outdated fleet.sh docs)
 - [ ] **UPDATE**: `docs/FLEET-FUTURE.md` → Mention using nixos-fleet instead of direct Colmena
 - [ ] **CREATE**: `docs/FLEET-NIXOS-FLEET.md` - How to use fleet CLI
 - [ ] **KEEP**: `docs/GLOBAL-SETTINGS.md` (fleet-config.nix still relevant)
@@ -218,7 +218,7 @@ All core features needed for dotfiles migration are implemented and working.
 ## Recommendation Summary
 
 **For Documentation Cleanup:**
-1. ❌ **DELETE** `docs/FLEET-SECRETS-INTEGRATION.md` - Documents non-existent fleet.sh commands
+1. ✅ **DELETED** `docs/FLEET-SECRETS-INTEGRATION.md` - Documents non-existent fleet.sh commands
 2. ✏️ **UPDATE** `docs/FLEET-FUTURE.md` - Add note: "Update: We built nixos-fleet to solve this"
 3. ✅ **KEEP** `docs/GLOBAL-SETTINGS.md` - Still relevant
 

@@ -143,7 +143,10 @@ This configuration represents a learning journey in the open - combining ideas f
 │       └── programs/     # Individual program modules
 │
 ├── scripts/              # Utility and management scripts
-│   ├── fleet.sh          # Universal fleet management tool
+│   ├── deployment/          # Fleet deployment scripts
+│   │   ├── safe-deploy.sh   # Safe deployment orchestration
+│   │   ├── pre-flight.sh    # Pre-deployment checks
+│   │   └── validate.sh      # Post-deployment validation
 │   ├── monitor-handler.sh   # Display management
 │   ├── start-hyprpanel.sh   # UI launcher
 │   ├── screenshot.sh        # Screenshot utilities
@@ -278,18 +281,17 @@ nh home switch           # Update home-manager only
 
 **Remote Deployment:**
 ```bash
-./scripts/fleet.sh list                    # Show all systems
-./scripts/fleet.sh build cortex            # Test build locally
-./scripts/fleet.sh deploy cortex 192.168.1.7  # Fresh install (⚠️ wipes disk!)
-./scripts/fleet.sh update cortex           # Update existing system
-./scripts/fleet.sh check cortex 192.168.1.7 jarvis  # Health check
+fleet status                               # Show all systems
+fleet check cortex                         # Health check
+fleet push cortex                          # Deploy updates
+fleet install cortex 192.168.1.7           # Fresh install (⚠️ wipes disk!)
 ```
 
 **Tools Used:**
 - **nh**: Fast local rebuilds (wrapper for nixos-rebuild)
 - **nixos-anywhere**: Initial deployment with disk formatting (disko)
 - **deploy-rs**: Safe remote updates with rollback capability
-- **fleet.sh**: Universal wrapper script for fleet management
+- **fleet**: CLI tool for unified fleet management ([nixos-fleet](https://github.com/sygint/nixos-fleet))
 
 **📖 For detailed deployment procedures, troubleshooting, and fleet management patterns, see [FLEET-MANAGEMENT.md](./FLEET-MANAGEMENT.md)**
 
@@ -398,9 +400,9 @@ Dynamic monitor configuration via `monitors.json`:
 
 1. **Edit configuration files** in `systems/` or `modules/`
 2. **Test locally**: `nix flake check`
-3. **Build**: `./scripts/fleet.sh build <system>`
+3. **Build**: `nix build .#nixosConfigurations.<system>.config.system.build.toplevel`
 4. **Deploy locally**: `nh os switch` (on same machine)
-5. **Deploy remotely**: `./scripts/fleet.sh update <system>`
+5. **Deploy remotely**: `fleet push <system>`
 
 ### Adding New System
 
@@ -464,7 +466,7 @@ Setup: `./scripts/setup-dev-environment.sh`
    - No automatic rollback configured in deploy-rs
    - Network/SSH configuration changes risk losing remote access
    - Pre-flight validation scripts exist but not integrated into main workflow
-   - Manual secrets sync required between repos
+    - Secrets auto-sync on deploy via `fleet push` (`--no-sync` to skip)
    - Risk: Remote deployments can brick systems without easy recovery
    - Solution: Implement safe-deploy wrapper with auto-rollback (see ANALYSIS-SUMMARY.md)
    - Status: High priority fix needed
@@ -549,7 +551,7 @@ Setup: `./scripts/setup-dev-environment.sh`
 **Deployment Safety:**
 - ⚠️ Pre-flight/validation scripts exist but not integrated
 - ⚠️ No automatic rollback in deploy-rs
-- ⚠️ Manual secrets sync required
+- ✅ Automatic secrets sync on deploy
 - 🎯 **Next**: Implement safe-deploy wrapper (IMPLEMENTATION-GUIDE.md Day 1-2)
 
 **AI/ML Stack (Cortex):**
@@ -583,7 +585,6 @@ Setup: `./scripts/setup-dev-environment.sh`
 
 **Development Workflow:**
 - 📋 Pre-commit hooks (nixfmt, statix, deadnix)
-- 📋 Just task automation
 - 📋 CI/CD for configuration testing
 
 **See [IMPLEMENTATION-GUIDE.md](IMPLEMENTATION-GUIDE.md) for prioritized implementation timeline (Day 1-10)**
@@ -597,7 +598,6 @@ Setup: `./scripts/setup-dev-environment.sh`
 - [ ] Integrate Synology Borg backups for all systems
 - [ ] Complete Cortex AI/ML stack (Ollama, llama.cpp)
 - [ ] Set up Headscale VPN for remote access
-- [ ] Implement Just task automation (see docs/SECURITY-ROADMAP.md)
 - [ ] Add pre-commit hooks (nixfmt, statix, deadnix)
 
 ### Medium Term (3-6 Months)

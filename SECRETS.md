@@ -25,26 +25,26 @@
 
 ```bash
 # Edit secrets (opens in sops editor)
-just edit-secrets
+fleet secrets edit
 # or: sops ../nixos-secrets/secrets.yaml
 
 # Rekey secrets after adding new host keys
-just rekey
+fleet secrets rekey
 # or: cd ../nixos-secrets && sops updatekeys -y secrets.yaml
 
-# Deploy (secrets auto-sync via rebuild-pre hook)
-just deploy-cortex
-just rebuild-orion
+# Deploy (secrets auto-sync via fleet)
+fleet push cortex
+sudo nixos-rebuild switch --flake .#orion
 
-# Manual secrets sync (usually automatic)
-just update-secrets
+# Manual secrets sync
+fleet secrets sync
 ```
 
 ### Quick Reference
 
 - **Secrets location**: `../nixos-secrets/secrets.yaml`
 - **Encryption**: age with SSH host keys
-- **Auto-sync**: Yes (via `rebuild-pre` hook in justfile)
+- **Auto-sync**: Yes (`fleet push` syncs secrets automatically, `--no-sync` to skip)
 - **Phase**: 1 (Local + Auto-Sync) ✅
 
 ---
@@ -104,37 +104,29 @@ imports = [
 - ✅ Local git repo at `../nixos-secrets`
 - ✅ sops-nix for encryption
 - ✅ Age keys for decryption
-- ✅ Automatic sync via `rebuild-pre` hook
-- ✅ justfile recipes (`edit-secrets`, `rekey`, `update-secrets`)
+- ✅ Automatic sync on deploy (`fleet push` syncs secrets before applying)
+- ✅ Fleet CLI commands (`secrets edit`, `secrets rekey`, `secrets sync`)
 - ✅ `.sops.yaml` with creation rules
 
-**Justfile Integration:**
+**Fleet CLI Integration:**
 
-```justfile
-# Run BEFORE every rebuild/deploy - syncs secrets automatically
-rebuild-pre: update-secrets
-  @git add --intent-to-add .
+```bash
+# Deploy (automatically syncs secrets first)
+fleet push cortex
 
-# Sync secrets from separate repo (HYBRID APPROACH)
-update-secrets:
-  @echo "🔄 Syncing secrets..."
-  @(cd ../nixos-secrets && git pull) || true
-  @nix flake update nixos-secrets --timeout 5
-  @echo "✅ Secrets synced"
+# Skip auto-sync if needed
+fleet push cortex --no-sync
 
-# Deploy commands automatically call rebuild-pre
-deploy-cortex: rebuild-pre
-  ./scripts/safe-deploy.sh cortex 192.168.1.7 jarvis
+# Manual sync without deploying
+fleet secrets sync
 ```
 
 **How It Works:**
-1. You run `just deploy-cortex` or `just rebuild-orion`
-2. `rebuild-pre` hook runs automatically
-3. Secrets repo pulls latest changes
-4. `nixos-secrets` flake input updated to new commit
-5. Build includes current secrets
-6. Deploy sends entire closure (with secrets) to target
-7. Target activates with correct secrets
+1. You run `fleet push cortex` to deploy
+2. Fleet automatically syncs secrets (pulls latest + updates flake input)
+3. Build includes current secrets
+4. Deploy sends entire closure (with secrets) to target
+5. Target activates with correct secrets
 
 ---
 
@@ -251,7 +243,8 @@ programs.git.extraConfig = {
 
 ```bash
 # 1. Edit secrets file
-just edit-secrets
+fleet secrets edit
+# or: sops ../nixos-secrets/secrets.yaml
 
 # 2. Add your secret in sops editor (vim by default)
 # Save and exit (secrets auto-encrypted)
@@ -271,8 +264,8 @@ sops.secrets."api_keys/openai" = {};
 environment.variables.OPENAI_API_KEY = 
   config.sops.secrets."api_keys/openai".path;
 
-# 6. Deploy (secrets auto-sync)
-just deploy-cortex
+# 6. Deploy
+fleet push cortex
 ```
 
 ### Add New Host
@@ -289,7 +282,8 @@ echo "age1..." > keys/hosts/newhost.txt
 # Add &newhost anchor and include in creation_rules
 
 # 4. Rekey all secrets
-just rekey
+fleet secrets rekey
+# or: cd ../nixos-secrets && sops updatekeys -y secrets.yaml
 
 # 5. Commit changes
 git add .
@@ -297,14 +291,14 @@ git commit -m "Add newhost age key"
 git push  # if using remote
 
 # 6. Deploy to new host
-just deploy-newhost
+fleet push newhost
 ```
 
 ### Update Secret
 
 ```bash
 # 1. Edit secrets
-just edit-secrets
+fleet secrets edit
 
 # 2. Modify value, save & exit
 
@@ -313,15 +307,15 @@ cd ../nixos-secrets
 git add secrets.yaml
 git commit -m "Update API key"
 
-# 4. Deploy (auto-syncs secrets)
-just deploy-cortex
+# 4. Deploy
+fleet push cortex
 ```
 
 ### Rekey After Key Changes
 
 ```bash
 # After adding/removing host keys
-just rekey
+fleet secrets rekey
 
 # Verify all hosts can decrypt
 cd ../nixos-secrets
@@ -410,7 +404,7 @@ git remote add homelab git@homelab.local:nix-secrets.git
 git push homelab main
 
 # 4. Update flake.nix input
-# 5. Test with just update-secrets
+# 5. Test with fleet secrets sync
 # 6. Deploy to all hosts
 ```
 
@@ -475,7 +469,7 @@ nix-secrets/
 
 3. **Rekey secrets:**
    ```bash
-   just rekey
+   fleet secrets rekey
    ```
 
 4. **Check sops configuration:**
@@ -490,16 +484,14 @@ nix-secrets/
 
 **Solutions:**
 
-1. **Manual sync:**
+1. **Redeploy** (auto-syncs secrets):
    ```bash
-   just update-secrets
+   fleet push cortex
    ```
 
-2. **Verify rebuild-pre hook:**
+2. **Manual sync** (without deploying):
    ```bash
-   # Check justfile has:
-   rebuild-pre: update-secrets
-   deploy-cortex: rebuild-pre
+   fleet secrets sync
    ```
 
 3. **Force flake update:**
@@ -598,7 +590,7 @@ sops.secrets."user/password_hash" = {
 
 ### EmergentMind's Approach
 - [nix-secrets repo structure](https://github.com/EmergentMind/nix-config/tree/dev)
-- [justfile with rebuild-pre](https://github.com/EmergentMind/nix-config/blob/dev/justfile)
+- [EmergentMind's justfile](https://github.com/EmergentMind/nix-config/blob/dev/justfile) (reference)
 - [Anatomy article](https://unmovedcentre.com/posts/anatomy-of-a-nixos-config/)
 
 ---

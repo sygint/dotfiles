@@ -7,7 +7,7 @@ HP EliteDesk G4 800 running NixOS 24.11
 **Initial Deployment:**
 ```bash
 # Boot any Linux USB on HP EliteDesk, enable SSH, then:
-./scripts/fleet.sh deploy nexus
+fleet install nexus
 ```
 
 **Alternative:** See [DEPLOYMENT.md](./DEPLOYMENT.md) for manual step-by-step install
@@ -92,11 +92,11 @@ Nexus is the centralized homelab services server, providing media streaming (Jel
 
 4. **Build and deploy from Orion:**
    ```bash
-   # Build configuration locally
-   ./scripts/fleet.sh build nexus
+    # Build configuration locally
+   nix build .#nixosConfigurations.nexus.config.system.build.toplevel
    
    # Deploy to Nexus
-   ./scripts/fleet.sh update nexus
+   fleet push nexus
    
    # Or use deploy-rs directly
    nix run github:serokell/deploy-rs -- --targets .#nexus
@@ -114,7 +114,7 @@ cd ~/.config/nixos
 nix flake check
 
 # Build and deploy
-./scripts/fleet.sh update nexus
+fleet push nexus
 
 # Or with deploy-rs
 nix run github:serokell/deploy-rs -- --targets .#nexus

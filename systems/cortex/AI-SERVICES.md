@@ -321,7 +321,7 @@ This configuration is deployed via the fleet management system:
 
 ```bash
 # Deploy from nixos directory
-./scripts/fleet.sh deploy cortex
+fleet push cortex
 
 # Or rebuild directly on cortex
 ssh jarvis@192.168.1.7 "sudo nixos-rebuild switch --flake /etc/nixos#cortex"

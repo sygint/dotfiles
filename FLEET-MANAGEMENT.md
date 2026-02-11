@@ -2,7 +2,7 @@
 
 **Practical guide to deploying and managing multiple NixOS systems using your current toolset.**
 
-**Current Stack:** `just` + `deploy-rs` + `fleet.sh` + `safe-deploy.sh`
+**Current Stack:** `fleet` CLI (nixos-fleet) + `deploy-rs` + `safe-deploy.sh`
 
 **Last Updated:** October 29, 2025
 
@@ -24,30 +24,27 @@
 ### List Available Systems
 
 ```bash
-./scripts/fleet.sh list
+fleet status
 ```
 
 ### Deploy to a System
 
 ```bash
-# Recommended: Use just commands (includes safety checks)
-just deploy-cortex
+# Recommended: Use fleet CLI
+fleet push cortex
 
-# Alternative: Direct script
+# Alternative: Direct safe deploy script
 ./scripts/safe-deploy.sh cortex 192.168.1.7 jarvis
-
-# Alternative: Using fleet script
-./scripts/fleet.sh update cortex
 ```
 
 ### Local Rebuild
 
 ```bash
 # On Orion (laptop)
-just rebuild-orion
+sudo nixos-rebuild switch --flake .#orion
 
 # With debugging
-just rebuild-trace orion
+sudo nixos-rebuild switch --flake .#orion --show-trace
 ```
 
 ---
@@ -71,11 +68,10 @@ just rebuild-trace orion
 │  │  - flake.nix             │  │
 │  │  - systems/              │  │
 │  │  - scripts/              │  │
-│  │  - justfile              │  │
 │  └──────────────────────────┘  │
 └────────────────────────────────┘
           │
-          │ deploy-rs
+          │ fleet push / deploy-rs
           ↓
 ┌────────────────────────────────┐
 │       Cortex (AI Server)       │
@@ -92,40 +88,35 @@ just rebuild-trace orion
 
 All commands assume you're in `/home/syg/.config/nixos`.
 
-### Using Just (Recommended)
+### Using Fleet CLI (Recommended)
 
 ```bash
-# Show all available commands
-just --list
+# Show fleet status
+fleet status
 
 # === Local Operations (Orion) ===
-just rebuild-orion              # Rebuild Orion locally
-just update-orion               # Update flake inputs + rebuild
+sudo nixos-rebuild switch --flake .#orion    # Rebuild Orion locally
 
 # === Remote Operations (Cortex) ===
-just deploy-cortex              # Deploy to Cortex (with safety checks)
-just check-cortex               # Pre-flight checks only
-just validate-cortex            # Post-deploy validation
-just ssh-cortex                 # SSH into Cortex
+fleet push cortex               # Deploy to Cortex
+fleet check cortex              # Health check
+fleet ssh cortex                # SSH into Cortex
 
 # === Updates ===
-just update                     # Update all flake inputs
-just update-input nixpkgs       # Update specific input
+fleet update                    # Update all flake inputs
 
 # === Secrets Management ===
-just update-secrets             # Sync nixos-secrets repo
-just edit-secrets               # Edit encrypted secrets
-just rekey                      # Rekey secrets after host changes
+fleet secrets sync              # Manual sync (fleet push does this automatically)
+fleet secrets edit              # Edit encrypted secrets
 ```
 
 ### Direct Script Usage
 
 ```bash
-# Fleet management script
-./scripts/fleet.sh list                    # List all systems
-./scripts/fleet.sh build cortex            # Build config locally
-./scripts/fleet.sh check cortex            # Check system health
-./scripts/fleet.sh update cortex           # Deploy updates
+# Fleet management CLI
+fleet status                    # Fleet overview
+fleet push cortex               # Deploy updates
+fleet check cortex              # Check system health
 
 # Safe deployment (with pre-flight checks)
 ./scripts/safe-deploy.sh cortex 192.168.1.7 jarvis
@@ -150,42 +141,29 @@ nix flake check
 
 ---
 
-## Fleet Script
+## Fleet CLI
 
-The `fleet.sh` script auto-discovers systems from your flake and provides unified management.
+The `fleet` CLI from [nixos-fleet](https://github.com/sygint/nixos-fleet) provides unified fleet management.
 
-### Auto-Discovery
+### Fleet Overview
 
 ```bash
-# List all systems defined in flake.nix
-./scripts/fleet.sh list
-```
-
-Output:
-```
-Available systems:
-  - orion
-  - cortex
-  - nexus
+# Show all systems and their status
+fleet status
 ```
 
 ### Build Configurations Locally
 
 ```bash
 # Build Cortex config to validate before deploying
-./scripts/fleet.sh build cortex
-
-# Build all systems
-for system in $(./scripts/fleet.sh list); do
-  ./scripts/fleet.sh build $system
-done
+nix build .#nixosConfigurations.cortex.config.system.build.toplevel
 ```
 
 ### Health Checks
 
 ```bash
 # Check Cortex connectivity and health
-./scripts/fleet.sh check cortex
+fleet check cortex
 ```
 
 The check performs:
@@ -198,8 +176,8 @@ The check performs:
 ### Deployment
 
 ```bash
-# Deploy to Cortex (uses deploy-rs)
-./scripts/fleet.sh update cortex
+# Deploy to Cortex
+fleet push cortex
 ```
 
 ---
@@ -314,43 +292,16 @@ deploy.nodes = {
 };
 ```
 
-### Step 3: Add Just Commands (Optional)
-
-Add to `justfile`:
-
-```justfile
-# Deploy to newsystem
-deploy-newsystem: rebuild-pre
-  ./scripts/safe-deploy.sh newsystem 192.168.1.50 admin
-
-# Check newsystem
-check-newsystem:
-  ./scripts/pre-flight.sh newsystem 192.168.1.50 admin
-
-# SSH to newsystem
-ssh-newsystem:
-  ssh admin@192.168.1.50
-```
-
-### Step 4: Bootstrap or Deploy
-
-**For new/clean system (wipes disk!):**
-
-```bash
-# Bootstrap with nixos-anywhere
-./scripts/bootstrap-nixos.sh -n newsystem -d 192.168.1.50 -u admin
-```
+### Step 3: Deploy
 
 **For existing system:**
 
 ```bash
 # Build locally first
-./scripts/fleet.sh build newsystem
+nix build .#nixosConfigurations.newsystem.config.system.build.toplevel
 
 # Deploy
-just deploy-newsystem
-# or
-./scripts/fleet.sh update newsystem
+fleet push newsystem
 ```
 
 ---
@@ -412,7 +363,7 @@ just deploy-newsystem
 
 1. **Check pre-flight:**
    ```bash
-   just check-cortex
+   fleet check cortex
    ```
 
 2. **View target system logs:**
@@ -448,7 +399,7 @@ just deploy-newsystem
 
 3. **Rekey secrets:**
    ```bash
-   just rekey
+   fleet secrets rekey
    ```
 
 4. **Verify in secrets repo:**
@@ -490,8 +441,7 @@ just deploy-newsystem
 ./scripts/bootstrap-nixos.sh -n cortex -d 192.168.1.7 -u jarvis
 
 # 3. Verify deployment
-just check-cortex
-just validate-cortex
+fleet check cortex
 ```
 
 ### Routine Updates (Weekly)
@@ -501,16 +451,16 @@ just validate-cortex
 vim systems/cortex/default.nix
 
 # 2. Build locally to validate
-./scripts/fleet.sh build cortex
+nix build .#nixosConfigurations.cortex.config.system.build.toplevel
 
 # 3. Run pre-flight checks
-just check-cortex
+fleet check cortex
 
-# 4. Deploy with safety checks
-just deploy-cortex
+# 4. Deploy
+fleet push cortex
 
 # 5. Validate deployment
-just validate-cortex
+./scripts/deployment/validate.sh cortex 192.168.1.7 jarvis
 ```
 
 ### Emergency Rollback
@@ -531,21 +481,18 @@ ssh jarvis@192.168.1.7 "sudo /nix/var/nix/profiles/system/bin/switch-to-configur
 
 ## Best Practices
 
-### 1. Always Run Pre-flight Checks
+### 1. Always Run Health Checks
 
 ```bash
-# Built into just commands
-just deploy-cortex  # Automatically runs pre-flight
-
-# Or manually
-just check-cortex
+# Before deploying
+fleet check cortex
 ```
 
 ### 2. Build Locally First
 
 ```bash
 # Catch errors before deploying
-./scripts/fleet.sh build cortex
+nix build .#nixosConfigurations.cortex.config.system.build.toplevel
 ```
 
 ### 3. Use Version Control
@@ -557,7 +504,7 @@ git commit -m "feat: update cortex GPU drivers"
 git push
 
 # Deploy
-just deploy-cortex
+fleet push cortex
 ```
 
 ### 4. Test in Stages
@@ -579,15 +526,10 @@ Watch the output for:
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for planned improvements:
 
-- **Colmena Integration** (Month 3-4)
+- **Full Colmena Migration** (In Progress)
   - Parallel deployment to multiple systems
   - Tag-based targeting (@server, @ai, etc.)
-  - Simpler fleet configuration
-
-- **Expanded Just Automation** (Ongoing)
-  - More pre-defined tasks
-  - Better error handling
-  - Integration with monitoring
+  - Already using `fleet` CLI wrapper
 
 - **Fleet Scaling** (Month 3+)
   - Proxmox VMs
@@ -605,8 +547,8 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for planned improvements:
 - [docs/ROADMAP.md](docs/ROADMAP.md) - Future plans
 
 ### Tools
+- [nixos-fleet](https://github.com/sygint/nixos-fleet) - Fleet management CLI
 - [deploy-rs](https://github.com/serokell/deploy-rs) - NixOS deployment tool
-- [just](https://github.com/casey/just) - Command runner
 - [nixos-anywhere](https://github.com/nix-community/nixos-anywhere) - Remote installation
 
 ### Community
@@ -616,6 +558,6 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for planned improvements:
 
 ---
 
-**Last Updated:** October 29, 2025  
+**Last Updated:** February 10, 2026  
 **Fleet Size:** 2 systems (Orion, Cortex)  
-**Deployment Tool:** deploy-rs + just + fleet.sh
+**Deployment Tool:** fleet CLI (nixos-fleet) + deploy-rs

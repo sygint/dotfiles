@@ -250,55 +250,38 @@ colmena apply --on @testing
 colmena exec --on @testing -- systemctl is-system-running
 ```
 
-### Phase 3: Update Just Commands (30 minutes)
+### Phase 3: Fleet CLI Integration (Done)
 
-Update `justfile`:
-
-```justfile
-# Deploy all systems (parallel)
-deploy-all:
-  colmena apply
-
-# Deploy by tag
-deploy-servers:
-  colmena apply --on @server
-
-deploy-ai:
-  colmena apply --on @ai
-
-# Deploy specific systems
-deploy-cortex:
-  colmena apply --on cortex
-
-# Fleet-wide operations
-fleet-status:
-  colmena exec -- systemctl is-system-running
-
-fleet-uptime:
-  colmena exec -- uptime
-
-fleet-versions:
-  colmena exec -- nixos-version
-```
-
-### Phase 4: Update Scripts (1 hour)
-
-Update `fleet.sh` to use Colmena when available:
+The `fleet` CLI from [nixos-fleet](https://github.com/sygint/nixos-fleet) replaces the justfile and fleet.sh script:
 
 ```bash
-# Check if colmena is available
-if command -v colmena &> /dev/null; then
-  use_colmena=true
-else
-  use_colmena=false
-fi
+# Deploy all systems (parallel)
+fleet push all
 
-# Update function
-if [ "$use_colmena" = true ]; then
-  colmena apply --on "$system"
-else
-  deploy .#"$system"
-fi
+# Deploy by tag
+fleet push --tag server
+
+# Deploy specific systems
+fleet push cortex
+
+# Fleet-wide operations
+fleet status
+fleet exec all -- systemctl is-system-running
+fleet exec all -- uptime
+fleet exec all -- nixos-version
+```
+
+### Phase 4: Completed
+
+The `fleet` CLI now handles all operations previously done by `fleet.sh`:
+
+```bash
+# The fleet CLI wraps Colmena and handles
+# all fleet management operations
+fleet push cortex     # was: ./scripts/fleet.sh deploy cortex
+fleet check cortex    # was: ./scripts/fleet.sh check cortex
+fleet status          # was: ./scripts/fleet.sh list
+fleet exec all -- cmd # was: manual SSH
 ```
 
 ---
@@ -441,14 +424,14 @@ colmena exec -- df -h / | grep -E "Filesystem|/$"
 
 echo ""
 echo "Failed Services:"
-colmena exec -- systemctl --failed --no-legend | wc -l
+fleet exec all -- systemctl --failed --no-legend | wc -l
 ```
 
 Run daily:
 
 ```bash
-# Add to cron or systemd timer
-just fleet-health
+# Or use fleet CLI directly
+fleet status
 ```
 
 ---

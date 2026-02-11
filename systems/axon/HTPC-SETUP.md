@@ -147,13 +147,13 @@ Add to `environment.systemPackages`:
 Once deployed, the HTPC can be managed alongside other systems:
 ```bash
 # Check status
-./scripts/fleet.sh status
+fleet status
 
 # Update all systems
-./scripts/fleet.sh deploy
+fleet push all
 
 # Update just HTPC
-nix run github:serokell/deploy-rs -- --targets .#htpc
+fleet push axon
 ```
 
 ## Security Considerations

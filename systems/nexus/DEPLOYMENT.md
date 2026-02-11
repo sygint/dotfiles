@@ -14,7 +14,7 @@
    ```
 3. **Deploy from Orion:**
    ```bash
-   ./scripts/fleet.sh deploy nexus
+   fleet install nexus
    # Or manually: nix run github:nix-community/nixos-anywhere -- --flake .#nexus root@<ip>
    ```
 
@@ -189,8 +189,8 @@ ssh admin@192.168.1.10
 git add systems/nexus/
 git commit -m "Add Nexus configuration for HP EliteDesk G4 800"
 
-# Deploy!
-./scripts/fleet.sh update nexus
+    # Deploy!
+fleet push nexus
 
 # Or use deploy-rs directly:
 nix run github:serokell/deploy-rs -- --targets .#nexus
@@ -230,7 +230,7 @@ nano systems/nexus/default.nix
 
 # Uncomment the Home Assistant section
 # Rebuild
-./scripts/fleet.sh update nexus
+fleet push nexus
 ```
 
 ## Troubleshooting

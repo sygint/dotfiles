@@ -85,7 +85,7 @@ vim systems/orion/default.nix
 ./scripts/testing/test-vm.sh orion
 
 # If good, deploy
-just deploy orion
+sudo nixos-rebuild switch --flake .#orion
 ```
 
 ### For Headless/Services:
@@ -99,7 +99,7 @@ vim systems/cortex/default.nix
 ./scripts/testing/test-container.sh cortex shell
 
 # If good, deploy
-just deploy cortex
+fleet push cortex
 
 # Clean up
 ./scripts/testing/test-container.sh cortex destroy

@@ -937,8 +937,8 @@
         "sops-nix": "sops-nix"
       },
       "locked": {
-        "lastModified": 1770787286,
-        "narHash": "sha256-l+WmYCCj81F5Va47j5ESyhAt6J0RNxdOXw6XH8s40VE=",
+        "lastModified": 1770796209,
+        "narHash": "sha256-t2Q0tTm//+p4zfs8nvLrACglKAhDSNHSitO4we5OUEc=",
         "path": "/home/syg/Projects/open-source/nixos-fleet",
         "type": "path"
       },
@@ -988,7 +988,7 @@
     "nixos-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1770783163,
+        "lastModified": 1770796263,
         "narHash": "sha256-UMqs3SS3SahJPKXj1+j2ebA7ztDV3grXueJTFbcspfk=",
         "path": "/home/syg/.config/nixos-secrets",
         "type": "path"
@@ -1217,11 +1217,11 @@
         "nixpkgs": "nixpkgs_7"
       },
       "locked": {
-        "lastModified": 1770787829,
-        "narHash": "sha256-XEgk/qqj1VzOYWtLTnusjk/lBP3nBFM9aBT+lZK/9uo=",
+        "lastModified": 1770796188,
+        "narHash": "sha256-6aH5+uI48Wj1WdvUIEeiutVLm32NtKyQLFmNSgUygcc=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "d98bd4bd523bd5ceb6411143020713c3ee4d7e7c",
+        "rev": "213a87234dd7579873787070e5f8ad98eb88bce8",
         "type": "github"
       },
       "original": {

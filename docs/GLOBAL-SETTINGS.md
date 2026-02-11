@@ -75,13 +75,13 @@ To change the timezone for all systems:
    # Rebuild local system
    sudo nixos-rebuild switch --flake .
    
-   # Deploy to remote systems
-   ./scripts/fleet.sh update cortex
-   ./scripts/fleet.sh update nexus
-   ./scripts/fleet.sh update axon
-   
-   # Or deploy all at once
-   nix run github:serokell/deploy-rs -- .
+    # Deploy to remote systems
+    fleet push cortex
+    fleet push nexus
+    fleet push axon
+    
+    # Or deploy all at once
+    fleet push all
    ```
 
 ## Available Timezones

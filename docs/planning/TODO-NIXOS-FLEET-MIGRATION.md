@@ -1,7 +1,7 @@
 # TODO: Migrate to nixos-fleet
 
 **Date Created**: 2026-01-22  
-**Status**: Not Started  
+**Status**: In Progress  
 **Priority**: Medium  
 **Estimated Effort**: 2-4 hours
 
@@ -10,6 +10,15 @@
 ## Overview
 
 This repository should be using **nixos-fleet** (`~/Projects/open-source/nixos-fleet`) for deployment, but is currently using **deploy-rs** directly. nixos-fleet provides a unified CLI and uses Colmena under the hood.
+
+**Progress:**
+- ✅ Justfile removed (all commands covered by `fleet` CLI)
+- ✅ Legacy `fleet.sh` removed
+- ✅ Documentation updated to reference `fleet` CLI
+- ✅ `just` package removed from system packages
+- ⬜ nixos-fleet flake input not yet added
+- ⬜ Colmena configuration not yet set up
+- ⬜ Full migration (Option A vs B) not yet decided
 
 **Why migrate:**
 - ✅ Unified `fleet` CLI instead of custom bash scripts
@@ -25,15 +34,14 @@ This repository should be using **nixos-fleet** (`~/Projects/open-source/nixos-f
 
 ### What We Have Now
 - **Deployment**: `deploy-rs` via `flake-modules/deploy.nix`
-- **Fleet Management**: Custom `scripts/deployment/fleet.sh` (bash wrapper)
+- **Fleet Management**: `fleet` CLI from nixos-fleet (justfile and fleet.sh removed)
 - **Fleet Config**: `fleet-config.nix` (good - compatible with nixos-fleet)
 - **Systems**: Orion, Cortex, Nexus, Axon
 
 ### What's Missing
-- nixos-fleet not added as flake input
+- nixos-fleet not yet added as flake input
 - No Colmena configuration
-- No `fleet` CLI available
-- Custom fleet.sh lacks secrets management
+- deploy-rs still used for actual deployments
 
 ---
 
@@ -182,28 +190,10 @@ nix run ~/Projects/open-source/nixos-fleet#fleet -- push cortex
 
 ---
 
-### Phase 4: Update Scripts & Docs (30 min)
+### Phase 4: Update Docs (Done)
 
-1. **Update justfile** to use `fleet` CLI:
-   ```justfile
-   # Deploy to specific host
-   deploy-cortex:
-       fleet push cortex
-   
-   # Deploy to all servers
-   deploy-servers:
-       fleet push --tag server
-   ```
-
-2. **Archive old fleet.sh**:
-   ```bash
-   mv scripts/deployment/fleet.sh scripts/deployment/archive/fleet.sh.old
-   ```
-
-3. **Update documentation**:
-   - Update `docs/BOOTSTRAP.md` to reference `fleet install`
-   - Create `docs/FLEET-MANAGEMENT.md` with nixos-fleet commands
-   - Update README with new deployment workflow
+Documentation has already been updated to reference `fleet` CLI commands.
+Old fleet.sh script and justfile have been deleted.
 
 ---
 
@@ -231,10 +221,10 @@ Add nixos-fleet modules to systems:
 - ✅ Home-manager configurations compatible
 - ✅ sops-nix secrets work with nixos-fleet
 
-### What Needs Adjustment ⚠️
-- ⚠️ Custom `deploy.nix` → Colmena configuration
-- ⚠️ `scripts/deployment/fleet.sh` → `fleet` CLI
-- ⚠️ deploy-rs usage → Colmena usage
+### What Needs Adjustment
+- ⚠️ Custom `deploy.nix` needs Colmena configuration
+- ✅ ~~`scripts/deployment/fleet.sh`~~ → Removed, `fleet` CLI in use
+- ⚠️ deploy-rs usage → Colmena usage (pending)
 
 ---
 
@@ -280,11 +270,6 @@ If migration fails:
    nix run github:serokell/deploy-rs -- .#<host>
    ```
 
-3. **Restore fleet.sh**:
-   ```bash
-   git restore scripts/deployment/fleet.sh
-   ```
-
 ---
 
 ## Open Questions
@@ -326,7 +311,6 @@ If migration fails:
 
 3. **This Month**:
    - [ ] Migrate all hosts
-   - [ ] Archive old fleet.sh
    - [ ] Add tags to fleet-config.nix
    - [ ] Create blog post about the migration
 
@@ -344,4 +328,5 @@ If migration fails:
 
 ## Updates
 
+**2026-02-10**: Removed justfile, fleet.sh, and `just` package. Updated all docs to reference `fleet` CLI.
 **2026-01-22**: Initial migration plan created. Currently using deploy-rs directly.

@@ -19,16 +19,16 @@ Personal NixOS configuration with **unified feature modules** based on the dendr
 - **[docs/security/SECURITY.md](docs/security/SECURITY.md)** - Security configuration
 - **[SECRETS.md](SECRETS.md)** - Secrets management (sops-nix + age)
 
-## 🚀 Quick Start
+## Quick Start
 
 **Deploy to existing system:**
 ```bash
-./scripts/fleet.sh deploy cortex
+fleet push cortex
 ```
 
 **Update all systems:**
 ```bash
-./scripts/fleet-deploy.sh update --all
+fleet push all
 ```
 
 **Local rebuild:**

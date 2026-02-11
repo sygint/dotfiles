@@ -2,33 +2,20 @@
 
 Scripts for deploying and managing NixOS fleet updates.
 
+## Fleet Management
+
+Fleet management is handled by the `fleet` CLI tool ([nixos-fleet](https://github.com/sygint/nixos-fleet)), which is installed as a flake input.
+
+```bash
+fleet status              # Show all systems
+fleet check cortex        # Health check
+fleet push cortex         # Deploy updates
+fleet install cortex 192.168.1.7  # Fresh install (⚠️ wipes disk!)
+```
+
+For complete documentation, see [FLEET-MANAGEMENT.md](../../FLEET-MANAGEMENT.md).
+
 ## Scripts
-
-### fleet.sh
-Main fleet management tool for deploying configurations across multiple systems.
-
-**Usage:**
-```bash
-./scripts/deployment/fleet.sh <command> [args]
-```
-
-**Commands:**
-- `list` - List all systems
-- `build <system>` - Build config locally
-- `check <system>` - Check system health
-- `update <system>` - Deploy updates to system
-- `deploy <system> <ip>` - Fresh install (⚠️ wipes disk!)
-
-**Examples:**
-```bash
-./scripts/deployment/fleet.sh list
-./scripts/deployment/fleet.sh build cortex
-./scripts/deployment/fleet.sh update cortex
-```
-
-For complete documentation, see [FLEET-MANAGEMENT.md](../../FLEET-MANAGEMENT.md)
-
-### safe-deploy.sh
 Orchestrates pre-flight checks, deployment, and validation for safer deployments.
 
 **Usage:**
@@ -72,7 +59,7 @@ Post-deployment validation to confirm system is healthy after updates.
 The recommended deployment workflow:
 
 1. **Pre-flight check:** `./scripts/deployment/pre-flight.sh cortex 192.168.1.7 jarvis`
-2. **Deploy:** `nixos-rebuild switch` or `./scripts/deployment/fleet.sh update cortex`
+2. **Deploy:** `fleet push cortex`
 3. **Validate:** `./scripts/deployment/validate.sh cortex 192.168.1.7 jarvis`
 
 Or use the all-in-one safe deploy:

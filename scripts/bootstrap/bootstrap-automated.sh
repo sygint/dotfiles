@@ -321,7 +321,7 @@ else
     log_warning "The base system is installed and secrets are configured,"
     echo "         but the full deployment encountered an error."
     echo ""
-    echo "You can retry with: just deploy-$HOST"
+    echo "You can retry with: fleet push $HOST"
     exit 1
 fi
 
@@ -375,8 +375,8 @@ fi
 echo ""
 echo -e "${CYAN}Next Steps:${NC}"
 echo "  1. Test SSH:        ssh $SSH_USER@$TARGET_IP"
-echo "  2. Deploy updates:  just deploy-$HOST"
-echo "  3. Wake on LAN:     just wake-$HOST (if configured)"
+echo "  2. Deploy updates:  fleet push $HOST"
+echo "  3. Check health:    fleet check $HOST"
 echo ""
 if [[ "$NEEDS_SECRETS" == "true" ]] && [[ "$IS_REBOOTSTRAP" == "false" ]]; then
     echo -e "${YELLOW}Important:${NC}"

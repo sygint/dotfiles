@@ -2,7 +2,7 @@
 
 **Date**: 2025-11-16  
 **Status**: ✅ Complete (10/10 improvements implemented)  
-**Scripts Updated**: `secrets-manager.sh`, `fleet.sh`
+**Scripts Updated**: `secrets-manager.sh` (fleet.sh replaced by `fleet` CLI)
 
 ## Overview
 
@@ -211,7 +211,7 @@ fi
 
 **Priority**: 🟢 Low  
 **Status**: Implemented  
-**Files**: `fleet.sh` (`validate_secrets`)
+**Files**: `fleet` CLI (nixos-fleet)
 
 ```bash
 # Check for system-specific secrets
@@ -240,7 +240,7 @@ fi
 
 **Priority**: 🟢 Low  
 **Status**: Implemented  
-**Files**: `secrets-manager.sh`, `fleet.sh`
+**Files**: `secrets-manager.sh`, `fleet` CLI (nixos-fleet)
 
 ```bash
 # Logging infrastructure
@@ -273,7 +273,7 @@ error() { echo -e "${RED}✗ $*${NC}"; log_operation "ERROR" "$*"; exit 1; }
 ### Validation
 
 ```bash
-$ ./scripts/deployment/fleet.sh secrets validate
+$ fleet secrets validate
 ℹ Testing decrypt...
 ✓ ✓ Decryption works
 ℹ Testing re-encrypt...
@@ -284,14 +284,14 @@ $ ./scripts/deployment/fleet.sh secrets validate
 ### Shellcheck
 
 ```bash
-$ shellcheck scripts/secrets-manager.sh scripts/deployment/fleet.sh
+$ shellcheck scripts/secrets-manager.sh
 # Zero warnings ✓
 ```
 
 ### Status Command
 
 ```bash
-$ ./scripts/deployment/fleet.sh secrets status
+$ fleet secrets status
 ℹ Secrets Status
 
   File: /home/syg/.config/nixos-secrets/secrets.yaml
@@ -373,7 +373,7 @@ mv ~/.nixos-secrets.log.tmp ~/.nixos-secrets.log
 Regularly audit age key permissions:
 
 ```bash
-./scripts/deployment/fleet.sh secrets status
+fleet secrets status
 ```
 
 Look for permission warnings in output.
