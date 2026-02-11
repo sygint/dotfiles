@@ -937,8 +937,8 @@
         "sops-nix": "sops-nix"
       },
       "locked": {
-        "lastModified": 1770796209,
-        "narHash": "sha256-t2Q0tTm//+p4zfs8nvLrACglKAhDSNHSitO4we5OUEc=",
+        "lastModified": 1770802001,
+        "narHash": "sha256-ST3PSvUsXCFntqZp+i84VbvWhtiYZZJ0f+pa3jrabJk=",
         "path": "/home/syg/Projects/open-source/nixos-fleet",
         "type": "path"
       },
