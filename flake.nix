@@ -25,7 +25,6 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     nixos-secrets.url = "path:/home/syg/.config/nixos-secrets";
     nixos-secrets.flake = false;
-    opencode.url = "github:anomalyco/opencode";
     devenv-bootstrap.url = "path:/home/syg/.config/nixos/archive/devenv-bootstrap";
     import-tree.url = "github:vic/import-tree";
 
@@ -169,6 +168,13 @@
             *) echo "Error: Host '$HOST' does not have Wake-on-LAN enabled."; echo "Enable it in fleet-config.nix under hosts.\$HOST.wol"; exit 1 ;;
             esac
           '';
+
+          # Run fleet from source for development — no nix build needed
+          fleet-dev = pkgs.writeShellScriptBin "fleet-dev" ''
+            export FLEET_FLAKE_DIR="''${FLEET_FLAKE_DIR:-$HOME/.config/nixos}"
+            cd ~/Projects/open-source/nixos-fleet
+            exec ${pkgs.go}/bin/go run ./cmd/ "$@"
+          '';
         in
         {
           # Formatter
@@ -181,9 +187,11 @@
               nixd
               nixpkgs-fmt
               just
+              go
               inputs'.nixos-fleet.packages.fleet
               fleet-sleep
               fleet-wake
+              fleet-dev
             ];
           };
 

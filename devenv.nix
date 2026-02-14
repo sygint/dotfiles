@@ -2,6 +2,15 @@
   pkgs ? import <nixpkgs> { },
 }:
 
+let
+  # Run fleet from source for development — no nix build needed
+  fleet-dev = pkgs.writeShellScriptBin "fleet-dev" ''
+    export FLEET_FLAKE_DIR="''${FLEET_FLAKE_DIR:-$HOME/.config/nixos}"
+    cd ~/Projects/open-source/nixos-fleet
+    exec ${pkgs.go}/bin/go run ./cmd/ "$@"
+  '';
+in
+
 pkgs.mkShell {
   name = "nixos-dotfiles-dev";
 
@@ -30,6 +39,10 @@ pkgs.mkShell {
     sops
     ssh-to-age
     yq-go # YAML processor
+
+    # Fleet development
+    go
+    fleet-dev
   ];
 
   shellHook = ''
@@ -67,6 +80,7 @@ pkgs.mkShell {
     echo
     echo "Available Commands:"
     echo "  • fleet - Fleet management CLI (nixos-fleet)"
+    echo "  • fleet-dev - Fleet CLI from source (for development)"
     echo "  • nixos-rebuild - Build/test configurations"
     echo
   '';
