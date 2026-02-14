@@ -157,31 +157,13 @@ in
     # Disable root login entirely for better security
     # Root access only through sudo from jarvis user
 
-    # Enable audit logging for security monitoring
-    auditd.enable = true;
-    audit = {
-      enable = true;
-      rules = [
-        # Monitor authentication events
-        "-w /var/log/auth.log -p wa -k auth"
-        # Monitor sudo usage and privilege escalation
-        "-w /etc/sudoers -p wa -k sudoers"
-        "-w /etc/sudoers.d -p wa -k sudoers"
-        # Monitor SSH configuration changes
-        "-w /etc/ssh/sshd_config -p wa -k ssh"
-        # Monitor user/group changes
-        "-w /etc/passwd -p wa -k passwd"
-        "-w /etc/group -p wa -k group"
-        "-w /etc/shadow -p wa -k passwd"
-        # Monitor login/logout events
-        "-w /var/log/wtmp -p wa -k logins"
-        "-w /var/log/btmp -p wa -k logins"
-        # Monitor service user directories
-        "-w /var/lib/friday -p wa -k friday-access"
-        # Monitor systemd service changes
-        "-w /etc/systemd/system -p wa -k systemd-changes"
-      ];
-    };
+    # Cortex-specific audit rules (base rules provided by security.hardening module)
+    audit.rules = [
+      "-w /var/log/wtmp -p wa -k logins"
+      "-w /var/log/btmp -p wa -k logins"
+      "-w /var/lib/friday -p wa -k friday-access"
+      "-w /etc/systemd/system -p wa -k systemd-changes"
+    ];
   };
 
   # Fail2ban - Automatic IP blocking for brute force protection
@@ -203,48 +185,42 @@ in
   networking = {
     networkmanager.enable = true;
 
-    # Enable firewall with strict rules - only allow Orion access
+    # Enable firewall with strict rules - only allow local network access
     firewall = {
       enable = true;
-      # No ports open by default - SSH access controlled by extraCommands
-      allowedTCPPorts = [ ];
-      # Disable ping responses for stealth
+      # Disable ping responses for stealth (from public sources)
       allowPing = false;
       # Log suspicious traffic
       logReversePathDrops = true;
 
-      # Strict firewall rules - only allow Orion machine access
+      # Override ai-services module: don't open ports globally.
+      # All port access is restricted to local networks via extraCommands below.
+      allowedTCPPorts = lib.mkForce [ ];
+
+      # Restrict all services to local networks only (RFC 1918 ranges).
+      # Rules are added to the nixos-fw chain which NixOS manages and flushes
+      # on each reload — so these never duplicate.
+      # NixOS already handles: loopback, established/related, and the final drop.
       extraCommands = ''
-        # Allow loopback traffic
-        iptables -A INPUT -i lo -j ACCEPT
+        # SSH - local networks only
+        iptables -A nixos-fw -p tcp --dport 22 -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 22 -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 22 -s 172.16.0.0/12 -j nixos-fw-accept
 
-        # Allow established and related connections
-        iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+        # Ollama API - local networks only
+        iptables -A nixos-fw -p tcp --dport 11434 -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 11434 -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 11434 -s 172.16.0.0/12 -j nixos-fw-accept
 
-        # Allow SSH only from local network ranges (adjust to your network)
-        # You may want to make this more specific to Orion's exact IP
-        iptables -A INPUT -p tcp --dport 22 -s 192.168.0.0/16 -j ACCEPT
-        iptables -A INPUT -p tcp --dport 22 -s 10.0.0.0/8 -j ACCEPT
-        iptables -A INPUT -p tcp --dport 22 -s 172.16.0.0/12 -j ACCEPT
+        # Open WebUI - local networks only
+        iptables -A nixos-fw -p tcp --dport 8080 -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 8080 -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 8080 -s 172.16.0.0/12 -j nixos-fw-accept
 
-        # Allow minimal ICMP for network diagnostics (from local networks only)
-        iptables -A INPUT -p icmp --icmp-type echo-request -s 192.168.0.0/16 -j ACCEPT
-        iptables -A INPUT -p icmp --icmp-type echo-request -s 10.0.0.0/8 -j ACCEPT
-        iptables -A INPUT -p icmp --icmp-type echo-request -s 172.16.0.0/12 -j ACCEPT
-
-        # Log and drop everything else
-        iptables -A INPUT -j LOG --log-prefix "CORTEX-FIREWALL-DROP: " --log-level 4
-        iptables -A INPUT -j DROP
-
-        # Also restrict outbound traffic (optional - uncomment if desired)
-        # iptables -A OUTPUT -o lo -j ACCEPT
-        # iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-        # iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT   # HTTP
-        # iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT  # HTTPS  
-        # iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT   # DNS
-        # iptables -A OUTPUT -p udp --dport 53 -j ACCEPT   # DNS
-        # iptables -A OUTPUT -j LOG --log-prefix "CORTEX-OUTBOUND-DROP: "
-        # iptables -A OUTPUT -j DROP
+        # ICMP ping - local networks only
+        iptables -A nixos-fw -p icmp --icmp-type echo-request -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p icmp --icmp-type echo-request -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p icmp --icmp-type echo-request -s 172.16.0.0/12 -j nixos-fw-accept
       '';
     };
   };
