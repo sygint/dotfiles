@@ -79,7 +79,12 @@ let
     set -euo pipefail
 
     STATE_FILE="/run/power-management/idle-count"
-    REQUIRED_CHECKS=${toString cfg.autoSuspend.requiredIdleChecks}
+    # If requiredIdleChecks is 0, compute from idleMinutes / checkIntervalMinutes
+    if [ "${toString cfg.autoSuspend.requiredIdleChecks}" -eq 0 ]; then
+      REQUIRED_CHECKS=$((${toString cfg.autoSuspend.idleMinutes} / ${toString cfg.autoSuspend.checkIntervalMinutes}))
+    else
+      REQUIRED_CHECKS=${toString cfg.autoSuspend.requiredIdleChecks}
+    fi
 
     mkdir -p /run/power-management
 
@@ -133,7 +138,7 @@ in
         default = 0;
         description = ''
           Number of consecutive idle checks before suspending.
-          Defaults to idleMinutes / checkIntervalMinutes if set to 0.
+          Set to 0 to auto-calculate from idleMinutes / checkIntervalMinutes.
         '';
       };
 
@@ -200,17 +205,7 @@ in
 
     # ===== Auto-suspend on idle =====
     (mkIf cfg.autoSuspend.enable (
-      let
-        effectiveChecks =
-          if cfg.autoSuspend.requiredIdleChecks > 0 then
-            cfg.autoSuspend.requiredIdleChecks
-          else
-            cfg.autoSuspend.idleMinutes / cfg.autoSuspend.checkIntervalMinutes;
-      in
       {
-        # Override requiredIdleChecks with computed value
-        modules.features.power-management.autoSuspend.requiredIdleChecks = lib.mkDefault effectiveChecks;
-
         # Timer that fires periodically to check idle status
         systemd.timers.auto-suspend = {
           description = "Check system idle status for auto-suspend";
