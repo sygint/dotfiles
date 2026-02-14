@@ -46,7 +46,6 @@ in
         inherit hostName;
         monitors = systemVars.monitors or [ ];
       };
-      opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system};
     };
     # Auto back up files that would be clobbered by Home Manager so that
     # unmanaged files are not lost during activation. This prevents
@@ -156,6 +155,10 @@ in
         enable = true;
         variant = "fhs"; # FHS environment for imperative extension management
         copilotPrompts.enable = true;
+      };
+      vscodium = {
+        enable = true;
+        variant = "fhs"; # FHS environment for imperative extension management
       };
       # Web browsers
       brave.enable = true;
@@ -280,6 +283,8 @@ in
       element-desktop
       ghostty
       gimp
+      baobab
+      gnome-disk-utility
       gparted
       keepassxc
       kitty

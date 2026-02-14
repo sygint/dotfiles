@@ -19,7 +19,6 @@ let
       extraSpecialArgs = {
         inherit self inputs;
         userVars = _userVars;
-        opencode = inputs.opencode.packages.${system};
       };
       modules = [
         inputs.nix-flatpak.homeManagerModules.nix-flatpak

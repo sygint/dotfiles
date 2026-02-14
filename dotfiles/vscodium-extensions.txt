@@ -1,0 +1,20 @@
+# List your VSCodium extension IDs here, one per line.
+# Extensions are installed from Open VSX Registry.
+# Proprietary extensions (Copilot, Live Share) are excluded.
+# Not on Open VSX: maattdd.gitless, ryu1kn.partial-diff
+
+jnoortheen.nix-ide
+bbenoist.nix
+astro-build.astro-vscode
+svelte.svelte-vscode
+bradlc.vscode-tailwindcss
+yzhang.markdown-all-in-one
+streetsidesoftware.code-spell-checker
+usernamehw.errorlens
+dbaeumer.vscode-eslint
+alefragnani.project-manager
+timonwong.shellcheck
+mhutchie.git-graph
+samgiz.vscode-kanbn-boards
+pflannery.vscode-versionlens
+dracula-theme.theme-dracula

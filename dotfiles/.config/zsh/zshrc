@@ -127,6 +127,9 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
 # --- devenv bootstrap
   alias bootstrap-devenv="$NIXOS_CONFIG_DIR/scripts/bootstrap/bootstrap-devenv.sh"
 
+# --- fleet
+  alias fleet="nix run ~/Projects/open-source/nixos-fleet#fleet --"
+
 # pnpm
 export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
