@@ -93,8 +93,8 @@ in
           pkgs.writeShellScriptBin "gpu-fan-control" ''
             # Wait for Xvfb to start
             sleep 2
-            # Enable fan control
-            nvidia-settings -a "GPUFanControlState=1" -a "FanSpeedPWM=${toString cfg.gpuFanSpeed}" || true
+            # Enable fan control - use full path
+            /run/current-system/sw/bin/nvidia-settings -a "GPUFanControlState=1" -a "FanSpeedPWM=${toString cfg.gpuFanSpeed}" || true
           ''
         );
       };
