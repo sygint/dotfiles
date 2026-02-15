@@ -11,6 +11,7 @@ let
     mkIf
     mkOption
     types
+    optionalString
     ;
   cfg = config.modules.features.gpu-fan-control;
 in
@@ -22,30 +23,39 @@ in
       default = 50;
       description = "Fan speed percentage (0-100)";
     };
+    targetTemp = mkOption {
+      type = types.int;
+      default = 55;
+      description = "Target GPU temperature for dynamic fan control";
+    };
   };
 
-  config = mkIf cfg {
+  config = mkIf cfg.enable {
     services.xserver = {
       enable = true;
       videoDrivers = [ "nvidia" ];
     };
 
-    services.xvfb = {
-      enable = true;
-      display = ":0";
-      screen = "1920x1080x24";
+    systemd.services.xvfb = {
+      description = "Xvfb virtual framebuffer for headless NVIDIA settings";
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "forking";
+        ExecStart = "${pkgs.xvfb}/bin/Xvfb :0 -screen 0 1920x1080x24";
+        ExecStop = "${pkgs.lsof}/bin/lsof -t :0 | xargs -r kill";
+      };
     };
 
     systemd.services.gpu-fan-control = {
       description = "NVIDIA GPU fan control via nvidia-settings";
       after = [ "xvfb.service" ];
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = [ "multi-user.target" };
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
         ExecStart = ''
           ${pkgs.xorg.xrandr}/bin/xrandr --display :0 || true
-          ${pkgs.xorg.nvidia_x11}/bin/nvidia-settings -a "GPUFanControlState=1" -a "FanSpeedPWM=${toString cfg.speed}"
+          nvidia-settings -a "GPUFanControlState=1" -a "FanSpeedPWM=${toString cfg.speed}"
         '';
       };
     };
