@@ -131,6 +131,7 @@ in
       # Core
       zsh.enable = true;
       mullvad.enable = true; # Unified system + home config
+      virtualization.service = "qemu";
       # Niri compositor ecosystem
       niri = {
         enable = true;
@@ -178,11 +179,7 @@ in
         ];
         # Password now managed by sops-nix secrets
       };
-      virtualization = {
-        enable = true;
-        service = "qemu"; # Temporarily using QEMU (VirtualBox build failing)
-        username = "${username}";
-      };
+      windows-vm.enable = true;
       containerization = {
         enable = true;
         service = "podman";
