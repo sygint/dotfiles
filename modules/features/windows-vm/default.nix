@@ -45,6 +45,12 @@ in
       onShutdown = "ignore";
     };
 
+    environment.systemPackages = with pkgs; [
+      virt-manager
+      virt-install
+      libosinfo
+    ];
+
     users.users.syg.extraGroups = [
       "libvirtd"
       "kvm"
