@@ -219,6 +219,16 @@ in
           }
         ];
       }
+      {
+        job_name = "cortex";
+        static_configs = [
+          {
+            targets = [
+              "cortex.home:9100"
+            ];
+          }
+        ];
+      }
     ];
   };
 

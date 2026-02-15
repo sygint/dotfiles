@@ -118,7 +118,19 @@ in
     };
 
     # Enable AI services (Ollama, NVIDIA, CUDA, etc.)
-    features.ai-services.enable = true;
+    features.ai-services = {
+      enable = true;
+      enableOllmcp = true;
+      enableOpenWebui = true;
+      enableGpuFanControl = true;
+      gpuFanSpeed = 50;
+    };
+
+    # Sunshine game streaming
+    features.sunshine = true;
+
+    # Sunshine game streaming
+    features.sunshine = true;
 
     # Power management - suspend when idle, wake via WoL
     features.power-management = {
@@ -217,6 +229,11 @@ in
         iptables -A nixos-fw -p tcp --dport 8080 -s 10.0.0.0/8 -j nixos-fw-accept
         iptables -A nixos-fw -p tcp --dport 8080 -s 172.16.0.0/12 -j nixos-fw-accept
 
+        # Prometheus node exporter - local networks only
+        iptables -A nixos-fw -p tcp --dport 9100 -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 9100 -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 9100 -s 172.16.0.0/12 -j nixos-fw-accept
+
         # ICMP ping - local networks only
         iptables -A nixos-fw -p icmp --icmp-type echo-request -s 192.168.0.0/16 -j nixos-fw-accept
         iptables -A nixos-fw -p icmp --icmp-type echo-request -s 10.0.0.0/8 -j nixos-fw-accept
@@ -227,11 +244,28 @@ in
 
   # Basic system packages
   environment.systemPackages = with pkgs; [
-    # Add any additional packages here if needed
+    lm_sensors
   ];
 
   # System monitoring and logging
   services = {
+    # Prometheus node exporter for system metrics
+    prometheus.exporters.node = {
+      enable = true;
+      port = 9100;
+      enabledCollectors = [
+        "systemd"
+        "diskstats"
+        "meminfo"
+        "netdev"
+        "stat"
+        "time"
+        "uname"
+        "loadavg"
+        "cpu"
+      ];
+    };
+
     # System journal configuration
     journald.extraConfig = ''
       SystemMaxUse=1G

@@ -14,10 +14,26 @@ in
 {
   options.modules.features.ai-services = {
     enable = lib.mkEnableOption "AI services with Ollama and NVIDIA CUDA support";
+    enableOllmcp = lib.mkEnableOption "Enable ollmcp for MCP tool support (filesystem, git, web search)";
+    enableWebSearch = lib.mkEnableOption "Enable self-hosted web search via SearXNG" // {
+      default = true;
+    };
+    enableOpenWebui = lib.mkEnableOption "Enable Open WebUI" // {
+      default = true;
+    };
+    enableGpuFanControl =
+      lib.mkEnableOption "Enable GPU fan control via nvidia-settings (for AIO coolers)"
+      // {
+        default = false;
+      };
+    gpuFanSpeed = lib.mkOption {
+      type = lib.types.int;
+      default = 50;
+      description = "GPU fan speed percentage when fan control is enabled";
+    };
   };
 
   config = lib.mkIf cfg.enable {
-
     # Enable GPU driver userspace libraries (creates /run/opengl-driver/lib)
     # CRITICAL: Without this, libcuda.so.1 is not discoverable and Ollama
     # falls back to CPU-only inference with zero GPU utilization.
@@ -44,13 +60,40 @@ in
     # Enable NVIDIA persistence daemon for better performance
     hardware.nvidia.nvidiaPersistenced = true;
 
-    # CRITICAL: Workaround for RTX 5090 (Blackwell architecture) driver bug
-    # Without this, CUDA will fail to initialize with "init failure: 3"
-    # See: https://github.com/ollama/ollama/issues/11593
-    # See: https://forums.developer.nvidia.com/t/solved-cuda-driver-initialization-failed-2x-rtx-5090/334578/4
+    # Set coolbits to enable fan control via nvidia-settings
+    # coolbits: 4 = thermal control, 8 = fan speed control
     boot.extraModprobeConfig = ''
+      options nvidia NVreg_PreserveVideoMemoryAllocations=1
+      options nvidia "coolbits=12"
       options nvidia_uvm uvm_disable_hmm=1
     '';
+
+    # Xvfb for headless nvidia-settings (for GPU fan control on AIO coolers)
+    systemd.services.xvfb = lib.mkIf cfg.enableGpuFanControl {
+      description = "Xvfb virtual framebuffer for headless NVIDIA settings";
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "forking";
+        ExecStart = "${pkgs.xvfb}/bin/Xvfb :0 -screen 0 1920x1080x24";
+      };
+    };
+
+    # GPU fan control service
+    systemd.services.gpu-fan-control = lib.mkIf cfg.enableGpuFanControl {
+      description = "NVIDIA GPU fan control via nvidia-settings";
+      after = [ "xvfb.service" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "gpu-fan-control.sh" ''
+          # Wait for Xvfb to start
+          sleep 2
+          # Enable fan control
+          nvidia-settings -a "GPUFanControlState=1" -a "FanSpeedPWM=${toString cfg.gpuFanSpeed}"
+        '';
+      };
+    };
 
     # Enable Ollama LLM service with CUDA acceleration
     services.ollama = {
@@ -84,10 +127,11 @@ in
     };
 
     # Enable Open WebUI (formerly Ollama WebUI)
-    services.open-webui = {
+    # Note: Using port 8888 to avoid conflict with SearXNG on 8080
+    services.open-webui = lib.mkIf cfg.enableOpenWebui {
       enable = true;
       host = "0.0.0.0";
-      port = 8080;
+      port = 8888;
       environment = {
         OLLAMA_API_BASE_URL = "http://localhost:11434";
         WEBUI_AUTH = "true";
@@ -96,11 +140,38 @@ in
       };
     };
 
+    # Enable SearXNG - self-hosted metasearch engine for web search
+    # Only accessible locally (127.0.0.1) for MCP tools to use
+    services.searx = lib.mkIf cfg.enableWebSearch {
+      enable = true;
+      settings = {
+        server = {
+          bind_address = "127.0.0.1";
+          port = 8080;
+          secret_key = "localhost-only-search";
+        };
+        search = {
+          formats = [
+            "html"
+            "json"
+          ];
+        };
+        engines = [
+          { name = "duckduckgo"; }
+          { name = "google"; }
+          { name = "bing"; }
+          { name = "wikipedia"; }
+        ];
+      };
+    };
+
     # Open firewall ports for AI services
     # Note: These are restricted by the main firewall config to local network only
     networking.firewall.allowedTCPPorts = [
       11434 # Ollama API
-      8080 # Open WebUI
+    ]
+    ++ lib.optionals cfg.enableOpenWebui [
+      8888 # Open WebUI
     ];
 
     # Ensure sufficient resources for AI workloads
@@ -114,11 +185,58 @@ in
     };
 
     # Add useful packages for AI/ML administration
-    environment.systemPackages = with pkgs; [
-      ollama # CLI for managing models
-      nvtopPackages.full # NVIDIA GPU monitoring (like htop for GPU)
-      cudaPackages.cudatoolkit # CUDA toolkit for diagnostics
-    ];
+    # Includes optional ollmcp deps if enabled
+    environment.systemPackages =
+      (with pkgs; [
+        ollama
+        nvtopPackages.full
+        cudaPackages.cudatoolkit
+      ])
+      ++ lib.optionals cfg.enableOllmcp (
+        with pkgs;
+        [
+          uv
+          nodejs
+          git
+          (python3.withPackages (
+            ps: with ps; [
+              ollama
+            ]
+          ))
+        ]
+      );
+
+    # ollmcp configuration - MCP client for Ollama with tool support
+    # This enables filesystem, git, and web search capabilities
+    environment.etc."ollmcp/servers.json" = lib.mkIf cfg.enableOllmcp {
+      text =
+        let
+          baseServers = {
+            filesystem = {
+              command = "npx";
+              args = [
+                "-y"
+                "@modelcontextprotocol/server-filesystem"
+                "/home/jarvis"
+              ];
+            };
+          };
+          webSearchServer = lib.optionalAttrs cfg.enableWebSearch {
+            web-search = {
+              command = "npx";
+              args = [
+                "-y"
+                "@iflow-mcp/one-search-mcp"
+              ];
+              env = {
+                SEARCH_PROVIDER = "searxng";
+                SEARXNG_URL = "http://127.0.0.1:8080";
+              };
+            };
+          };
+        in
+        builtins.toJSON (baseServers // webSearchServer);
+    };
 
     # Systemd service overrides for better resource management
     systemd.services.ollama = {

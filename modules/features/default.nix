@@ -12,7 +12,11 @@ let
       || (type == "directory" && builtins.pathExists (./. + "/${name}/default.nix"))
     );
   moduleNames = builtins.filter (n: isModule n entries.${n}) (builtins.attrNames entries);
+  # For .nix files, import directly. For directories, import default.nix
+  makePath =
+    name: type: if type == "directory" then ./. + "/${name}/default.nix" else ./. + "/${name}";
+  importPaths = map (name: makePath name entries.${name}) moduleNames;
 in
 {
-  imports = map (name: ./. + "/${name}") moduleNames;
+  imports = importPaths;
 }

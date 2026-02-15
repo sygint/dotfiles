@@ -67,6 +67,16 @@ The following models are automatically downloaded on first boot:
 - **Access**: Available from all hosts on the network
 - **Authentication**: None (internal network only)
 
+### Open WebUI
+- **URL**: `http://192.168.1.7:8888`
+- **Access**: Available from all hosts on the network
+- **Authentication**: Enabled (username/password required)
+
+### SearXNG (Local Web Search)
+- **URL**: `http://127.0.0.1:8080` (localhost only)
+- **Access**: Used by MCP tools for AI-powered web search
+- **Purpose**: Self-hosted metasearch engine for privacy-preserving web searches
+
 ### API Examples
 
 **List models**:
@@ -221,22 +231,27 @@ ssh jarvis@192.168.1.7 "ollama run llama3.2:3b 'Count to 10' --verbose"
 
 ### Planned Additions
 
-1. **Open WebUI**: Web-based interface for Ollama
-   - Status: Temporarily disabled due to ctranslate2 build issues
-   - Alternative: Use Ollama CLI or third-party web UIs
+1. **Open WebUI**: ✅ Implemented (port 8888)
+   - Web-based interface for Ollama
+   - Authentication enabled
 
-2. **Additional Models**: Consider adding:
+2. **Web Search**: ✅ Implemented
+   - Self-hosted SearXNG metasearch engine
+   - MCP tool integration for AI-powered searches
+   - No external API keys required
+
+3. **Additional Models**: Consider adding:
    - `codellama:34b` - Specialized coding model
    - `mixtral:8x7b` - Mixture of experts for versatility
    - `yi:34b` - High-quality general purpose model
 
-3. **API Gateway**: Nginx reverse proxy with:
+4. **API Gateway**: Nginx reverse proxy with:
    - SSL/TLS termination
    - API key authentication
    - Rate limiting
    - Request logging
 
-4. **Monitoring Dashboard**: Grafana + Prometheus for:
+5. **Monitoring Dashboard**: Grafana + Prometheus for:
    - GPU utilization over time
    - Model inference latency
    - Request volume and patterns
@@ -266,7 +281,9 @@ ssh jarvis@192.168.1.7 "ollama pull <model-name>"
 ### Current Security Posture
 - ✅ Only accessible on local network (192.168.1.0/24)
 - ✅ Firewall protects from external access
-- ❌ No API authentication
+- ✅ Open WebUI has authentication enabled
+- ✅ SearXNG is localhost-only (not exposed to network)
+- ❌ No API authentication on Ollama
 - ❌ No rate limiting
 - ❌ No audit logging
 
