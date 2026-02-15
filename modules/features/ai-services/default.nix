@@ -94,7 +94,7 @@ in
             # Wait for Xvfb to start
             sleep 2
             # Enable fan control
-            ${pkgs.cudaPackages.cudatoolkit}/bin/nvidia-settings -a "GPUFanControlState=1" -a "FanSpeedPWM=${toString cfg.gpuFanSpeed}" || true
+            nvidia-settings -a "GPUFanControlState=1" -a "FanSpeedPWM=${toString cfg.gpuFanSpeed}" || true
           ''
         );
       };
