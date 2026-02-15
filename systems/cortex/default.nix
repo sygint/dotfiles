@@ -129,9 +129,6 @@ in
     # Sunshine game streaming
     features.sunshine = true;
 
-    # Sunshine game streaming
-    features.sunshine = true;
-
     # Power management - suspend when idle, wake via WoL
     features.power-management = {
       enable = true;

@@ -86,12 +86,12 @@ in
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = pkgs.writeShellScript "gpu-fan-control.sh" ''
+        ExecStart = "${pkgs.writeShellScriptBin "gpu-fan-control" ''
           # Wait for Xvfb to start
           sleep 2
           # Enable fan control
           nvidia-settings -a "GPUFanControlState=1" -a "FanSpeedPWM=${toString cfg.gpuFanSpeed}"
-        '';
+        ''}/bin/gpu-fan-control";
       };
     };
 
