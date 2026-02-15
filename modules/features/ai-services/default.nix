@@ -93,8 +93,9 @@ in
           pkgs.writeShellScriptBin "gpu-fan-control" ''
             # Wait for Xvfb to start
             sleep 2
-            # Enable fan control - use full path
-            /run/current-system/sw/bin/nvidia-settings -a "GPUFanControlState=1" -a "FanSpeedPWM=${toString cfg.gpuFanSpeed}" || true
+            # Enable fan control - use GPUTargetFanSpeed for RTX 5090
+            # fan:0 is the radiator fans, fan:1 is the main GPU fan
+            /run/current-system/sw/bin/nvidia-settings -a "GPUFanControlState=1" -a "[fan:0]/GPUTargetFanSpeed=${toString cfg.gpuFanSpeed}" || true
           ''
         );
       };
