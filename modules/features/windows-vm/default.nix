@@ -45,10 +45,9 @@ in
       onShutdown = "ignore";
     };
 
-    environment.systemPackages = with pkgs; [
-      virt-manager
-      virt-install
-      libosinfo
+    environment.systemPackages = [
+      pkgs.libvirt
+      pkgs.libosinfo
     ];
 
     users.users.syg.extraGroups = [
@@ -56,40 +55,7 @@ in
       "kvm"
     ];
 
-    # Create the Windows VM via virt-install
-    system.activationScripts.create-windows-vm = ''
-      set -e
-
-      VM_NAME="windows11"
-
-      # Check if VM already exists
-      if virsh dominfo "$VM_NAME" >/dev/null 2>&1; then
-        echo "VM $VM_NAME already exists"
-      else
-        echo "Creating Windows 11 VM..."
-
-        # Create disk image
-        mkdir -p /var/lib/libvirt/images
-        truncate -s ${toString cfg.diskSize}G /var/lib/libvirt/images/windows11.qcow2
-
-        # Install Windows VM
-        virt-install \
-          --name "$VM_NAME" \
-          --memory ${toString cfg.memory} \
-          --vcpus ${toString cfg.cores} \
-          --disk path=/var/lib/libvirt/images/windows11.qcow2,format=qcow2 \
-          --cdrom "${cfg.iso}" \
-          --os-variant win11 \
-          --network network=default \
-          --graphics spice \
-          --video qxl \
-          --machine q35 \
-          --boot uefi \
-          --controller type=usb,model=qemu-xhci
-
-        echo "Windows 11 VM created successfully"
-        echo "Run 'virt-manager' to access the VM"
-      fi
-    '';
+    # Note: VM creation is manual via virt-manager after deployment
+    # Run: virt-manager to create and start the Windows 11 VM
   };
 }
