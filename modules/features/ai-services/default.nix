@@ -100,14 +100,6 @@ in
       };
     };
 
-    # Add nvidia-settings to system packages
-    environment.systemPackages = lib.mkIf cfg.enableGpuFanControl (
-      with pkgs;
-      [
-        cudaPackages.cudatoolkit
-      ]
-    );
-
     # Enable Ollama LLM service with CUDA acceleration
     services.ollama = {
       enable = true;
