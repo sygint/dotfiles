@@ -73,8 +73,10 @@ in
       description = "Xvfb virtual framebuffer for headless NVIDIA settings";
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
-        Type = "forking";
+        Type = "simple";
+        RemainAfterExit = true;
         ExecStart = "${pkgs.xvfb}/bin/Xvfb :0 -screen 0 1920x1080x24";
+        ExecStop = "${pkgs.coreutils}/bin/kill $MAINPID";
       };
     };
 
@@ -86,14 +88,25 @@ in
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = "${pkgs.writeShellScriptBin "gpu-fan-control" ''
-          # Wait for Xvfb to start
-          sleep 2
-          # Enable fan control
-          nvidia-settings -a "GPUFanControlState=1" -a "FanSpeedPWM=${toString cfg.gpuFanSpeed}"
-        ''}/bin/gpu-fan-control";
+        Environment = "DISPLAY=:0";
+        ExecStart = lib.getExe (
+          pkgs.writeShellScriptBin "gpu-fan-control" ''
+            # Wait for Xvfb to start
+            sleep 2
+            # Enable fan control
+            ${pkgs.cudaPackages.cudatoolkit}/bin/nvidia-settings -a "GPUFanControlState=1" -a "FanSpeedPWM=${toString cfg.gpuFanSpeed}" || true
+          ''
+        );
       };
     };
+
+    # Add nvidia-settings to system packages
+    environment.systemPackages = lib.mkIf cfg.enableGpuFanControl (
+      with pkgs;
+      [
+        cudaPackages.cudatoolkit
+      ]
+    );
 
     # Enable Ollama LLM service with CUDA acceleration
     services.ollama = {
