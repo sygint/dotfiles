@@ -282,9 +282,6 @@ in
     };
 
     systemPackages = with pkgs; [
-      # SDDM theme (must be in systemPackages for SDDM to find it)
-      sddmTheme
-
       # Enhanced CLI applications (base has basic set)
       # Note: bat, eza, fd, fzf, zoxide provided by features.zsh module
       fastfetch
