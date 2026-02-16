@@ -32,7 +32,7 @@ Future improvements and aspirational items. Not prioritized -- just captured so 
 
 ## Hardware
 
-- **Fingerprint sensor** -- Framework 13 fprintd + PAM integration
+- ~~**Fingerprint sensor**~~ -- Framework 13 fprintd + PAM integration ✓
 
 ## Someday
 
