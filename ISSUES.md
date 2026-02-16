@@ -6,17 +6,6 @@ Open bugs and known issues across the NixOS fleet.
 
 ## Open Issues
 
-### Mullvad VPN Not in System Tray
-
-**Priority:** High
-**System:** Orion
-
-Mullvad GUI (Electron) uses temp file paths for system tray icons. HyprPanel receives tray registration but can't load the icon from `/tmp/.org.chromium.Chromium.*/logo.png`.
-
-- Daemon and GUI both running, D-Bus registration works
-- Workaround: use `mullvad` CLI (`mullvad status`, `mullvad connect`)
-- Root cause: Electron/Wayland systray limitation (upstream)
-
 ### sshd Status Reporting Inconsistency
 
 **Priority:** Medium
@@ -39,3 +28,17 @@ Mullvad GUI (Electron) uses temp file paths for system tray icons. HyprPanel rec
 - **Brave BAT ads** -- disabled via command-line flags (Nov 2025)
 - **git-secrets / TruffleHog integration** -- pre-commit hooks + scanning script (Nov 2025)
 - **LibreWolf Stylix warning** -- harmless, ignored (Nov 2025)
+
+---
+
+## Known Limitations
+
+### Mullvad VPN System Tray
+
+**System:** Orion
+
+Mullvad GUI (Electron) uses temp file paths for system tray icons. HyprPanel receives tray registration but can't load the icon from `/tmp/.org.chromium.Chromium.*/logo.png`.
+
+- Daemon and GUI both running, D-Bus registration works
+- Workaround: use `mullvad` CLI (`mullvad status`, `mullvad connect`)
+- Root cause: Electron/Wayland systray limitation (upstream, unfixable)
