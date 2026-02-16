@@ -28,7 +28,7 @@ let
 
       # Font
       Font = "JetBrainsMono Nerd Font";
-      FontSize = "13";
+      FontSize = "16";
 
       # Layout
       FormPosition = "center";
@@ -273,6 +273,13 @@ in
     wayland.enable = true;
     theme = "sddm-astronaut-theme";
     extraPackages = sddmTheme.propagatedBuildInputs;
+    # Show on all monitors
+    settings = {
+      General = {
+        # Show login screen on all connected displays
+        Display = null;
+      };
+    };
   };
 
   # Set keyboard layout for TTY console
