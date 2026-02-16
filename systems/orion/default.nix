@@ -16,76 +16,6 @@ let
   fleetConfig = import ../../fleet-config.nix;
   inherit (systemVars.system) hostName;
   inherit (systemVars.user) username;
-
-  # SDDM Astronaut theme with Catppuccin Mocha colors
-  sddmTheme = pkgs.sddm-astronaut.override {
-    themeConfig = {
-      # Background
-      Background = "${../../wallpapers/wallpaperflare.com_wallpaper-6.jpg}";
-      CropBackground = "true";
-      DimBackground = "0.3";
-      DimBackgroundColor = "#1e1e2e";
-
-      # Font
-      Font = "JetBrainsMono Nerd Font";
-      FontSize = "16";
-
-      # Layout
-      FormPosition = "center";
-      RoundCorners = "20";
-      PartialBlur = "true";
-      BlurMax = "48";
-      Blur = "2.0";
-      HaveFormBackground = "true";
-
-      # Catppuccin Mocha colors
-      FormBackgroundColor = "#1e1e2e";
-      BackgroundColor = "#1e1e2e";
-
-      HeaderTextColor = "#cdd6f4";
-      DateTextColor = "#a6adc8";
-      TimeTextColor = "#cdd6f4";
-
-      LoginFieldBackgroundColor = "#313244";
-      PasswordFieldBackgroundColor = "#313244";
-      LoginFieldTextColor = "#cdd6f4";
-      PasswordFieldTextColor = "#cdd6f4";
-      UserIconColor = "#89b4fa";
-      PasswordIconColor = "#89b4fa";
-
-      PlaceholderTextColor = "#6c7086";
-      WarningColor = "#f38ba8";
-
-      LoginButtonTextColor = "#1e1e2e";
-      LoginButtonBackgroundColor = "#89b4fa";
-      SystemButtonsIconsColor = "#cdd6f4";
-      SessionButtonTextColor = "#cdd6f4";
-      VirtualKeyboardButtonTextColor = "#cdd6f4";
-
-      DropdownTextColor = "#cdd6f4";
-      DropdownSelectedBackgroundColor = "#89b4fa";
-      DropdownBackgroundColor = "#313244";
-
-      HighlightTextColor = "#cdd6f4";
-      HighlightBackgroundColor = "#45475a";
-      HighlightBorderColor = "#89b4fa";
-
-      HoverUserIconColor = "#b4befe";
-      HoverPasswordIconColor = "#b4befe";
-      HoverSystemButtonsIconsColor = "#b4befe";
-      HoverSessionButtonTextColor = "#b4befe";
-      HoverVirtualKeyboardButtonTextColor = "#b4befe";
-
-      # Behavior
-      ForceLastUser = "true";
-      PasswordFocus = "true";
-      HideCompletePassword = "true";
-
-      # Date/Time
-      HourFormat = "hh:mm AP";
-      DateFormat = "dddd, MMMM d";
-    };
-  };
 in
 {
   imports = [
@@ -266,13 +196,12 @@ in
   };
 
   # ════════════════════════════════════════════════════════════════════════════
-  # DISPLAY MANAGER - SDDM (Astronaut theme, Catppuccin Mocha)
+  # DISPLAY MANAGER - SDDM (Testing default theme)
   # ════════════════════════════════════════════════════════════════════════════
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = false; # Use X11 mode for better reliability
-    theme = "sddm-astronaut-theme";
-    extraPackages = sddmTheme.propagatedBuildInputs;
+    theme = "maldives"; # Testing default theme to isolate issues
     # Show on all monitors
     settings = {
       General = {
