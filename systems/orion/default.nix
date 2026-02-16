@@ -131,7 +131,10 @@ in
       # Core
       zsh.enable = true;
       mullvad.enable = true; # Unified system + home config
-      virtualization.service = "qemu";
+      virtualization = {
+        enable = true;
+        service = "qemu";
+      };
       # Niri compositor ecosystem
       niri = {
         enable = true;
