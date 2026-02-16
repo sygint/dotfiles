@@ -24,6 +24,12 @@ in
         Experimental = true;
         # Enable all Bluetooth profiles
         Enable = "Source,Sink,Media,Socket";
+        # Faster initial connection for audio devices
+        FastConnectable = true;
+        # Retry reconnection up to 7 times on connection failure
+        ReconnectAttempts = 7;
+        # Intervals (seconds) between reconnection attempts
+        ReconnectIntervals = "1,2,4,8,16,32,64";
       };
     };
 
