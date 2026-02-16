@@ -32,7 +32,6 @@ in
         {
           config,
           pkgs,
-          userVars,
           ...
         }:
         let
@@ -40,16 +39,6 @@ in
 
           dotfilesDir = "${inputs.dotfiles.outPath}";
           configZshDir = "${dotfilesDir}/.config/zsh";
-
-          # Compositor selection for .zlogin auto-start
-          # Defaults to Hyprland for backward compatibility
-          compositor = userVars.compositor or "Hyprland";
-
-          # Process .zlogin template with compositor substitution
-          zloginTemplate = builtins.readFile "${dotfilesDir}/.zlogin";
-          zloginProcessed = pkgs.writeText "zlogin" (
-            lib.replaceStrings [ "@compositor@" ] [ compositor ] zloginTemplate
-          );
         in
         {
           # Install zsh packages for the user
@@ -68,11 +57,6 @@ in
             ".zshenv" = {
               source = mkOutOfStoreSymlink "${dotfilesDir}/zshenv";
               force = true;
-            };
-            # .zlogin is a processed template (compositor substitution)
-            # Must be in ZDOTDIR (.config/zsh) since .zprofile sets ZDOTDIR there
-            ".config/zsh/.zlogin" = {
-              source = zloginProcessed;
             };
             ".config/zsh/.zshrc" = {
               source = mkOutOfStoreSymlink "${configZshDir}/zshrc";

@@ -20,7 +20,7 @@ in
   user = {
     username = "syg";
 
-    # Which compositor to auto-start on TTY1 login
+    # Which compositor is in use (used by swhkd for lock screen selection)
     # Options: "Hyprland", "niri"
     compositor = "niri";
 
