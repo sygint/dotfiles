@@ -197,17 +197,21 @@ in
 
           wallpaperPath = "${configRoot}/wallpapers/wallpaperflare.com_wallpaper-1.jpg";
 
+          renameWorkspaceScript = "${configRoot}/scripts/desktop/rename-workspace.sh";
+
           niriConf = pkgs.writeText "config.kdl" (
             lib.replaceStrings
               [
                 "@monitors@"
                 "@wallpaperPath@"
                 "@monitorHandler@"
+                "@renameWorkspaceScript@"
               ]
               [
                 monitorSection
                 wallpaperPath
                 "${scriptsDir}/monitor-handler.sh --fast"
+                renameWorkspaceScript
               ]
               niriConfTemplate
           );

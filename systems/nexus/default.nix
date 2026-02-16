@@ -350,14 +350,55 @@ in
   # };
 
   # Loki + Promtail - Log aggregation (like grep for all your logs)
-  # services.loki.enable = true;
-  # services.promtail.enable = true;
+  services.loki = {
+    enable = true;
+    configuration = {
+      server = {
+        http_listen_port = 3100;
+        grpc_listen_port = 9096;
+      };
+      common = {
+        path_prefix = "/var/lib/loki";
+        storage = {
+          filesystem = {
+            chunks_directory = "/var/lib/loki/chunks";
+            rules_directory = "/var/lib/loki/rules";
+          };
+        };
+      };
+      schema_config = {
+        configs = [
+          {
+            from = "2024-01-01";
+            store = "tsdb";
+            object_store = "filesystem";
+            schema = "v13";
+            index = {
+              prefix = "index_";
+              period = "24h";
+            };
+          }
+        ];
+      };
+      limits_config = {
+        allow_structured_metadata = false;
+      };
+    };
+  };
+  services.promtail.enable = true;
+
+  # AdGuard Home - DNS-level ad blocking
+  services.adguardhome = {
+    enable = true;
+    port = 53;
+  };
 
   # ===== Firewall Configuration =====
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [
       22 # SSH
+      53 # AdGuard Home DNS
       3000 # Grafana
       8080 # Leantime
       8096 # Jellyfin HTTP
@@ -366,6 +407,7 @@ in
       # Forgejo, Buildbot, and Harmonia ports are opened by their respective modules
     ];
     allowedUDPPorts = [
+      53 # AdGuard Home DNS
       1900 # DLNA/UPnP discovery
       7359 # Jellyfin discovery
     ];

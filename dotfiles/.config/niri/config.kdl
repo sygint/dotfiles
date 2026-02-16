@@ -329,6 +329,9 @@ binds {
     // Show hotkey overlay
     Mod+Shift+Slash { show-hotkey-overlay; }
 
+    // ── Workspace Naming ────────────────────────────────────────────────
+    Mod+N { spawn "bash" "@renameWorkspaceScript@"; }
+
     // Escape hatch for keyboard shortcut inhibitors
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
 }
