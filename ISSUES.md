@@ -34,16 +34,11 @@ Mullvad GUI (Electron) uses temp file paths for system tray icons. HyprPanel rec
 
 `systemctl status sshd` reports not running, but SSH connections work fine. Status reporting / monitoring issue only.
 
-### Fingerprint Sensor
-
-**Priority:** Low
-**System:** Orion
-
-Framework 13 fingerprint reader not configured. Requires fprintd and PAM integration.
-
 ---
 
 ## Recently Fixed
+
+- **Fingerprint sensor** -- fprintd enabled via nixos-hardware Framework module, PAM integration active for sudo/swaylock/SDDM, fingerprints enrolled (Feb 2026)
 
 - **Hyprlock crashing** -- added missing PAM service (Nov 2025)
 - **Volume multiple notifications** -- consolidated notification system (Nov 2025)
