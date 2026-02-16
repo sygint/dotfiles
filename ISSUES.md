@@ -6,16 +6,6 @@ Open bugs and known issues across the NixOS fleet.
 
 ## Open Issues
 
-### Bluetooth Audio Channel Switching
-
-**Priority:** High
-**System:** Orion
-
-Audio doesn't switch channels when Bluetooth devices connect/disconnect. WirePlumber priority config added but device won't reconnect after WirePlumber restart. TOZO Open EarRing shows `br-connection-page-timeout` and "invalid profile" errors.
-
-- Potential causes: device needs pairing mode after WirePlumber restart, HFP/HSP vs A2DP profile issue, auto-reconnect broken
-- Location: `modules/features/audio.nix`
-
 ### Mullvad VPN Not in System Tray
 
 **Priority:** High
@@ -37,6 +27,8 @@ Mullvad GUI (Electron) uses temp file paths for system tray icons. HyprPanel rec
 ---
 
 ## Recently Fixed
+
+- **Bluetooth Audio** -- added BlueZ reconnect settings (FastConnectable, ReconnectAttempts, ReconnectIntervals) for reliable audio device reconnection (Feb 2026)
 
 - **Fingerprint sensor** -- fprintd enabled via nixos-hardware Framework module, PAM integration active for sudo/swaylock/SDDM, fingerprints enrolled (Feb 2026)
 
