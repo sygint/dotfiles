@@ -37,7 +37,7 @@ in
 
             settings = {
               general = {
-                lock_cmd = "pidof hyprlock || hyprlock"; # avoid starting multiple hyprlock instances.
+                lock_cmd = "noctalia-shell ipc call lockScreen lock"; # use noctalia's lock screen
                 before_sleep_cmd = "loginctl lock-session"; # lock before suspend.
                 after_sleep_cmd = "hyprctl dispatch dpms on && ${systemScriptsDir}/monitor-handler.sh --fast --bar=${barCfg}"; # restore display and monitors after suspend.
                 ignore_dbus_inhibit = false; # respect app inhibitors (e.g., video playback)
@@ -54,7 +54,7 @@ in
                 # Screenlock
                 {
                   timeout = 300; # 5 minutes
-                  on-timeout = "loginctl lock-session"; # lock the session
+                  on-timeout = "noctalia-shell ipc call lockScreen lock"; # lock using noctalia
                 }
 
                 # DPMS - lock-aware monitor control

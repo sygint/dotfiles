@@ -135,18 +135,16 @@ in
         enable = true;
         service = "qemu";
       };
-      # Niri compositor ecosystem
       niri = {
         enable = true;
         packages.enable = true;
       };
-      noctalia-shell.enable = true;
-      # Hyprland ecosystem
       hyprland = {
         enable = true;
         packages.enable = true;
       };
-      hypridle.enable = true;
+      swayidle.enable = true;
+      noctalia-shell.enable = true;
       screenshots.enable = true;
       swhkd.enable = true; # Compositor-agnostic keybindings
       wayland.enable = true;

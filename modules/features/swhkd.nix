@@ -52,9 +52,8 @@ in
           scriptsDir = "${configRoot}/scripts";
           hostScriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
-          # Lock screen — detect compositor at runtime:
-          # hyprlock for Hyprland, swaylock for everything else
-          lockCmd = if (userVars.compositor or "Hyprland") == "Hyprland" then "hyprlock" else "swaylock";
+          # Lock screen — use swaylock
+          lockCmd = "swaylock";
 
           # Generate swhkdrc content
           swhkdConfig = ''
