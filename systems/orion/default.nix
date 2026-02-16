@@ -270,7 +270,7 @@ in
   # ════════════════════════════════════════════════════════════════════════════
   services.displayManager.sddm = {
     enable = true;
-    wayland.enable = true;
+    wayland.enable = false; # Use X11 mode for better reliability
     theme = "sddm-astronaut-theme";
     extraPackages = sddmTheme.propagatedBuildInputs;
     # Show on all monitors
@@ -281,6 +281,9 @@ in
       };
     };
   };
+
+  # Enable X server for SDDM
+  services.xserver.enable = true;
 
   # Set keyboard layout for TTY console
   console.keyMap = "us";
