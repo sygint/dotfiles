@@ -16,6 +16,76 @@ let
   fleetConfig = import ../../fleet-config.nix;
   inherit (systemVars.system) hostName;
   inherit (systemVars.user) username;
+
+  # SDDM Astronaut theme with Catppuccin Mocha colors
+  sddmTheme = pkgs.sddm-astronaut.override {
+    themeConfig = {
+      # Background
+      Background = "${../../wallpapers/wallpaperflare.com_wallpaper-6.jpg}";
+      CropBackground = "true";
+      DimBackground = "0.3";
+      DimBackgroundColor = "#1e1e2e";
+
+      # Font
+      Font = "JetBrainsMono Nerd Font";
+      FontSize = "13";
+
+      # Layout
+      FormPosition = "center";
+      RoundCorners = "20";
+      PartialBlur = "true";
+      BlurMax = "48";
+      Blur = "2.0";
+      HaveFormBackground = "true";
+
+      # Catppuccin Mocha colors
+      FormBackgroundColor = "#1e1e2e";
+      BackgroundColor = "#1e1e2e";
+
+      HeaderTextColor = "#cdd6f4";
+      DateTextColor = "#a6adc8";
+      TimeTextColor = "#cdd6f4";
+
+      LoginFieldBackgroundColor = "#313244";
+      PasswordFieldBackgroundColor = "#313244";
+      LoginFieldTextColor = "#cdd6f4";
+      PasswordFieldTextColor = "#cdd6f4";
+      UserIconColor = "#89b4fa";
+      PasswordIconColor = "#89b4fa";
+
+      PlaceholderTextColor = "#6c7086";
+      WarningColor = "#f38ba8";
+
+      LoginButtonTextColor = "#1e1e2e";
+      LoginButtonBackgroundColor = "#89b4fa";
+      SystemButtonsIconsColor = "#cdd6f4";
+      SessionButtonTextColor = "#cdd6f4";
+      VirtualKeyboardButtonTextColor = "#cdd6f4";
+
+      DropdownTextColor = "#cdd6f4";
+      DropdownSelectedBackgroundColor = "#89b4fa";
+      DropdownBackgroundColor = "#313244";
+
+      HighlightTextColor = "#cdd6f4";
+      HighlightBackgroundColor = "#45475a";
+      HighlightBorderColor = "#89b4fa";
+
+      HoverUserIconColor = "#b4befe";
+      HoverPasswordIconColor = "#b4befe";
+      HoverSystemButtonsIconsColor = "#b4befe";
+      HoverSessionButtonTextColor = "#b4befe";
+      HoverVirtualKeyboardButtonTextColor = "#b4befe";
+
+      # Behavior
+      ForceLastUser = "true";
+      PasswordFocus = "true";
+      HideCompletePassword = "true";
+
+      # Date/Time
+      HourFormat = "hh:mm AP";
+      DateFormat = "dddd, MMMM d";
+    };
+  };
 in
 {
   imports = [
@@ -182,7 +252,6 @@ in
         ];
         # Password now managed by sops-nix secrets
       };
-      windows-vm.enable = true;
       containerization = {
         enable = true;
         service = "podman";
@@ -197,10 +266,14 @@ in
   };
 
   # ════════════════════════════════════════════════════════════════════════════
-  # NO DISPLAY MANAGER - TTY LOGIN
+  # DISPLAY MANAGER - SDDM (Astronaut theme, Catppuccin Mocha)
   # ════════════════════════════════════════════════════════════════════════════
-  # Using direct TTY login to avoid PAM/session issues with display managers.
-  # Login at TTY, then Hyprland starts automatically via .zlogin.
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+    theme = "sddm-astronaut-theme";
+    extraPackages = sddmTheme.propagatedBuildInputs;
+  };
 
   # Set keyboard layout for TTY console
   console.keyMap = "us";
@@ -270,6 +343,9 @@ in
     };
 
     systemPackages = with pkgs; [
+      # SDDM theme (must be in systemPackages for SDDM to find it)
+      sddmTheme
+
       # Enhanced CLI applications (base has basic set)
       # Note: bat, eza, fd, fzf, zoxide provided by features.zsh module
       fastfetch
@@ -283,6 +359,7 @@ in
       element-desktop
       ghostty
       gimp
+      loupe
       baobab
       gnome-disk-utility
       gparted
