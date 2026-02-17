@@ -36,6 +36,15 @@ in
             bar = {
               position = lib.mkDefault "top";
               floating = lib.mkDefault false;
+              widgets = {
+                center = [
+                  {
+                    id = "Workspace";
+                    labelMode = "index+name";
+                    characterCount = 20;
+                  }
+                ];
+              };
             };
 
             # ── Dock ──────────────────────────────────────────────────────
