@@ -38,11 +38,29 @@ in
       bluez-tools # For bluetoothctl and bluetooth TUI
     ];
 
-    # Ensure bluetooth is not soft-blocked by rfkill on boot
+    # Ensure bluetooth is not soft-blocked by rfkill
+    # Use udev rule to trigger when BT device appears (handles firmware init race)
+    services.udev.extraRules = ''
+      # Unblock Bluetooth when the hci device appears
+      SUBSYSTEM=="rfkill", ATTR{type}=="bluetooth", ACTION=="add", RUN+="${pkgs.util-linux}/bin/rfkill unblock bluetooth"
+    '';
+
+    # Fallback: systemd service to unblock after bluetooth service starts
     systemd.services.bluetooth-rfkill-unblock = {
       description = "Unblock Bluetooth via rfkill";
       after = [ "bluetooth.service" ];
       wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.util-linux}/bin/rfkill unblock bluetooth";
+      };
+    };
+
+    # Also unblock when graphical session starts (handles DE/WM re-blocking)
+    systemd.user.services.bluetooth-rfkill-unblock = {
+      description = "Unblock Bluetooth via rfkill (user session)";
+      after = [ "graphical-session.target" ];
+      wantedBy = [ "graphical-session.target" ];
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${pkgs.util-linux}/bin/rfkill unblock bluetooth";
