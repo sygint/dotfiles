@@ -63,16 +63,6 @@ in
     # Leantime environment files for containers (loaded at runtime by Podman)
     # These files contain MYSQL_PASSWORD and MYSQL_ROOT_PASSWORD for DB
     # and LEAN_DB_PASSWORD for the app container
-    secrets."nexus/leantime_db_env" = {
-      owner = "root";
-      group = "root";
-      mode = "0400";
-    };
-    secrets."nexus/leantime_app_env" = {
-      owner = "root";
-      group = "root";
-      mode = "0400";
-    };
 
     secrets."nexus/grafana_admin_password" = {
       owner = "grafana";
@@ -261,75 +251,18 @@ in
     };
   };
 
-  # Create required directories for Leantime data persistence
-  # Leantime storage directories
-  # UID/GID 1000 = www-data inside the leantime container
-  # These directories MUST exist before the container starts
+  # OpenProject persistent volume
   systemd.tmpfiles.rules = [
     # NAS mounts
     "d /mnt/nas 0755 root root -"
     "d /mnt/nas/movies 0755 root root -"
     "d /mnt/nas/tvshows 0755 root root -"
     "d /mnt/nas/music 0755 root root -"
-    # Leantime storage
-    "d /var/lib/leantime 0755 root root -"
-    "d /var/lib/leantime/db-data 0755 root root -"
-    "d /var/lib/leantime/userfiles 0755 1000 1000 -"
-    "d /var/lib/leantime/plugins 0755 1000 1000 -"
-    "d /var/lib/leantime/storage 0755 1000 1000 -"
-    "d /var/lib/leantime/storage/logs 0755 1000 1000 -"
-    "d /var/lib/leantime/storage/app 0755 1000 1000 -"
-    "d /var/lib/leantime/storage/debugbar 0755 1000 1000 -"
-    "d /var/lib/leantime/storage/framework 0755 1000 1000 -"
-    "d /var/lib/leantime/storage/framework/cache 0755 1000 1000 -"
-    "d /var/lib/leantime/storage/framework/cache/data 0755 1000 1000 -"
-    "d /var/lib/leantime/storage/framework/cache/installation 0755 1000 1000 -"
-    "d /var/lib/leantime/storage/framework/sessions 0755 1000 1000 -"
-    "d /var/lib/leantime/storage/framework/views 0755 1000 1000 -"
   ];
 
   virtualisation.oci-containers = {
     backend = "podman";
     containers = {
-      # Leantime - Goals-focused PM tool (https://leantime.io/)
-      leantime-db = {
-        image = "mariadb:10.11";
-        ports = [ ]; # Not exposed outside
-        volumes = [
-          "/var/lib/leantime/db-data:/var/lib/mysql"
-        ];
-        environment = {
-          MYSQL_DATABASE = "leantime";
-          MYSQL_USER = "leantime";
-          # Passwords loaded from environmentFiles below
-        };
-        environmentFiles = [
-          config.sops.secrets."nexus/leantime_db_env".path
-        ];
-        autoStart = true;
-      };
-      leantime = {
-        image = "leantime/leantime:latest";
-        ports = [ "8080:8080" ];
-        volumes = [
-          "/var/lib/leantime/userfiles:/var/www/html/userfiles"
-          "/var/lib/leantime/plugins:/var/www/html/app/Plugins"
-          "/var/lib/leantime/storage:/var/www/html/storage"
-        ];
-        environment = {
-          LEAN_DB_HOST = "leantime-db";
-          LEAN_DB_USER = "leantime";
-          LEAN_DB_DATABASE = "leantime";
-          LEAN_EMAIL_RETURN = "no-reply@localhost";
-          LEAN_APP_URL = "http://nexus.home:8080"; # Use flake DNS/hostname instead of localhost
-          # Password loaded from environmentFiles below
-        };
-        environmentFiles = [
-          config.sops.secrets."nexus/leantime_app_env".path
-        ];
-        dependsOn = [ "leantime-db" ];
-        autoStart = true;
-      };
     };
   };
 

@@ -9,7 +9,6 @@ Historical documentation and completed project documents.
 #### PRDs (Product Requirement Documents)
 - **001-LEGACY-CLEANUP-PRD.md** - Legacy code cleanup project
 - **dendritic-lite-migration.md** - Migration to dendritic-lite auto-import pattern
-- **leantime-container-diagnosis.md** - Leantime container debugging
 
 ### Deprecated Tools & Processes
 - **COLMENA-INTEGRATION.md** - Old Colmena deployment tool (replaced by deploy-rs)
