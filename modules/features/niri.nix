@@ -90,6 +90,26 @@ in
       default = [ ];
       description = "Monitor configurations. Use 'desc' for stable matching across reboots.";
     };
+
+    workspaces = mkOption {
+      type = types.listOf (
+        types.submodule {
+          options = {
+            name = mkOption {
+              type = types.str;
+              description = "Workspace name";
+            };
+            rule = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Optional rule for this workspace (may be null)";
+            };
+          };
+        }
+      );
+      default = [ ];
+      description = "Workspaces to create (optionally with rule).";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -192,6 +212,43 @@ in
           monitorSection =
             if monitorBlocks != "" then monitorBlocks else "// No monitors configured — niri will auto-detect";
 
+          # Generate workspace blocks from workspaces config
+          workspaceConfigs = cfg.workspaces;
+          workspaceBlocks = lib.concatMapStringsSep "\n\n" (
+            w:
+            let
+              ruleStr =
+                if w ? rule && w.rule != null && w.rule != "" then
+                  let
+                    eqSplit = builtins.split "=" w.rule;
+                  in
+                  if builtins.length eqSplit == 2 then
+                    let
+                      key = builtins.elemAt eqSplit 0;
+                      rawVal = builtins.elemAt eqSplit 1;
+                      val =
+                        if
+                          (builtins.match ''^\s*\".*\"\s*$'' rawVal) != null
+                          || (builtins.match ''^\s*r#\".*\"#\s*$'' rawVal) != null
+                        then
+                          builtins.replaceStrings [ " " "\t" ] [ "" "" ] rawVal
+                        else
+                          "\"${builtins.replaceStrings [ " " "\t" ] [ "" "" ] rawVal}\"";
+                    in
+                    "    rule ${key}=${val}"
+                  else
+                    ""
+                else
+                  "";
+            in
+            ''
+              workspace "${w.name}" {
+              ${ruleStr}
+              }''
+          ) workspaceConfigs;
+
+          workspaceSection = if workspaceBlocks != "" then workspaceBlocks else "// No workspaces configured";
+
           # Read template and substitute variables
           niriConfTemplate = builtins.readFile "${configDotfilesDir}/niri/config.kdl";
 
@@ -206,12 +263,14 @@ in
                 "@wallpaperPath@"
                 "@monitorHandler@"
                 "@renameWorkspaceScript@"
+                "@workspaces@"
               ]
               [
                 monitorSection
                 wallpaperPath
                 "${scriptsDir}/monitor-handler.sh --fast"
                 renameWorkspaceScript
+                workspaceSection
               ]
               niriConfTemplate
           );
