@@ -171,7 +171,7 @@ in
           hyprlandConfTemplate = builtins.readFile "${configDotfilesDir}/hypr/hyprland.conf";
 
           # Default wallpaper — use the first wallpaper in the repo
-          wallpaperPath = "${configRoot}/wallpapers/wallpaperflare.com_wallpaper-1.jpg";
+          wallpaperPath = "${configRoot}/wallpapers/wallpaperflare.com_wallpaper-6.jpg";
           lockWallpaper = "${configRoot}/wallpapers/wallpaperflare.com_wallpaper-6.jpg";
 
           hyprlandConf = pkgs.writeText "hyprland.conf" (
