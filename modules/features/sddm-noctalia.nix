@@ -15,6 +15,7 @@ let
   cfg = config.modules.features.sddm-noctalia;
 
   noctalia-sddm-theme = pkgs.stdenvNoCC.mkDerivation {
+    propagatedBuildInputs = [ pkgs.sddm ];
     pname = "sddm-noctalia-theme";
     version = "unstable";
 

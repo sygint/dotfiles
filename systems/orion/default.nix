@@ -138,7 +138,21 @@ in
       niri = {
         enable = true;
         packages.enable = true;
+        workspaces = [
+          {
+            name = "1: Web";
+          }
+          {
+            name = "2: Code";
+            rule = "app_id=Code";
+          }
+          {
+            name = "3: Chat";
+            rule = "app_id=discord";
+          }
+        ];
       };
+      sddm-noctalia.enable = true;
       hyprland = {
         enable = true;
         packages.enable = true;
@@ -194,20 +208,10 @@ in
   };
 
   # ════════════════════════════════════════════════════════════════════════════
-  # DISPLAY MANAGER - SDDM (Testing default theme)
-  # ════════════════════════════════════════════════════════════════════════════
-  services.displayManager.sddm = {
-    enable = true;
-    wayland.enable = false; # Use X11 mode for better reliability
-    theme = "maldives"; # Testing default theme to isolate issues
-    # Show on all monitors
-    settings = {
-      General = {
-        # Show login screen on all connected displays
-        Display = null;
-      };
-    };
-  };
+  # DISPLAY MANAGER - SDDM with Noctalia theme
+  # ═════════════════════════════════════════════════════════════════════════════===
+  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.theme = "noctalia";
 
   # Enable X server for SDDM
   services.xserver.enable = true;
