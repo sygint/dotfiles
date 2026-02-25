@@ -260,8 +260,7 @@ in
     "d /mnt/nas/music 0755 root root -"
   ];
 
-  # virtualisation.oci-containers was removed - oci-containers module unavailable in nixpkgs
-  # Use virtualisation.podman.enable = true if needed
+  virtualisation.podman.enable = true;
 
   # ===== Optional Services (disabled for now) =====
   # Uncomment these when you're ready to add them:
