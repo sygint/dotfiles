@@ -1,4 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
+let
+  configRoot = "/home/syg/.config/nixos";
+in
 {
   imports = [
     ../../../modules/home
@@ -90,6 +93,9 @@
   home.sessionVariables = {
     XDG_DATA_DIRS = "$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share";
   };
+
+  # OpenCode config - symlink to shared config
+  home.file."opencode.json".source = lib.file.mkOutOfStoreSymlink "${configRoot}/systems/orion/dotfiles/opencode.json";
 
   # wayland.windowManager.sway.enable = true;
 
