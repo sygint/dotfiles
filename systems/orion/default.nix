@@ -140,15 +140,16 @@ in
         packages.enable = true;
         workspaces = [
           {
-            name = "1: Web";
+            name = "Nixos";
           }
           {
-            name = "2: Code";
-            rule = "app_id=Code";
+            name = "ES";
           }
           {
-            name = "3: Chat";
-            rule = "app_id=discord";
+            name = "SFF";
+          }
+          {
+            name = "PRJ";
           }
         ];
       };
