@@ -222,34 +222,34 @@ in
     ];
   };
 
-  # Grafana - Visualize metrics with dashboards
-  services.grafana = {
-    enable = true;
-    settings = {
-      server = {
-        http_addr = "0.0.0.0";
-        http_port = 3000;
-        domain = "nexus.home";
-        root_url = "http://nexus.home:3000/";
-      };
-      security = {
-        admin_user = "admin";
-        admin_password_file = config.sops.secrets."nexus/grafana_admin_password".path;
-      };
-    };
-
-    provision = {
-      enable = true;
-      datasources.settings.datasources = [
-        {
-          name = "Prometheus";
-          type = "prometheus";
-          url = "http://127.0.0.1:${toString config.services.prometheus.port}";
-          isDefault = true;
-        }
-      ];
-    };
-  };
+  # Grafana - Visualize metrics with dashboards (disabled - needs secret_key)
+  # services.grafana = {
+  #   enable = true;
+  #   settings = {
+  #     server = {
+  #       http_addr = "0.0.0.0";
+  #       http_port = 3000;
+  #       domain = "nexus.home";
+  #       root_url = "http://nexus.home:3000/";
+  #     };
+  #     security = {
+  #       admin_user = "admin";
+  #       admin_password_file = config.sops.secrets."nexus/grafana_admin_password".path;
+  #     };
+  #   };
+  #
+  #   provision = {
+  #     enable = true;
+  #     datasources.settings.datasources = [
+  #       {
+  #         name = "Prometheus";
+  #         type = "prometheus";
+  #         url = "http://127.0.0.1:${toString config.services.prometheus.port}";
+  #         isDefault = true;
+  #       }
+  #     ];
+  #   };
+  # };
 
   # OpenProject persistent volume
   systemd.tmpfiles.rules = [
