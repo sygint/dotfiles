@@ -1,4 +1,9 @@
-{ pkgs, config, inputs, ... }:
+{
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 let
   inherit (config.lib.file) mkOutOfStoreSymlink;
 in
@@ -95,7 +100,8 @@ in
   };
 
   # OpenCode config - symlink to shared config
-  home.file."opencode.json".source = mkOutOfStoreSymlink "${inputs.dotfiles.outPath}/opencode.json";
+  home.file."opencode.json".source =
+    mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/opencode.json";
 
   # wayland.windowManager.sway.enable = true;
 
