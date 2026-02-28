@@ -100,7 +100,7 @@ in
   };
 
   # OpenCode config - symlink to shared config
-  home.file."config/opencode/opencode.json".source =
+  home.file.".config/opencode/opencode.json".source =
     mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/opencode/opencode.json";
 
   # wayland.windowManager.sway.enable = true;
