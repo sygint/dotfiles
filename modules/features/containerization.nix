@@ -31,6 +31,11 @@ in
 
   config = mkIf cfg.enable (
     lib.mkMerge [
+      # Ensure subid NSS lookup works for rootless containers (nixpkgs doesn't do this yet)
+      {
+        environment.etc."nsswitch.conf".text = lib.mkOrder 1600 "\nsubid:     files\n";
+      }
+
       # Podman
       (mkIf (cfg.service == "podman") {
         virtualisation = {

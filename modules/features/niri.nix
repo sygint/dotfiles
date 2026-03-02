@@ -213,10 +213,30 @@ in
             if monitorBlocks != "" then monitorBlocks else "// No monitors configured — niri will auto-detect";
 
           # Generate workspace blocks from workspaces config
+          # Creates named workspaces on every configured monitor for consistency.
+          # When multiple monitors are configured, workspaces are suffixed
+          # (e.g. "Nixos", "Nixos:2", "Nixos:3") and pinned via open-on-output.
+          # With a single monitor (or no monitors), workspaces are created without suffixes.
           workspaceConfigs = cfg.workspaces;
-          workspaceBlocks = lib.concatMapStringsSep "\n\n" (
-            w:
+
+          # Build a per-monitor suffix: first monitor gets no suffix, second gets ":2", etc.
+          monitorCount = builtins.length monitorConfigs;
+          usePerMonitor = monitorCount > 1 && builtins.length workspaceConfigs > 0;
+
+          # Generate workspace blocks for a single workspace on a single monitor
+          mkWorkspaceBlock =
+            w: monitorIdx: monitor:
             let
+              suffix = if monitorIdx == 0 then "" else ":${toString (monitorIdx + 1)}";
+              wsName = "${w.name}${suffix}";
+              outputId =
+                if (monitor.desc or null) != null then
+                  monitor.desc
+                else if (monitor.name or null) != null then
+                  monitor.name
+                else
+                  null;
+              outputLine = if outputId != null then ''open-on-output "${outputId}"'' else "";
               ruleStr =
                 if w ? rule && w.rule != null && w.rule != "" then
                   let
@@ -240,12 +260,64 @@ in
                     ""
                 else
                   "";
+              lines = lib.filter (s: s != "") [
+                outputLine
+                ruleStr
+              ];
+              body = lib.concatStringsSep "\n" lines;
             in
             ''
-              workspace "${w.name}" {
-              ${ruleStr}
-              }''
-          ) workspaceConfigs;
+              workspace "${wsName}" {
+              ${body}
+              }'';
+
+          # Generate all workspace blocks
+          workspaceBlocks =
+            if usePerMonitor then
+              # Multi-monitor: group workspaces by monitor so Niri assigns them
+              # in the correct order on each output (monitor-first, workspace-second).
+              # NOTE: Niri does not reorder existing workspaces on config reload —
+              # a session restart (log out/in) is required for order changes to take effect.
+              lib.concatStringsSep "\n\n" (
+                lib.concatMap (
+                  monitorWithIdx:
+                  map (w: mkWorkspaceBlock w monitorWithIdx.idx monitorWithIdx.monitor) workspaceConfigs
+                ) (lib.imap0 (idx: monitor: { inherit idx monitor; }) monitorConfigs)
+              )
+            else
+              # Single/no monitor: simple workspace blocks without suffixes
+              lib.concatMapStringsSep "\n\n" (
+                w:
+                let
+                  ruleStr =
+                    if w ? rule && w.rule != null && w.rule != "" then
+                      let
+                        eqSplit = builtins.split "=" w.rule;
+                      in
+                      if builtins.length eqSplit == 2 then
+                        let
+                          key = builtins.elemAt eqSplit 0;
+                          rawVal = builtins.elemAt eqSplit 1;
+                          val =
+                            if
+                              (builtins.match ''^\s*\".*\"\s*$'' rawVal) != null
+                              || (builtins.match ''^\s*r#\".*\"#\s*$'' rawVal) != null
+                            then
+                              builtins.replaceStrings [ " " "\t" ] [ "" "" ] rawVal
+                            else
+                              "\"${builtins.replaceStrings [ " " "\t" ] [ "" "" ] rawVal}\"";
+                        in
+                        "    rule ${key}=${val}"
+                      else
+                        ""
+                    else
+                      "";
+                in
+                ''
+                  workspace "${w.name}" {
+                  ${ruleStr}
+                  }''
+              ) workspaceConfigs;
 
           workspaceSection = if workspaceBlocks != "" then workspaceBlocks else "// No workspaces configured";
 

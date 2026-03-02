@@ -304,7 +304,7 @@ in
       gparted
       keepassxc
       kitty
-      libreoffice
+      libreoffice-fresh # 'still' variant broken: notoSubset glob fails with new noto-fonts naming
       librewolf-unwrapped
       meld
       nemo-with-extensions # Nemo with file-roller and other extensions
