@@ -13,10 +13,7 @@ in
   options.modules.features.sunshine = mkEnableOption "Sunshine game streaming server";
 
   config = mkIf cfg {
-    services.xserver = {
-      enable = true;
-      layout = "us";
-    };
+    services.xserver.enable = true;
 
     services.sunshine = {
       enable = true;
