@@ -117,6 +117,9 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
   eval "$(direnv hook zsh)"
   export DIRENV_LOG_FORMAT=""
 
+# --- claude code router
+  eval "$(ccr activate)"
+
 # --- nixos
   alias update="nh os switch && chezmoi apply"
 

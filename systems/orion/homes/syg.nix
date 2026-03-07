@@ -103,6 +103,10 @@ in
   home.file.".config/opencode/opencode.json".source =
     mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/opencode/opencode.json";
 
+  # Claude Code Router config - routes claude-code to LM Studio on cortex
+  home.file.".claude-code-router/config.json".source =
+    mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/claude-code-router/config.json";
+
   # wayland.windowManager.sway.enable = true;
 
   # Enable XDG user directories

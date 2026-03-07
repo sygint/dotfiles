@@ -9,6 +9,8 @@ in
   # their own complex configuration modules
   home.packages = with pkgs; [
     appimage-run
+    claude-code
+    claude-code-router
     obsidian
     opencode
     opencode-desktop
