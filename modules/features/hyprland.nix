@@ -91,6 +91,31 @@ in
       default = [ ];
       description = "Monitor configurations. Use 'desc' for stable matching across reboots.";
     };
+
+    workspaces = mkOption {
+      type = types.listOf (
+        types.submodule {
+          options = {
+            name = mkOption {
+              type = types.str;
+              description = "Workspace display name (shared across compositors)";
+            };
+            hyprland = mkOption {
+              type = types.nullOr types.attrs;
+              default = null;
+              description = "Hyprland-specific config: { id, monitorDesc?, monitorName?, default?, persistent? }";
+            };
+            niri = mkOption {
+              type = types.nullOr types.attrs;
+              default = null;
+              description = "Niri-specific config: { rule? }";
+            };
+          };
+        }
+      );
+      default = [ ];
+      description = "Unified workspace configuration consumed by all compositor modules.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -127,7 +152,7 @@ in
           scriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
           # Generate monitor configuration lines from Nix
-          monitorConfigs = userVars.monitors or [ ];
+          monitorConfigs = cfg.monitors;
           monitorLines = lib.concatMapStringsSep "\n" (
             m:
             let
@@ -167,6 +192,85 @@ in
                 monitor = , preferred, auto, 1
               '';
 
+          # Generate workspace configuration lines from Nix
+          # Reads unified workspace format: { name, hyprland = { id, monitorDesc, ... }; }
+          workspaceConfigs = cfg.workspaces;
+
+          # Filter to only workspaces that have hyprland config
+          hyprlandWorkspaces = builtins.filter (ws: (ws.hyprland or null) != null) workspaceConfigs;
+
+          # Track which monitors have had their first workspace seen
+          # to auto-assign default:true to the first workspace per monitor
+          workspaceLines =
+            let
+              # For each workspace, determine if it's the first on its monitor
+              firstOnMonitor = map (
+                ws:
+                let
+                  h = ws.hyprland;
+                  thisMonitor =
+                    if (h.monitorDesc or null) != null then
+                      "desc:${h.monitorDesc}"
+                    else if (h.monitorName or null) != null then
+                      h.monitorName
+                    else
+                      null;
+                  # Find the first workspace with this monitor
+                  firstWsForMonitor =
+                    if thisMonitor == null then
+                      null
+                    else
+                      lib.findFirst (
+                        w:
+                        let
+                          wh = w.hyprland;
+                          wMonitor =
+                            if (wh.monitorDesc or null) != null then
+                              "desc:${wh.monitorDesc}"
+                            else if (wh.monitorName or null) != null then
+                              wh.monitorName
+                            else
+                              null;
+                        in
+                        wMonitor == thisMonitor
+                      ) null hyprlandWorkspaces;
+                  isFirst = firstWsForMonitor != null && (firstWsForMonitor.hyprland.id or 0) == (h.id or (0 - 1));
+                  # Use explicit default if set, otherwise auto-detect
+                  isDefault = if (h.default or null) != null then h.default else isFirst;
+                  persistent = h.persistent or true;
+                in
+                { inherit ws isDefault persistent; }
+              ) hyprlandWorkspaces;
+            in
+            lib.concatMapStringsSep "\n" (
+              entry:
+              let
+                ws = entry.ws;
+                h = ws.hyprland;
+                id = toString h.id;
+                parts = [ "workspace = ${id}" ]
+                  ++ lib.optional ((h.monitorDesc or null) != null) "monitor:desc:${h.monitorDesc}"
+                  ++ lib.optional ((h.monitorName or null) != null) "monitor:${h.monitorName}"
+                  ++ lib.optional entry.isDefault "default:true"
+                  ++ lib.optional entry.persistent "persistent:true"
+                  ++ lib.optional ((ws.name or "") != "") "defaultName:${ws.name}";
+              in
+              lib.concatStringsSep ", " parts
+            ) firstOnMonitor;
+
+          workspaceSection =
+            if workspaceLines != "" then
+              ''
+                # ═══════════════════════════════════════════════════════════════════════════════
+                # WORKSPACES - Generated from Nix configuration
+                # ═══════════════════════════════════════════════════════════════════════════════
+                ${workspaceLines}
+              ''
+            else
+              ''
+                # No workspaces configured in Nix - using Hyprland defaults
+              '';
+
           # Generate hyprland.conf from template with variable substitution
           hyprlandConfTemplate = builtins.readFile "${configDotfilesDir}/hypr/hyprland.conf";
 
@@ -184,6 +288,7 @@ in
                 "@monitorHandler@"
                 "@wallpaperPath@"
                 "@monitors@"
+                "@workspaces@"
               ]
               [
                 (hyprland.terminal or "ghostty")
@@ -193,6 +298,7 @@ in
                 "${scriptsDir}/monitor-handler.sh --fast"
                 wallpaperPath
                 monitorSection
+                workspaceSection
               ]
               hyprlandConfTemplate
           );

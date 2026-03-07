@@ -44,7 +44,6 @@ in
       inherit inputs;
       userVars = systemVars.user // {
         inherit hostName;
-        monitors = systemVars.monitors or [ ];
       };
     };
     # Auto back up files that would be clobbered by Home Manager so that
@@ -138,25 +137,15 @@ in
       niri = {
         enable = true;
         packages.enable = true;
-        workspaces = [
-          {
-            name = "Nixos";
-          }
-          {
-            name = "ES";
-          }
-          {
-            name = "SFF";
-          }
-          {
-            name = "PRJ";
-          }
-        ];
+        monitors = systemVars.monitors or [ ];
+        workspaces = systemVars.workspaces or [ ];
       };
       sddm-noctalia.enable = true;
       hyprland = {
         enable = true;
         packages.enable = true;
+        monitors = systemVars.monitors or [ ];
+        workspaces = systemVars.workspaces or [ ];
       };
       swayidle.enable = true;
       noctalia-shell.enable = true;

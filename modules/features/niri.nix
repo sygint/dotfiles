@@ -97,18 +97,23 @@ in
           options = {
             name = mkOption {
               type = types.str;
-              description = "Workspace name";
+              description = "Workspace display name (shared across compositors)";
             };
-            rule = mkOption {
-              type = types.nullOr types.str;
+            hyprland = mkOption {
+              type = types.nullOr types.attrs;
               default = null;
-              description = "Optional rule for this workspace (may be null)";
+              description = "Hyprland-specific config: { id, monitorDesc?, monitorName?, default?, persistent? }";
+            };
+            niri = mkOption {
+              type = types.nullOr types.attrs;
+              default = null;
+              description = "Niri-specific config: { rule? }";
             };
           };
         }
       );
       default = [ ];
-      description = "Workspaces to create (optionally with rule).";
+      description = "Unified workspace configuration consumed by all compositor modules.";
     };
   };
 
@@ -144,7 +149,7 @@ in
           scriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
           # Generate niri monitor output blocks from the shared monitors config
-          monitorConfigs = userVars.monitors or [ ];
+          monitorConfigs = cfg.monitors;
           monitorBlocks = lib.concatMapStringsSep "\n\n" (
             m:
             let
@@ -213,11 +218,17 @@ in
             if monitorBlocks != "" then monitorBlocks else "// No monitors configured — niri will auto-detect";
 
           # Generate workspace blocks from workspaces config
+          # Reads unified workspace format: { name, niri = { rule, ... }; }
           # Creates named workspaces on every configured monitor for consistency.
           # When multiple monitors are configured, workspaces are suffixed
           # (e.g. "Nixos", "Nixos:2", "Nixos:3") and pinned via open-on-output.
           # With a single monitor (or no monitors), workspaces are created without suffixes.
           workspaceConfigs = cfg.workspaces;
+
+          # Helper to extract niri rule from unified workspace format
+          getRule = w:
+            let niri = w.niri or null;
+            in if niri != null then (niri.rule or null) else null;
 
           # Build a per-monitor suffix: first monitor gets no suffix, second gets ":2", etc.
           monitorCount = builtins.length monitorConfigs;
@@ -237,10 +248,11 @@ in
                 else
                   null;
               outputLine = if outputId != null then ''open-on-output "${outputId}"'' else "";
+              rule = getRule w;
               ruleStr =
-                if w ? rule && w.rule != null && w.rule != "" then
+                if rule != null && rule != "" then
                   let
-                    eqSplit = builtins.split "=" w.rule;
+                    eqSplit = builtins.split "=" rule;
                   in
                   if builtins.length eqSplit == 2 then
                     let
@@ -289,10 +301,11 @@ in
               lib.concatMapStringsSep "\n\n" (
                 w:
                 let
+                  rule = getRule w;
                   ruleStr =
-                    if w ? rule && w.rule != null && w.rule != "" then
+                    if rule != null && rule != "" then
                       let
-                        eqSplit = builtins.split "=" w.rule;
+                        eqSplit = builtins.split "=" rule;
                       in
                       if builtins.length eqSplit == 2 then
                         let
