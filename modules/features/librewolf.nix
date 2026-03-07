@@ -48,6 +48,19 @@ in
             # privacy
             "privacy.clearOnShutdown.cookies" = true;
             "privacy.donottrackheader.enabled" = true;
+
+            # Audio fix: RFP spoofs AudioContext causing silent audio on many sites.
+            # Use fingerprintingProtection (FPP) instead, which allows granular overrides.
+            "privacy.resistFingerprinting" = false;
+            "privacy.fingerprintingProtection" = true;
+            # Exclude AudioContext from fingerprinting protection so audio works
+            # See: https://searchfox.org/mozilla-central/source/toolkit/components/resistfingerprinting/RFPTargets.inc
+            "privacy.fingerprintingProtection.overrides" = "-AudioContext";
+
+            # Allow media autoplay (needed for audio/video playback)
+            "media.autoplay.default" = 0; # 0=allow, 1=block audible, 5=block all
+            "media.autoplay.blocking_policy" = 0;
+
             #  --- protections enabled by default ---
             # "privacy.clearOnShutdown.history" = false;
             # "privacy.fingerprintingProtection" = true;
