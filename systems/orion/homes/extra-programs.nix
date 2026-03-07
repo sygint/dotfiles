@@ -8,6 +8,7 @@ in
   # This is where we add additional programs that don't need
   # their own complex configuration modules
   home.packages = with pkgs; [
+    appimage-run
     obsidian
     opencode
     opencode-desktop
