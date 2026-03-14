@@ -91,13 +91,48 @@ in
     ];
   };
 
-  # Additional udev rules for Logitech devices with plugdev group access
+  # Additional udev rules
   services.udev.extraRules = ''
     # Enable plugdev group access for Logitech devices
     KERNEL=="uinput", SUBSYSTEM=="misc", GROUP="input", MODE="0664"
     SUBSYSTEM=="hidraw", ATTRS{idVendor}=="046d", GROUP="plugdev", MODE="0664"
     SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", GROUP="plugdev", MODE="0664"
   '';
+
+  # Framework EC (FRMW0004:00) sends a spurious rfkill soft-block on WiFi and
+  # Bluetooth ~10s after boot -- after any early-boot oneshots have already run.
+  # A delayed unblock after login catches this. No persistent monitor needed:
+  # the EC only fires once and doesn't re-block after being overridden.
+  # After unblocking, notifies noctalia-shell via IPC since it only polls
+  # `nmcli radio wifi` once at startup and would otherwise cache WiFi as disabled.
+  systemd.user.services.rfkill-unblock = {
+    description = "Unblock WiFi/BT after Framework EC rfkill (delayed)";
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = let
+        qs = inputs.noctalia-shell.inputs.noctalia-qs.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      in pkgs.writeShellScript "rfkill-unblock" ''
+        # 5s delay ensures we run after the EC's spurious rfkill event (fires ~0-1s after session start)
+        ${pkgs.coreutils}/bin/sleep 5
+        ${pkgs.util-linux}/bin/rfkill unblock all
+        echo "Unblocked all rfkill devices"
+
+        # Notify noctalia-shell so it updates its WiFi indicator.
+        # Instance ID changes every boot, so discover it dynamically.
+        QS="${qs}/bin/qs"
+        INSTANCE=$($QS list --all 2>/dev/null | ${pkgs.gnugrep}/bin/grep "^Instance" | head -1 | ${pkgs.gawk}/bin/awk '{print $2}' | tr -d ':')
+        if [ -n "$INSTANCE" ]; then
+          $QS ipc -i "$INSTANCE" call wifi enable 2>/dev/null \
+            && echo "Notified noctalia-shell (instance $INSTANCE): WiFi enabled" \
+            || echo "Noctalia IPC call failed (not critical)"
+        else
+          echo "No noctalia-shell instance found (not critical)"
+        fi
+      '';
+    };
+  };
 
   # User is now defined directly below
   users.users.syg = {
@@ -333,23 +368,6 @@ in
       "Oracle_VirtualBox_Extension_Pack"
       "vscode-extension-mhutchie-git-graph"
     ];
-
-  # WiFi undock fix - passwordless sudo for driver reload
-  security.sudo.extraRules = [
-    {
-      users = [ "syg" ];
-      commands = [
-        {
-          command = "${pkgs.kmod}/bin/modprobe";
-          options = [ "NOPASSWD" ];
-        }
-        {
-          command = "${pkgs.iproute2}/bin/ip";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
 
   # Base Nix settings, like flakes, are handled in base config
 

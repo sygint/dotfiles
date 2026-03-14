@@ -29,6 +29,10 @@ in
     networking = {
       hostName = cfg.hostName;
       networkmanager.enable = true;
+      # wireless.enable is intentionally left unset - NetworkManager's module manages wpa_supplicant as its backend.
+
+      # NetworkManager-wait-online is unreliable (especially with WiFi) and causes nh to abort activation.
+      networkmanager.wifi.powersave = false;
 
       # Enable firewall
       firewall = {
@@ -40,5 +44,9 @@ in
     environment.systemPackages = with pkgs; [
       networkmanagerapplet # nm-connection-editor for advanced network settings
     ];
+
+    # NetworkManager-wait-online is unreliable (especially with WiFi) and causes nh to abort activation.
+    systemd.services.NetworkManager-wait-online.enable = false;
+
   };
 }

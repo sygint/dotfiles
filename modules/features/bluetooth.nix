@@ -56,17 +56,6 @@ in
       };
     };
 
-    # Also unblock when graphical session starts (handles DE/WM re-blocking)
-    systemd.user.services.bluetooth-rfkill-unblock = {
-      description = "Unblock Bluetooth via rfkill (user session)";
-      after = [ "graphical-session.target" ];
-      wantedBy = [ "graphical-session.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "${pkgs.util-linux}/bin/rfkill unblock bluetooth";
-      };
-    };
-
     # Enable blueman service for GUI management
     services.blueman.enable = true;
   };
