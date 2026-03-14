@@ -1,0 +1,53 @@
+{
+  "LOG": true,
+  "LOG_LEVEL": "info",
+  "CLAUDE_PATH": "",
+  "HOST": "127.0.0.1",
+  "PORT": 3456,
+  "APIKEY": "",
+  "API_TIMEOUT_MS": "600000",
+  "PROXY_URL": "",
+  "transformers": [],
+  "Providers": [
+    {
+      "name": "lm-studio",
+      "api_base_url": "http://192.168.1.7:1234/v1/chat/completions",
+      "api_key": "lm-studio",
+      "models": [
+        "qwen/qwen3-coder-30b",
+        "qwen/qwq-32b"
+      ],
+      "transformer": {
+        "use": [
+          [
+            "maxtoken",
+            {
+              "max_tokens": 4096
+            }
+          ],
+          "enhancetool"
+        ]
+      }
+    }
+  ],
+  "StatusLine": {
+    "enabled": false,
+    "currentStyle": "default",
+    "default": {
+      "modules": []
+    },
+    "powerline": {
+      "modules": []
+    }
+  },
+  "Router": {
+    "default": "lm-studio,qwen/qwq-32b",
+    "background": "lm-studio,qwen/qwq-32b",
+    "think": "lm-studio,qwen/qwq-32b",
+    "longContext": "lm-studio,qwen/qwq-32b",
+    "longContextThreshold": 60000,
+    "webSearch": "lm-studio,qwen/qwq-32b",
+    "image": "lm-studio,qwen/qwq-32b"
+  },
+  "CUSTOM_ROUTER_PATH": ""
+}

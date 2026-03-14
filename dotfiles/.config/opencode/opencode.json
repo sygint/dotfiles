@@ -1,0 +1,61 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LM Studio",
+      "options": {
+        "baseURL": "http://192.168.1.7:1234/v1",
+        "apiKey": "lm-studio"
+      },
+      "models": {
+        "qwen/qwq-32b": {
+          "name": "Qwq 32b"
+        },
+        "mistralai/devstral-small-2-2512": {
+          "name": "Devstral Small 2 2512"
+        },
+        "mistralai/codestral-22b-v0.1": {
+          "name": "Codestral 22b V0.1"
+        },
+        "google/gemma-3-27b": {
+          "name": "Gemma 3 27b"
+        },
+        "qwen/qwen3.5-35b-a3b": {
+          "name": "Qwen3.5 35b A3b"
+        },
+        "qwen/qwen2.5-coder-14b": {
+          "name": "Qwen2.5 Coder 14b"
+        },
+        "qwen/qwen3-vl-30b": {
+          "name": "Qwen3 Vl 30b"
+        },
+        "bytedance/seed-oss-36b": {
+          "name": "Seed Oss 36b"
+        },
+        "qwen/qwen3-coder-30b": {
+          "name": "Qwen3 Coder 30b",
+          "limit": {
+            "context": 32768,
+            "output": 4096
+          }
+        },
+        "openai/gpt-oss-20b": {
+          "name": "Gpt Oss 20b"
+        },
+        "mistral-2x24b-moe-power-magistral-devstral-reasoning-ultimate-44b-i1": {
+          "name": "Mistral 2x24b Moe Power Magistral Devstral Reasoning Ultimate 44b I1"
+        },
+        "zai-org/glm-4.7-flash": {
+          "name": "Glm 4.7 Flash"
+        },
+        "mistralai/ministral-3-14b-reasoning": {
+          "name": "Ministral 3 14b Reasoning"
+        },
+        "google/gemma-3-4b": {
+          "name": "Gemma 3 4b"
+        }
+      }
+    }
+  }
+}

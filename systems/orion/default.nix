@@ -235,6 +235,7 @@ in
         enableSharing = false;
       };
       flatpak.enable = true;
+      rustdesk.enable = true;
     };
   };
 
@@ -256,9 +257,9 @@ in
     HandleLidSwitchExternalPower = "suspend";
     HandlePowerKey = "hibernate";
   };
-  systemd.sleep.extraConfig = ''
-    HibernateDelaySec=30min
-  '';
+  systemd.sleep.settings.Sleep = {
+    HibernateDelaySec = "30min";
+  };
 
   fonts.packages = with pkgs; [
     pkgs.nerd-fonts.fira-code

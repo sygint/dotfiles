@@ -123,6 +123,11 @@ source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
 # --- nixos
   alias update="nh os switch && chezmoi apply"
 
+# --- sudo askpass for VSCode/Cursor terminals (no reliable TTY)
+  if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+    alias sudo="sudo -A"
+  fi
+
 # --- nix helper
   alias nos="nh os switch"
   alias nhs="nh home switch"

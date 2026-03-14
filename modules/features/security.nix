@@ -44,11 +44,21 @@ in
       login.enableGnomeKeyring = true;
     };
 
+    # Graphical askpass for sudo/SSH in environments without a TTY (e.g. VSCode terminal).
+    # openssh-askpass is the official OpenSSH GTK3 askpass — minimal, Wayland-native,
+    # tiny attack surface (~150 lines of C). It pops a password dialog and returns the
+    # passphrase on stdout, nothing else.
+    environment.variables = {
+      SUDO_ASKPASS = "${pkgs.openssh-askpass}/bin/ssh-askpass";
+      SSH_ASKPASS = lib.mkForce "${pkgs.openssh-askpass}/bin/ssh-askpass";
+    };
+
     # Install secret management tools
     environment.systemPackages =
       with pkgs;
       [
         libsecret # For secret-tool command-line access
+        openssh-askpass # GTK3 graphical password prompt for sudo/SSH
       ]
       ++ (optionals cfg.hardening.enable [
         # Security hardening tools

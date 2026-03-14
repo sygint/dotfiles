@@ -39,5 +39,6 @@
   "terminal.integrated.env.linux": {
     "PATH": "${env:PATH}:/run/current-system/sw/bin"
   },
-  "explorer.confirmDelete": false
+  "explorer.confirmDelete": false,
+  "chat.viewSessions.orientation": "stacked"
 }
