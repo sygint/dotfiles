@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 
@@ -27,7 +26,10 @@ in
         }:
         let
           inherit (config.lib.file) mkOutOfStoreSymlink;
-          configHyprpanelDir = "${inputs.dotfiles.outPath}/.config/hyprpanel";
+          # Use the real filesystem path, NOT inputs.dotfiles.outPath (which
+          # resolves to a read-only /nix/store copy). mkOutOfStoreSymlink needs
+          # to point to the actual mutable file on disk.
+          configHyprpanelDir = "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/hyprpanel";
         in
         {
           # Install hyprpanel from nixpkgs

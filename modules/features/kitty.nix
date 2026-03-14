@@ -3,7 +3,6 @@
   lib,
   pkgs,
   userVars,
-  inputs,
   ...
 }:
 
@@ -22,7 +21,10 @@ in
         home =
           let
             inherit (config.lib.file) mkOutOfStoreSymlink;
-            configKittyDir = "${inputs.dotfiles.outPath}/.config/kitty";
+            # Use the real filesystem path, NOT inputs.dotfiles.outPath (which
+            # resolves to a read-only /nix/store copy). mkOutOfStoreSymlink needs
+            # to point to the actual mutable file on disk.
+            configKittyDir = "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/kitty";
           in
           {
             packages = [ pkgs.kitty ];

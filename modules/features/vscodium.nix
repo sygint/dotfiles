@@ -3,7 +3,6 @@
   lib,
   pkgs,
   userVars,
-  inputs,
   ...
 }:
 
@@ -87,8 +86,11 @@ in
             inherit (config.lib.file) mkOutOfStoreSymlink;
           in
           {
+            # Use the real filesystem path, NOT inputs.dotfiles.outPath (which
+            # resolves to a read-only /nix/store copy). mkOutOfStoreSymlink needs
+            # to point to the actual mutable file on disk.
             ".config/VSCodium/User/settings.json".source =
-              mkOutOfStoreSymlink "${inputs.dotfiles.outPath}/.config/VSCodium/User/settings.json";
+              mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/VSCodium/User/settings.json";
           };
       };
   };

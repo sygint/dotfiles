@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 
@@ -37,7 +36,10 @@ in
         let
           inherit (config.lib.file) mkOutOfStoreSymlink;
 
-          dotfilesDir = "${inputs.dotfiles.outPath}";
+          # Use the real filesystem path, NOT inputs.dotfiles.outPath (which
+          # resolves to a read-only /nix/store copy). mkOutOfStoreSymlink needs
+          # to point to the actual mutable file on disk.
+          dotfilesDir = "${config.home.homeDirectory}/.config/nixos/dotfiles";
           configZshDir = "${dotfilesDir}/.config/zsh";
         in
         {

@@ -3,7 +3,6 @@
   lib,
   pkgs,
   userVars,
-  inputs,
   ...
 }:
 
@@ -20,13 +19,15 @@ in
       { config, ... }:
       let
         inherit (config.lib.file) mkOutOfStoreSymlink;
-        configRoot = "/home/${userVars.username}/.config/nixos";
       in
       {
         home.packages = [ pkgs.btop ];
 
+        # Use the real filesystem path, NOT inputs.dotfiles.outPath (which
+        # resolves to a read-only /nix/store copy). mkOutOfStoreSymlink needs
+        # to point to the actual mutable file on disk.
         home.file.".config/btop/btop.conf" = {
-          source = mkOutOfStoreSymlink "${inputs.dotfiles.outPath}/.config/btop/btop.conf";
+          source = mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/btop/btop.conf";
           force = true;
         };
       };

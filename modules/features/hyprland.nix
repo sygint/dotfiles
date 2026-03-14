@@ -145,7 +145,12 @@ in
         let
           inherit (config.lib.file) mkOutOfStoreSymlink;
 
+          # inputs.dotfiles.outPath resolves to a read-only /nix/store copy —
+          # fine for builtins.readFile (eval-time template reads) but NOT for
+          # mkOutOfStoreSymlink (runtime symlinks that need to point to mutable files).
           configDotfilesDir = "${inputs.dotfiles.outPath}/.config";
+          # Real filesystem path for mkOutOfStoreSymlink targets
+          configDotfilesMutableDir = "${config.home.homeDirectory}/.config/nixos/dotfiles/.config";
           hyprland = userVars.hyprland;
           hostName = userVars.hostName or "orion";
           configRoot = "/home/${userVars.username}/.config/nixos";
@@ -349,7 +354,7 @@ in
               source = hyprlandConf;
             };
             ".config/hypr/mocha.conf" = {
-              source = mkOutOfStoreSymlink "${configDotfilesDir}/hypr/mocha.conf";
+              source = mkOutOfStoreSymlink "${configDotfilesMutableDir}/hypr/mocha.conf";
               force = true;
             };
           };

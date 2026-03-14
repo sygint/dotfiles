@@ -3,7 +3,6 @@
   lib,
   pkgs,
   userVars,
-  inputs,
   ...
 }:
 
@@ -122,11 +121,14 @@ in
             inherit (config.lib.file) mkOutOfStoreSymlink;
           in
           {
-            # Symlink entire directories to access all chatmodes and prompts
+            # Symlink entire directories to access all chatmodes and prompts.
+            # Use the real filesystem path, NOT inputs.dotfiles.outPath (which
+            # resolves to a read-only /nix/store copy). mkOutOfStoreSymlink needs
+            # to point to the actual mutable file on disk.
             ".config/Code/User/instructions".source =
-              mkOutOfStoreSymlink "${inputs.dotfiles.outPath}/.config/Code/User/instructions";
+              mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/instructions";
             ".config/Code/User/prompts".source =
-              mkOutOfStoreSymlink "${inputs.dotfiles.outPath}/.config/Code/User/prompts";
+              mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/Code/User/prompts";
           }
         );
       };
