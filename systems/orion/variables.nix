@@ -57,7 +57,7 @@ in
   monitors = [
     # Laptop display (BOE panel)
     {
-      desc = "BOE 0x0BCA";
+      desc = "BOE 0x0BCA Unknown";
       resolution = "2256x1504@60";
       position = "0x0";
       scale = "1";
@@ -84,21 +84,19 @@ in
   # - hyprland: id (required), monitorDesc for monitor pinning
   # - niri: rule for workspace rules
   # The first workspace assigned to each monitor gets default:true automatically (Hyprland).
-  # Niri duplicates workspaces across all monitors with suffixes.
   workspaces = [
-    # Ultrawide (Hyprland workspaces 1-5)
-    { name = "System"; hyprland = { id = 1;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; }
-    { name = "ES";     hyprland = { id = 2;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; }
-    { name = "HSFF";   hyprland = { id = 3;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; }
-    { name = "PRJ";    hyprland = { id = 4;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; }
-    { name = "PRJ 2";  hyprland = { id = 5;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; }
-    # Laptop (Hyprland workspaces 6-8)
-    { name = "Media";   hyprland = { id = 6;  monitorDesc = "BOE 0x0BCA"; }; }
-    { name = "Media 2"; hyprland = { id = 7;  monitorDesc = "BOE 0x0BCA"; }; }
-    { name = "Media 3"; hyprland = { id = 8;  monitorDesc = "BOE 0x0BCA"; }; }
-    # Portrait (Hyprland workspaces 9-10)
-    { name = "Chat"; hyprland = { id = 9;  monitorDesc = "Sceptre Tech Inc Sceptre M24 00"; }; }
-    { name = "Info"; hyprland = { id = 10; monitorDesc = "Sceptre Tech Inc Sceptre M24 00"; }; }
+    # Laptop (Main)
+    { name = "System"; hyprland = { id = 1;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
+    { name = "ES";     hyprland = { id = 2;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
+    { name = "HSFF";   hyprland = { id = 3;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
+    { name = "PRJ";    hyprland = { id = 4;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
+    { name = "PRJ2";   hyprland = { id = 5;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
+    # Ultrawide (Secondary)
+    { name = "Media";   hyprland = { id = 6;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; niri = { rule = "open-on-output=Acer Technologies ED343CUR V 1326001BF2X00"; }; }
+    { name = "Media 2"; hyprland = { id = 7;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; niri = { rule = "open-on-output=Acer Technologies ED343CUR V 1326001BF2X00"; }; }
+    # Portrait (Tertiary)
+    { name = "Chat"; hyprland = { id = 8;  monitorDesc = "Sceptre Tech Inc Sceptre M24 00"; }; niri = { rule = "open-on-output=Sceptre Tech Inc Sceptre M24 00"; }; }
+    { name = "Info"; hyprland = { id = 9;  monitorDesc = "Sceptre Tech Inc Sceptre M24 00"; }; niri = { rule = "open-on-output=Sceptre Tech Inc Sceptre M24 00"; }; }
   ];
 
   # Re-export network config for this host (optional, for convenience)

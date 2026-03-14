@@ -112,7 +112,17 @@ in
           };
         }
       );
-      default = [ ];
+      default = [
+        { name = "System"; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
+        { name = "ES"; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
+        { name = "HSFF"; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
+        { name = "PRJ"; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
+        { name = "PRJ2"; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
+        { name = "Media"; niri = { rule = "open-on-output=Acer Technologies ED343CUR V 1326001BF2X00"; }; }
+        { name = "Media 2"; niri = { rule = "open-on-output=Acer Technologies ED343CUR V 1326001BF2X00"; }; }
+        { name = "Chat"; niri = { rule = "open-on-output=Sceptre Tech Inc Sceptre M24 00"; }; }
+        { name = "Info"; niri = { rule = "open-on-output=Sceptre Tech Inc Sceptre M24 00"; }; }
+      ];
       description = "Unified workspace configuration consumed by all compositor modules.";
     };
   };
@@ -232,7 +242,12 @@ in
 
           # Build a per-monitor suffix: first monitor gets no suffix, second gets ":2", etc.
           monitorCount = builtins.length monitorConfigs;
-          usePerMonitor = monitorCount > 1 && builtins.length workspaceConfigs > 0;
+          # Skip per-monitor duplication when workspaces already have explicit open-on-output rules
+          allHaveOutputRules = builtins.all (w:
+            let rule = getRule w;
+            in rule != null && lib.hasPrefix "open-on-output=" rule
+          ) workspaceConfigs;
+          usePerMonitor = monitorCount > 1 && builtins.length workspaceConfigs > 0 && !allHaveOutputRules;
 
           # Generate workspace blocks for a single workspace on a single monitor
           mkWorkspaceBlock =
@@ -297,30 +312,23 @@ in
                 ) (lib.imap0 (idx: monitor: { inherit idx monitor; }) monitorConfigs)
               )
             else
-              # Single/no monitor: simple workspace blocks without suffixes
+              # Single/no monitor or explicit output rules: emit workspace blocks directly
               lib.concatMapStringsSep "\n\n" (
                 w:
                 let
                   rule = getRule w;
+                  # Parse "key=value" — builtins.split returns [before [] after] (length 3)
                   ruleStr =
                     if rule != null && rule != "" then
                       let
                         eqSplit = builtins.split "=" rule;
                       in
-                      if builtins.length eqSplit == 2 then
+                      if builtins.length eqSplit >= 3 then
                         let
                           key = builtins.elemAt eqSplit 0;
-                          rawVal = builtins.elemAt eqSplit 1;
-                          val =
-                            if
-                              (builtins.match ''^\s*\".*\"\s*$'' rawVal) != null
-                              || (builtins.match ''^\s*r#\".*\"#\s*$'' rawVal) != null
-                            then
-                              builtins.replaceStrings [ " " "\t" ] [ "" "" ] rawVal
-                            else
-                              "\"${builtins.replaceStrings [ " " "\t" ] [ "" "" ] rawVal}\"";
+                          rawVal = builtins.elemAt eqSplit 2;
                         in
-                        "    rule ${key}=${val}"
+                        ''    ${key} "${rawVal}"''
                       else
                         ""
                     else
