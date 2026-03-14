@@ -16,85 +16,48 @@ in
   };
 
   config = mkIf cfg.enable {
-    # Home-manager configuration
     home-manager.sharedModules = [
-      {
-        programs.noctalia-shell = {
-          enable = true;
-          package = inputs.noctalia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default;
-          systemd.enable = true;
+      (
+        { config, ... }:
+        let
+          inherit (config.lib.file) mkOutOfStoreSymlink;
+          # Use the actual filesystem path, NOT inputs.dotfiles.outPath (which
+          # resolves to a read-only nix store copy). The whole point of
+          # mkOutOfStoreSymlink is to create a symlink to the real mutable file
+          # so noctalia can write runtime state back to it.
+          configNoctaliaDir = "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/noctalia";
+        in
+        {
+          programs.noctalia-shell = {
+            enable = true;
+            package = inputs.noctalia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default;
+            systemd.enable = true;
+            # Don't set settings here — we manage settings.json as a mutable
+            # dotfile so noctalia can persist runtime state (settingsVersion,
+            # WiFi toggle, user prefs from the GUI, etc). The upstream HM
+            # module would create a read-only nix store symlink, which breaks
+            # noctalia's ability to write back to the file.
+          };
 
-          settings = {
-            # ── General ────────────────────────────────────────────────────
-            general = {
-              telemetryEnabled = lib.mkDefault false;
-              showChangelogOnStartup = lib.mkDefault false;
+          # Symlink settings and colors to versioned dotfiles in our repo.
+          # Noctalia writes runtime state back to settings.json (settingsVersion,
+          # wifiEnabled, widget config, etc), and changes show up as git diffs
+          # we can review and commit as we see fit.
+          # Colors were previously injected by Stylix's noctalia target (catppuccin-mocha
+          # base16 scheme) — now baked directly into the dotfile since we disabled
+          # that target to avoid the read-only store symlink conflict.
+          xdg.configFile = {
+            "noctalia/settings.json" = {
+              source = mkOutOfStoreSymlink "${configNoctaliaDir}/settings.json";
+              force = true;
             };
-
-            # ── Bar ───────────────────────────────────────────────────────
-            # Opacity is managed by Stylix theming module — don't override here
-            bar = {
-              position = lib.mkDefault "top";
-              floating = lib.mkDefault false;
-              widgets = {
-                center = [
-                  {
-                    id = "Workspace";
-                    labelMode = "index+name";
-                    characterCount = 20;
-                  }
-                ];
-              };
-            };
-
-            # ── Dock ──────────────────────────────────────────────────────
-            dock = {
-              enabled = lib.mkDefault true;
-              position = lib.mkDefault "bottom";
-              displayMode = lib.mkDefault "auto_hide";
-              pinnedApps = lib.mkDefault [
-                "ghostty"
-                "brave-browser"
-                "nemo"
-              ];
-            };
-
-            # ── App Launcher ──────────────────────────────────────────────
-            appLauncher = {
-              terminalCommand = lib.mkDefault "ghostty -e";
-              sortByMostUsed = lib.mkDefault true;
-              position = lib.mkDefault "center";
-            };
-
-            # ── Color Scheme ──────────────────────────────────────────────
-            colorSchemes = {
-              darkMode = lib.mkDefault true;
-            };
-
-            # ── Notifications ─────────────────────────────────────────────
-            notifications = {
-              enabled = lib.mkDefault true;
-              location = lib.mkDefault "top_right";
-            };
-
-            # ── OSD ───────────────────────────────────────────────────────
-            osd = {
-              enabled = lib.mkDefault true;
-              location = lib.mkDefault "top_right";
-            };
-
-            # ── Audio ─────────────────────────────────────────────────────
-            audio = {
-              volumeStep = lib.mkDefault 5;
-            };
-
-            # ── Brightness ────────────────────────────────────────────────
-            brightness = {
-              brightnessStep = lib.mkDefault 5;
+            "noctalia/colors.json" = {
+              source = mkOutOfStoreSymlink "${configNoctaliaDir}/colors.json";
+              force = true;
             };
           };
-        };
-      }
+        }
+      )
     ];
   };
 }

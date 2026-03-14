@@ -59,6 +59,12 @@ in
       inputs.noctalia-shell.homeModules.default
       {
         stylix.targets.librewolf.enable = false;
+        # We manage noctalia's settings.json as a mutable dotfile via
+        # mkOutOfStoreSymlink so noctalia can persist runtime state.
+        # Stylix's noctalia target injects opacity/font values into
+        # programs.noctalia-shell.settings, which causes the upstream
+        # HM module to generate a conflicting read-only store symlink.
+        stylix.targets.noctalia-shell.enable = false;
       }
     ];
     users.syg = import ./homes/syg.nix;
