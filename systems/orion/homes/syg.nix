@@ -107,8 +107,6 @@ in
   home.file.".claude-code-router/config.json".source =
     mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/claude-code-router/config.json";
 
-  # wayland.windowManager.sway.enable = true;
-
   # Enable XDG user directories
   # xdg = {
   #   enable = true;
