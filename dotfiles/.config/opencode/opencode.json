@@ -9,6 +9,34 @@
         "apiKey": "lm-studio"
       },
       "models": {
+        "qwen/qwen3-coder-30b": {
+          "name": "Qwen3 Coder 30b",
+          "limit": {
+            "context": 32768,
+            "output": 4096
+          }
+        },
+        "unsloth/qwen3.5-35b-a3b": {
+          "name": "Unsloth Qwen3.5 35b A3b"
+        },
+        "qwen3.5-27b": {
+          "name": "Qwen3.5 27b"
+        },
+        "olympiccoder-32b": {
+          "name": "Olympiccoder 32b"
+        },
+        "lfm2-24b-a2b": {
+          "name": "Lfm2 24b A2b"
+        },
+        "qwen2.5-coder-32b-instruct": {
+          "name": "Qwen2.5 Coder 32b Instruct"
+        },
+        "qwen2.5-32b-instruct": {
+          "name": "Qwen2.5 32b Instruct"
+        },
+        "qwen/qwen2.5-coder-32b": {
+          "name": "Qwen2.5 Coder 32b"
+        },
         "qwen/qwq-32b": {
           "name": "Qwq 32b"
         },
@@ -32,13 +60,6 @@
         },
         "bytedance/seed-oss-36b": {
           "name": "Seed Oss 36b"
-        },
-        "qwen/qwen3-coder-30b": {
-          "name": "Qwen3 Coder 30b",
-          "limit": {
-            "context": 32768,
-            "output": 4096
-          }
         },
         "openai/gpt-oss-20b": {
           "name": "Gpt Oss 20b"

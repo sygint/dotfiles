@@ -9,7 +9,7 @@ in
   home = {
     username = username;
     homeDirectory = "/home/${username}";
-    stateVersion = "24.11";
+    stateVersion = "26.05";
 
     # Desktop-specific: wallpapers symlink (live-updating, no rebuild needed)
     file.wallpapers.source = mkOutOfStoreSymlink "${configRoot}/wallpapers";

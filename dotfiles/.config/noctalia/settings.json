@@ -8,7 +8,9 @@
         "customLaunchPrefixEnabled": false,
         "density": "default",
         "enableClipPreview": true,
+        "enableClipboardChips": true,
         "enableClipboardHistory": true,
+        "enableClipboardSmartIcons": true,
         "enableSessionSearch": true,
         "enableSettingsSearch": true,
         "enableWindowsSearch": true,
@@ -23,7 +25,6 @@
         "showIconBackground": true,
         "sortByMostUsed": true,
         "terminalCommand": "ghostty -e",
-        "useApp2Unit": false,
         "viewMode": "list"
     },
     "audio": {
@@ -31,6 +32,7 @@
         ],
         "preferredPlayer": "",
         "spectrumFrameRate": 30,
+        "spectrumMirrored": true,
         "visualizerType": "linear",
         "volumeFeedback": false,
         "volumeFeedbackSoundFile": "",
@@ -48,7 +50,6 @@
         "density": "default",
         "displayMode": "always_visible",
         "enableExclusionZoneInset": true,
-        "floating": false,
         "fontScale": 1,
         "frameRadius": 12,
         "frameThickness": 8,
@@ -261,7 +262,7 @@
                             "apiKeys": {
                             },
                             "maxHistoryLength": 100,
-                            "model": "gemini-2.5-flash",
+                            "model": "qwen2.5-coder-32b-instruct",
                             "openaiBaseUrl": "https://api.openai.com/v1/chat/completions",
                             "openaiLocal": false,
                             "provider": "google",
@@ -358,7 +359,7 @@
                 },
                 {
                     "defaultSettings": {
-                        "apiKey": "YOUR_API_KEY_HERE",
+                        "apiKey": "e30474af5f7b437c8e128786328667a1",
                         "category": "general",
                         "country": "us",
                         "language": "en",
@@ -395,20 +396,6 @@
                         "refreshIntervalSec": 30
                     },
                     "id": "plugin:model-usage"
-                },
-                {
-                    "commandPrefix": "auto-tile",
-                    "defaultSettings": {
-                        "debounceMs": 300,
-                        "enabled": true,
-                        "maxEventsPerSecond": 20,
-                        "maxVisible": 4,
-                        "onlyAtMax": true,
-                        "perWorkspace": false,
-                        "workspaceMaxVisible": {
-                        }
-                    },
-                    "id": "plugin:niri-auto-tile"
                 },
                 {
                     "deviceNativePath": "__default__",
@@ -612,8 +599,10 @@
         "indicatorColor": "primary",
         "indicatorOpacity": 0.6,
         "indicatorThickness": 3,
+        "launcherIcon": "",
         "launcherIconColor": "none",
         "launcherPosition": "end",
+        "launcherUseDistroLogo": false,
         "monitors": [
         ],
         "onlySameOutput": true,
@@ -694,6 +683,7 @@
         "telemetryEnabled": false
     },
     "hooks": {
+        "colorGeneration": "",
         "darkModeChange": "",
         "enabled": false,
         "performanceModeDisabled": "",
@@ -805,7 +795,8 @@
         "overlayLayer": true
     },
     "plugins": {
-        "autoUpdate": true
+        "autoUpdate": true,
+        "notifyUpdates": true
     },
     "sessionMenu": {
         "countdownDuration": 10000,
@@ -874,7 +865,7 @@
         "showHeader": true,
         "showKeybinds": true
     },
-    "settingsVersion": 57,
+    "settingsVersion": 59,
     "systemMonitor": {
         "batteryCriticalThreshold": 5,
         "batteryWarningThreshold": 20,
@@ -941,7 +932,14 @@
         "sortOrder": "name",
         "transitionDuration": 1500,
         "transitionEdgeSmoothness": 0.05,
-        "transitionType": "random",
+        "transitionType": [
+            "fade",
+            "disc",
+            "stripes",
+            "wipe",
+            "pixelate",
+            "honeycomb"
+        ],
         "useSolidColor": false,
         "useWallhaven": false,
         "viewMode": "single",

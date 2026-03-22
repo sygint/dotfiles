@@ -8,13 +8,14 @@ let
   inherit (config.lib.file) mkOutOfStoreSymlink;
 in
 {
-  imports = [
-    ../../../modules/home
-    ./extra-programs.nix
-  ];
+imports = [
+  ../../../modules/home
+  ./extra-programs.nix
+];
 
   home.packages = with pkgs; [
     rofi
+    electron
   ];
 
   # Make the monitor-setup script available in the user's PATH by

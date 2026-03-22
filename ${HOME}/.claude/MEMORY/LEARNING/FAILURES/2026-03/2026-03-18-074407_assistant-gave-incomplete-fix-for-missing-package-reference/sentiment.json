@@ -1,0 +1,8 @@
+{
+  "rating": 3,
+  "summary": "Frustrated by incomplete solution",
+  "detailed_context": "Syg is trying to accomplish installing Claude Desktop on their Orion system. PAI identified that claude-desktop was referenced in extra-programs.nix but didn't actually provide a complete installation solution - they only mentioned fixing the reference issue. Syg is frustrated because the original problem wasn't solved, just partially addressed. The specific behavior that triggered this reaction was PAI's response indicating they fixed an issue but not actually showing how to install Claude Desktop properly. PAI should have provided the actual installation steps or package configuration needed rather than just noting the reference exists. This reveals Syg expects complete solutions, not partial fixes, and wants actionable answers to their technical questions.",
+  "session_id": "63de1ca3-4600-449d-9f5e-b602c9fcc159",
+  "captured_at": "2026-03-18T14:44:07.834Z",
+  "transcript_source": "63de1ca3-4600-449d-9f5e-b602c9fcc159.jsonl"
+}

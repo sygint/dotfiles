@@ -8,7 +8,7 @@
   inputs,
   fh,
   lib,
-  hasSecrets,
+  hasSecrets ? false,
   ...
 }:
 let
@@ -73,6 +73,8 @@ in
   boot = {
     supportedFilesystems = [ "ntfs" ];
   };
+
+  programs.nix-ld.enable = true;
 
   # Set timezone from global fleet config
   time.timeZone = fleetConfig.global.timeZone;
@@ -358,7 +360,11 @@ in
       qt6Packages.qt6ct
       adwaita-qt
       adwaita-qt6
+
+      # KDE Connect for Android integration
+      # kdeconnect
     ];
+
   };
 
   # Extend base unfree packages with orion-specific ones
