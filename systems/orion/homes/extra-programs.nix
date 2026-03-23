@@ -11,6 +11,7 @@ in
   # their own complex configuration modules
   home.packages = with pkgs; [
     appimage-run
+    bun
     claude-code
     claude-code-router
     lmstudio

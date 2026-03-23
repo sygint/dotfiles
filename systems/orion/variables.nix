@@ -85,15 +85,15 @@ in
   # - niri: rule for workspace rules
   # The first workspace assigned to each monitor gets default:true automatically (Hyprland).
   workspaces = [
-    # Laptop (Main)
-    { name = "System"; hyprland = { id = 1;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
-    { name = "ES";     hyprland = { id = 2;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
-    { name = "HSFF";   hyprland = { id = 3;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
-    { name = "PRJ";    hyprland = { id = 4;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
-    { name = "PRJ2";   hyprland = { id = 5;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
-    # Ultrawide (Secondary)
-    { name = "Media";   hyprland = { id = 6;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; niri = { rule = "open-on-output=Acer Technologies ED343CUR V 1326001BF2X00"; }; }
-    { name = "Media 2"; hyprland = { id = 7;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; niri = { rule = "open-on-output=Acer Technologies ED343CUR V 1326001BF2X00"; }; }
+    # Ultrawide (Main)
+    { name = "System"; hyprland = { id = 1;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; niri = { rule = "open-on-output=Acer Technologies ED343CUR V 1326001BF2X00"; }; }
+    { name = "ES";     hyprland = { id = 2;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; niri = { rule = "open-on-output=Acer Technologies ED343CUR V 1326001BF2X00"; }; }
+    { name = "HSFF";   hyprland = { id = 3;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; niri = { rule = "open-on-output=Acer Technologies ED343CUR V 1326001BF2X00"; }; }
+    { name = "PRJ";    hyprland = { id = 4;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; niri = { rule = "open-on-output=Acer Technologies ED343CUR V 1326001BF2X00"; }; }
+    { name = "PRJ2";   hyprland = { id = 5;  monitorDesc = "Acer Technologies ED343CUR V 1326001BF2X00"; }; niri = { rule = "open-on-output=Acer Technologies ED343CUR V 1326001BF2X00"; }; }
+    # Laptop (Secondary)
+    { name = "Media";   hyprland = { id = 6;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
+    { name = "Media 2"; hyprland = { id = 7;  monitorDesc = "BOE 0x0BCA"; }; niri = { rule = "open-on-output=BOE 0x0BCA Unknown"; }; }
     # Portrait (Tertiary)
     { name = "Chat"; hyprland = { id = 8;  monitorDesc = "Sceptre Tech Inc Sceptre M24 00"; }; niri = { rule = "open-on-output=Sceptre Tech Inc Sceptre M24 00"; }; }
     { name = "Info"; hyprland = { id = 9;  monitorDesc = "Sceptre Tech Inc Sceptre M24 00"; }; niri = { rule = "open-on-output=Sceptre Tech Inc Sceptre M24 00"; }; }

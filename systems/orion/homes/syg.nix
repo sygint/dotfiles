@@ -15,6 +15,7 @@ in
 
   home.packages = with pkgs; [
     rofi
+    electron
   ];
 
   # Make the monitor-setup script available in the user's PATH by

@@ -1,4 +1,4 @@
-# LM Studio 0.4.6-1 — updated from nixpkgs (which ships 0.4.5-2).
+# LM Studio 0.4.7-1 — updated from nixpkgs (which ships 0.4.5-2).
 #
 # Self-contained AppImage wrapper. Based on the nixpkgs lmstudio package
 # (pkgs/by-name/lm/lmstudio/).
@@ -19,8 +19,8 @@
 }:
 let
   pname = "lmstudio";
-  version = "0.4.6-1";
-  hash = "sha256-FHZ64zmnqHrQyX4ift/lVUzW+HiCVkXpWVa4hkssX/k=";
+  version = "0.4.7-4";
+  hash = "sha256-2dSgBr2B+PIUi/YCBmXDWXQWEEId6Qymh1JQuAPG/xU=";
 
   src = fetchurl {
     url = "https://installers.lmstudio.ai/linux/x64/${version}/LM-Studio-${version}-x64.AppImage";
