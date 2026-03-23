@@ -236,6 +236,7 @@ in
       };
       flatpak.enable = true;
       rustdesk.enable = true;
+      ccr.enable = true;
     };
   };
 
@@ -316,6 +317,9 @@ in
     };
 
     systemPackages = with pkgs; [
+      # NixOS dynamic linker for non-Nix executables (bun, etc.)
+      nix-ld
+
       # Enhanced CLI applications (base has basic set)
       # Note: bat, eza, fd, fzf, zoxide provided by features.zsh module
       fastfetch
