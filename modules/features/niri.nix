@@ -240,14 +240,23 @@ in
             let niri = w.niri or null;
             in if niri != null then (niri.rule or null) else null;
 
+          # Helper to extract monitor assignment from niri config
+          getMonitor = w:
+            let niri = w.niri or null;
+            in if niri != null then (niri.monitor or null) else null;
+
           # Build a per-monitor suffix: first monitor gets no suffix, second gets ":2", etc.
           monitorCount = builtins.length monitorConfigs;
-          # Skip per-monitor duplication when workspaces already have explicit open-on-output rules
-          allHaveOutputRules = builtins.all (w:
-            let rule = getRule w;
-            in rule != null && lib.hasPrefix "open-on-output=" rule
-          ) workspaceConfigs;
-          usePerMonitor = monitorCount > 1 && builtins.length workspaceConfigs > 0 && !allHaveOutputRules;
+          # Multi-monitor: show only assigned workspaces per monitor
+          # Single monitor: all workspaces in order (no output rules)
+          usePerMonitor = monitorCount > 1;
+
+          # Filter workspaces for a specific monitor (by niri.monitor short name)
+          workspacesForMonitor = monitorDesc:
+            lib.filter (w:
+              let wsMonitor = getMonitor w;
+              in wsMonitor == null || lib.hasPrefix wsMonitor monitorDesc
+            ) workspaceConfigs;
 
           # Generate workspace blocks for a single workspace on a single monitor
           mkWorkspaceBlock =
@@ -301,18 +310,20 @@ in
           # Generate all workspace blocks
           workspaceBlocks =
             if usePerMonitor then
-              # Multi-monitor: group workspaces by monitor so Niri assigns them
-              # in the correct order on each output (monitor-first, workspace-second).
+              # Multi-monitor: only workspaces assigned to each monitor
               # NOTE: Niri does not reorder existing workspaces on config reload —
               # a session restart (log out/in) is required for order changes to take effect.
               lib.concatStringsSep "\n\n" (
                 lib.concatMap (
                   monitorWithIdx:
-                  map (w: mkWorkspaceBlock w monitorWithIdx.idx monitorWithIdx.monitor) workspaceConfigs
+                  let
+                    wsForThisMonitor = workspacesForMonitor monitorWithIdx.monitor.desc;
+                  in
+                  map (w: mkWorkspaceBlock w monitorWithIdx.idx monitorWithIdx.monitor) wsForThisMonitor
                 ) (lib.imap0 (idx: monitor: { inherit idx monitor; }) monitorConfigs)
               )
             else
-              # Single/no monitor or explicit output rules: emit workspace blocks directly
+              # Single/no monitor: emit all workspaces in correct order
               lib.concatMapStringsSep "\n\n" (
                 w:
                 let
@@ -340,7 +351,21 @@ in
                   }''
               ) workspaceConfigs;
 
-          workspaceSection = if workspaceBlocks != "" then workspaceBlocks else "// No workspaces configured";
+          # COMMENT-OUT OPTION: keep original generated workspace blocks but
+          # comment them in the produced config so the logic is preserved
+          # in the file for later re-enabling, without being active now.
+          workspaceBlocksCommented =
+            if workspaceBlocks != "" then
+              let
+                lines = lib.splitString "\n" workspaceBlocks;
+              in lib.concatStringsSep "\n" (map (l: "// " + l) lines)
+            else
+              "// No workspaces configured";
+
+          workspaceSection = if workspaceBlocks != "" then
+              "// Workspaces generation disabled by user\n" + workspaceBlocksCommented
+            else
+              "// No workspaces configured";
 
           # Read template and substitute variables
           niriConfTemplate = builtins.readFile "${configDotfilesDir}/niri/config.kdl";
