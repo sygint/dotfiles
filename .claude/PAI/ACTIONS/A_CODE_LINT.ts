@@ -63,17 +63,49 @@ async function main() {
   const exitCode = res.status == null ? (res.error ? 2 : 0) : res.status
 
   let raw: any = { stdout, stderr }
-  let summary = { errors: 0, warnings: 0, fixable: 0, duration_ms: duration }
+  // default summary
+  let summary: any = { errors: 0, warnings: 0, fixable: 0, failures: 0, duration_ms: duration }
+  let toolsOut: any[] = [
+    {
+      name: 'code-lint',
+      cmd: `${runner.cmd} ${helperPath} ${helperArgs.map(a=>String(a)).join(' ')}`,
+      exitCode,
+      errors: undefined,
+      warnings: undefined,
+      stdout: parsed.flags.format === 'json' ? undefined : stdout,
+      stderr,
+      duration_ms: duration,
+    }
+  ]
+
   // If helper returned JSON, parse and reuse its shape when possible
   if (parsed.flags.format === 'json') {
     try {
       const parsedJson = JSON.parse(stdout)
       raw.parsed = parsedJson
       if (parsedJson && typeof parsedJson === 'object') {
+        // map top-level summary if present
         if (parsedJson.summary && typeof parsedJson.summary === 'object') {
           summary.errors = parsedJson.summary.errors || 0
           summary.warnings = parsedJson.summary.warnings || 0
           summary.fixable = parsedJson.summary.fixable || 0
+          summary.failures = parsedJson.summary.failures || 0
+        }
+
+        // map per-tool results if present (code-lint.ts emits 'results')
+        if (Array.isArray(parsedJson.results)) {
+          toolsOut = parsedJson.results.map((r: any) => ({
+            name: r.tool || r.name || 'tool',
+            cmd: r.tool || undefined,
+            exitCode: r.exitCode != null ? r.exitCode : undefined,
+            ok: r.ok,
+            errors: r.errors != null ? r.errors : 0,
+            warnings: r.warnings != null ? r.warnings : 0,
+            stdout: r.stdout,
+            stderr: r.stderr,
+            duration_ms: r.duration_ms != null ? r.duration_ms : undefined,
+            fixApplied: r.fixApplied != null ? r.fixApplied : undefined,
+          }))
         }
       }
     } catch (e) {
@@ -91,16 +123,7 @@ async function main() {
       runner: runner.cmd,
     },
     summary,
-    tools: [
-      {
-        name: 'code-lint',
-        cmd: `${runner.cmd} ${helperPath} ${helperArgs.map(a=>String(a)).join(' ')}`,
-        exitCode,
-        stdout: parsed.flags.format === 'json' ? undefined : stdout,
-        stderr,
-        duration_ms: duration,
-      }
-    ],
+    tools: toolsOut,
     raw,
   }
 
