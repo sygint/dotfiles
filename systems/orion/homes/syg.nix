@@ -16,7 +16,16 @@ in
   home.packages = with pkgs; [
     rofi
     electron
+    wire-desktop
   ];
+
+  home.file."bin/wire" = {
+    text = ''
+      #!/usr/bin/env bash
+      exec ${pkgs.wire-desktop}/bin/wire-desktop --password-store=gnome-libsecret "$@"
+    '';
+    executable = true;
+  };
 
   # Make the monitor-setup script available in the user's PATH by
   # adding it to $HOME/bin via home.file. This avoids injecting the
@@ -95,8 +104,8 @@ in
     };
   };
 
-  # Add Flatpak directories to XDG_DATA_DIRS so apps appear in Rofi
   home.sessionVariables = {
+    ELECTRON_PASSWORD_STORE = "gnome-libsecret";
     XDG_DATA_DIRS = "$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share";
   };
 

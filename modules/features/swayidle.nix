@@ -49,7 +49,7 @@ in
               # Screenlock
               {
                 timeout = 300;
-                command = "swaylock";
+                command = "noctalia-shell ipc call lockScreen lock";
               }
 
               # DPMS - lock-aware monitor control
@@ -61,7 +61,7 @@ in
             ];
 
             events = {
-              "before-sleep" = "swaylock";
+              "before-sleep" = "noctalia-shell ipc call lockScreen lock";
             };
           };
         }

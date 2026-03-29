@@ -23,7 +23,8 @@ in
           After = [ "graphical-session.target" ];
         };
         Service = {
-          Type = "simple";
+          Type = "forking";
+          PIDFile = "%t/ccr.pid";
           ExecStart = "${pkgs.claude-code-router}/bin/ccr start";
           Restart = "on-failure";
           RestartSec = 5;

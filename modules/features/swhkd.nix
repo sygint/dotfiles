@@ -52,8 +52,8 @@ in
           scriptsDir = "${configRoot}/scripts";
           hostScriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
-          # Lock screen — use swaylock
-          lockCmd = "swaylock";
+          # Lock screen — use noctalia-shell
+          lockCmd = "noctalia-shell ipc call lockScreen lock";
 
           # Generate swhkdrc content
           swhkdConfig = ''
