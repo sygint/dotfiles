@@ -1,0 +1,405 @@
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running 'nixos-help').
+
+{
+  config,
+  pkgs,
+  inputs,
+  fh,
+  lib,
+  hasSecrets,
+  ...
+}:
+let
+  systemVars = import ./variables.nix;
+  fleetConfig = import ../default.nix;
+  inherit (systemVars.system) hostName;
+  inherit (systemVars.user) username;
+in
+{
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware.nix
+    # Import all modules (features, system, home)
+    ../../modules
+  ]
+  ++ lib.optionals hasSecrets [
+    (import (inputs.nixos-secrets + "/default.nix") {
+      inherit
+        config
+        lib
+        pkgs
+        inputs
+        hasSecrets
+        ;
+    })
+  ];
+
+  # Home Manager configuration
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    extraSpecialArgs = {
+      inherit inputs;
+      userVars = systemVars.user // {
+        inherit hostName;
+      };
+    };
+    # Auto back up files that would be clobbered by Home Manager so that
+    # unmanaged files are not lost during activation. This prevents
+    # activations from failing due to existing files like
+    # '/home/syg/.mozilla/firefox/profiles.ini'. The extension can be
+    # changed as needed.
+    backupFileExtension = ".hm-backup";
+    # Disable stylix librewolf target to suppress warning
+    sharedModules = [
+      inputs.nix-flatpak.homeManagerModules.nix-flatpak
+      inputs.dank-material-shell.homeModules.dank-material-shell
+      inputs.noctalia-shell.homeModules.default
+      {
+        stylix.targets.librewolf.enable = false;
+        # We manage noctalia's settings.json as a mutable dotfile via
+        # mkOutOfStoreSymlink so noctalia can persist runtime state.
+        # Stylix's noctalia target injects opacity/font values into
+        # programs.noctalia-shell.settings, which causes the upstream
+        # HM module to generate a conflicting read-only store symlink.
+        stylix.targets.noctalia-shell.enable = false;
+      }
+    ];
+    users.syg = import ./homes/syg.nix;
+  };
+
+  boot = {
+    supportedFilesystems = [ "ntfs" ];
+  };
+
+  # Set timezone from global fleet config
+  time.timeZone = fleetConfig.global.timeZone;
+
+  # Enable Logitech device support
+  hardware.logitech.wireless = {
+    enable = true;
+    enableGraphical = true;
+  };
+
+  # Enable hardware video acceleration for AMD graphics
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    extraPackages = with pkgs; [
+      # AMD video acceleration
+      mesa
+      libva
+      libva-utils
+      libva-vdpau-driver
+      libvdpau-va-gl
+    ];
+  };
+
+  # Additional udev rules
+  services.udev.extraRules = ''
+    # Enable plugdev group access for Logitech devices
+    KERNEL=="uinput", SUBSYSTEM=="misc", GROUP="input", MODE="0664"
+    SUBSYSTEM=="hidraw", ATTRS{idVendor}=="046d", GROUP="plugdev", MODE="0664"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", GROUP="plugdev", MODE="0664"
+  '';
+
+  # Framework EC (FRMW0004:00) sends a spurious rfkill soft-block on WiFi and
+  # Bluetooth ~10s after boot -- after any early-boot oneshots have already run.
+  # A delayed unblock after login catches this. No persistent monitor needed:
+  # the EC only fires once and doesn't re-block after being overridden.
+  # After unblocking, notifies noctalia-shell via IPC since it only polls
+  # `nmcli radio wifi` once at startup and would otherwise cache WiFi as disabled.
+  systemd.user.services.rfkill-unblock = {
+    description = "Unblock WiFi/BT after Framework EC rfkill (delayed)";
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = let
+        qs = inputs.noctalia-shell.inputs.noctalia-qs.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      in pkgs.writeShellScript "rfkill-unblock" ''
+        # 5s delay ensures we run after the EC's spurious rfkill event (fires ~0-1s after session start)
+        ${pkgs.coreutils}/bin/sleep 5
+        ${pkgs.util-linux}/bin/rfkill unblock all
+        echo "Unblocked all rfkill devices"
+
+        # Notify noctalia-shell so it updates its WiFi indicator.
+        # Instance ID changes every boot, so discover it dynamically.
+        QS="${qs}/bin/qs"
+        INSTANCE=$($QS list --all 2>/dev/null | ${pkgs.gnugrep}/bin/grep "^Instance" | head -1 | ${pkgs.gawk}/bin/awk '{print $2}' | tr -d ':')
+        if [ -n "$INSTANCE" ]; then
+          $QS ipc -i "$INSTANCE" call wifi enable 2>/dev/null \
+            && echo "Notified noctalia-shell (instance $INSTANCE): WiFi enabled" \
+            || echo "Noctalia IPC call failed (not critical)"
+        else
+          echo "No noctalia-shell instance found (not critical)"
+        fi
+      '';
+    };
+  };
+
+  # User is now defined directly below
+  users.users.syg = {
+    isNormalUser = true;
+    description = "syg";
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "dialout"
+      "plugdev"
+    ];
+    shell = pkgs.zsh;
+  };
+  environment.shells = with pkgs; [ zsh ];
+
+  # Add cortex to local hosts for DNS resolution (temporary until UDM DNS fixed)
+  networking.extraHosts = ''
+    ${fleetConfig.hosts.cortex.ip} cortex.home cortex
+  '';
+
+  modules = {
+    features = {
+      # Hardware
+      bluetooth.enable = true;
+      audio.enable = true;
+      networking = {
+        enable = true;
+        hostName = "${hostName}";
+      };
+      # Core
+      zsh.enable = true;
+      mullvad.enable = true; # Unified system + home config
+      virtualization = {
+        enable = true;
+        service = "qemu";
+      };
+      niri = {
+        enable = true;
+        packages.enable = true;
+        monitors = systemVars.monitors or [ ];
+        workspaces = systemVars.workspaces or [ ];
+      };
+      sddm-noctalia.enable = true;
+      hyprland = {
+        enable = true;
+        packages.enable = true;
+        monitors = systemVars.monitors or [ ];
+        workspaces = systemVars.workspaces or [ ];
+      };
+      swayidle.enable = true;
+      noctalia-shell.enable = true;
+      screenshots.enable = true;
+      swhkd.enable = true; # Compositor-agnostic keybindings
+      wayland.enable = true;
+      # Development tools
+      git.enable = true;
+      kitty.enable = true;
+      btop.enable = true;
+      devenv.enable = true;
+      vscode = {
+        enable = true;
+        variant = "fhs"; # FHS environment for imperative extension management
+        copilotPrompts.enable = true;
+      };
+      vscodium = {
+        enable = true;
+        variant = "fhs"; # FHS environment for imperative extension management
+      };
+      # Web browsers
+      brave.enable = true;
+      firefox.enable = true;
+      librewolf.enable = true;
+      # Utilities
+      archiver.enable = true;
+      protonmail-bridge.enable = true;
+      # System services
+      # xserver.enable = true;
+      syncthing = {
+        enable = true;
+        username = "${username}";
+        lanInterfaces = [
+          fleetConfig.hosts.orion.interfaces.wifi.name
+          fleetConfig.hosts.orion.interfaces.ethernet.name
+        ];
+        # Password now managed by sops-nix secrets
+      };
+      containerization = {
+        enable = true;
+        service = "podman";
+      };
+      printing = {
+        enable = true;
+        enableAutoDiscovery = true;
+        enableSharing = false;
+      };
+      flatpak.enable = true;
+      rustdesk.enable = true;
+      ccr.enable = true;
+    };
+  };
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # DISPLAY MANAGER - SDDM with Noctalia theme
+  # ═════════════════════════════════════════════════════════════════════════════===
+  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.theme = "noctalia";
+
+  # Enable X server for SDDM
+  services.xserver.enable = true;
+
+  # Set keyboard layout for TTY console
+  console.keyMap = "us";
+
+  # Power management / hibernation
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend-then-hibernate";
+    HandleLidSwitchExternalPower = "suspend";
+    HandlePowerKey = "hibernate";
+  };
+  systemd.sleep.settings.Sleep = {
+    HibernateDelaySec = "30min";
+  };
+
+  fonts.packages = with pkgs; [
+    pkgs.nerd-fonts.fira-code
+    pkgs.nerd-fonts.droid-sans-mono
+    pkgs.nerd-fonts.jetbrains-mono
+  ];
+
+  stylix = {
+    enable = true;
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
+    image = ../../wallpapers/wallpaperflare.com_wallpaper-6.jpg;
+    polarity = "dark";
+
+    # Fix Qt platform warning
+    targets.qt.platform = pkgs.lib.mkForce "qtct";
+
+    fonts = {
+      serif = {
+        package = pkgs.dejavu_fonts;
+        name = "DejaVu Serif";
+      };
+
+      sansSerif = {
+        package = pkgs.dejavu_fonts;
+        name = "DejaVu Sans";
+      };
+
+      monospace = {
+        package = pkgs.nerd-fonts.jetbrains-mono;
+        name = "JetBrainsMono Nerd Font";
+      };
+
+      emoji = {
+        package = pkgs.noto-fonts-color-emoji;
+        name = "Noto Color Emoji";
+      };
+    };
+  };
+
+  # Fix deprecated Qt platform theme warning
+  qt = {
+    enable = true;
+    platformTheme = "qt5ct"; # Use qt5ct to match stylix configuration
+    # Let stylix handle the style
+  };
+
+  # Base system programs (zsh, nix-index, etc.) are enabled in base config
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment = {
+    sessionVariables = {
+      NH_FLAKE = "/home/${username}/.config/nixos";
+    };
+
+    systemPackages = with pkgs; [
+      # NixOS dynamic linker for non-Nix executables (bun, etc.)
+      nix-ld
+
+      # Enhanced CLI applications (base has basic set)
+      # Note: bat, eza, fd, fzf, zoxide provided by features.zsh module
+      fastfetch
+      tealdeer
+      tree
+      usbutils
+      yazi
+      zellij
+
+      # Desktop applications
+      element-desktop
+      ghostty
+      gimp
+      loupe
+      baobab
+      gnome-disk-utility
+      gparted
+      keepassxc
+      kitty
+      libreoffice-fresh # 'still' variant broken: notoSubset glob fails with new noto-fonts naming
+      librewolf-unwrapped
+      meld
+      nemo-with-extensions # Nemo with file-roller and other extensions
+      rocketchat-desktop
+      shiori
+      signal-desktop
+      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+
+      # Enhanced development tools (base has basic git)
+      act # gh actions cli
+      gh # GitHub CLI for PR and repo management
+      direnv
+      lazygit
+
+      # System-specific tools
+      fh.packages.x86_64-linux.default
+
+      # Qt theming support
+      libsForQt5.qt5ct
+      qt6Packages.qt6ct
+      adwaita-qt
+      adwaita-qt6
+    ];
+  };
+
+  # Extend base unfree packages with orion-specific ones
+  nixpkgs.config.allowUnfreePredicate =
+    pkg:
+    builtins.elem (lib.getName pkg) [
+      "obsidian"
+      "slack"
+      "synology-drive-client"
+      "vscode"
+      "vscode-with-extensions"
+      "vscode-extension-github-copilot"
+      "vscode-extension-github-copilot-chat"
+      "Oracle_VirtualBox_Extension_Pack"
+      "vscode-extension-mhutchie-git-graph"
+    ];
+
+  # Base Nix settings, like flakes, are handled in base config
+
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  # programs.gnupg.agent = {
+  #   enable           = true;
+  #   enableSSHSupport = true;
+  # };
+
+  # List services that you want to enable:
+
+  # Enable the OpenSSH daemon.
+  # services.openssh.enable = true;
+
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
+
+  # System State Version Handled in base config
+}

@@ -1,0 +1,405 @@
+# NixOS configuration for Nexus (Homelab)
+# Purpose: Centralized homelab services including media, monitoring, and automation
+{
+  config,
+  pkgs,
+  lib,
+  hasSecrets,
+  inputs,
+  ...
+}:
+
+let
+  systemVars = import ./variables.nix;
+  networkConfig = import ../default.nix;
+  inherit (systemVars.system) hostName;
+  inherit (systemVars.user) username;
+in
+{
+  imports = [
+    ./hardware.nix
+    ./disk-config.nix
+    # Import all modules (features, system, home)
+    ../../modules
+  ]
+  ++ lib.optionals hasSecrets [
+    (import (inputs.nixos-secrets + "/default.nix") {
+      inherit
+        config
+        lib
+        pkgs
+        inputs
+        hasSecrets
+        ;
+    })
+  ];
+
+  # Boot configuration handled by modules/system/default.nix
+  # (systemd-boot, EFI, stateVersion are set there)
+
+  networking.hostName = hostName;
+  time.timeZone = networkConfig.global.timeZone;
+
+  # ===== Secrets Management =====
+  # Secrets are mandatory for this system
+  assertions = [
+    {
+      assertion = hasSecrets;
+      message = "Secrets required—nixos-secrets submodule missing";
+    }
+  ];
+
+  # The nixos-secrets module already sets defaultSopsFile, just configure what we need here
+  sops = {
+    age.keyFile = lib.mkForce "/var/lib/sops-nix/key.txt"; # Override to use dedicated key file
+
+    secrets."nexus/rescue_password_hash" = {
+      neededForUsers = true;
+    };
+    # Leantime environment files for containers (loaded at runtime by Podman)
+    # These files contain MYSQL_PASSWORD and MYSQL_ROOT_PASSWORD for DB
+    # and LEAN_DB_PASSWORD for the app container
+
+    secrets."nexus/grafana_admin_password" = {
+      owner = "grafana";
+      group = "grafana";
+    };
+  };
+
+  # ===== NAS Storage Mounts =====
+  # Mount Synology NAS media shares via NFS
+  # NAS configuration centralized in fleet-config.nix
+  fileSystems."/mnt/nas/movies" = {
+    device = "${networkConfig.infrastructure.nas.ip}:${networkConfig.infrastructure.nas.shares.movies}";
+    fsType = "nfs";
+    options = [
+      "x-systemd.automount" # Auto-mount on access
+      "noauto" # Don't mount at boot
+      "x-systemd.idle-timeout=600" # Unmount after 10min idle
+      "nfsvers=4" # Use NFSv4
+    ];
+  };
+
+  fileSystems."/mnt/nas/tvshows" = {
+    device = "${networkConfig.infrastructure.nas.ip}:${networkConfig.infrastructure.nas.shares.tvshows}";
+    fsType = "nfs";
+    options = [
+      "x-systemd.automount"
+      "noauto"
+      "x-systemd.idle-timeout=600"
+      "nfsvers=4"
+    ];
+  };
+
+  fileSystems."/mnt/nas/music" = {
+    device = "${networkConfig.infrastructure.nas.ip}:${networkConfig.infrastructure.nas.shares.music}";
+    fsType = "nfs";
+    options = [
+      "x-systemd.automount"
+      "noauto"
+      "x-systemd.idle-timeout=600"
+      "nfsvers=4"
+    ];
+  };
+
+  # ===== User Configuration =====
+
+  # Deploy user: SSH-only for remote deployments (key-only, no password)
+  users.users.${username} = {
+    isNormalUser = true;
+    description = "Remote deployment user (SSH key-only)";
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "jellyfin"
+      "grafana"
+    ];
+    # SSH: Key-only authentication (no password set)
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMSdxXvx7Df+/2cPMe7C2TUSqRkYee5slatv7t3MG593 syg@nixos"
+    ];
+    # Password is explicitly locked - this user CANNOT login at console
+    # This provides clear separation: SSH uses this user, console uses rescue user
+    # Passwordless sudo via security.sudo.wheelNeedsPassword = false
+    hashedPassword = "!"; # Locked account - SSH key only
+  };
+
+  # Rescue user: Console-only for physical/KVM emergency access (password-only, no SSH)
+  users.users.rescue = {
+    isNormalUser = true;
+    description = "Emergency console access (password-only)";
+    extraGroups = [ "wheel" ]; # Can sudo for system repairs
+    # Password for console/KVM access via secrets
+    hashedPasswordFile = config.sops.secrets."nexus/rescue_password_hash".path;
+    # No SSH keys - this user CANNOT login remotely
+    # Provides audit trail: rescue user = physical access only
+  };
+
+  # ===== Nix Configuration =====
+  # Deploy user needs to be trusted for remote deployments
+  nix.settings = {
+    trusted-users = [
+      "root"
+      "deploy"
+    ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+  };
+
+  # Ensure Jellyfin can read NAS mounts
+
+  # ===== Security Configuration =====
+
+  # Passwordless sudo for wheel group (needed for remote deployments)
+  # Override the security module's default of requiring passwords
+  security.sudo.wheelNeedsPassword = lib.mkForce false;
+
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+      KbdInteractiveAuthentication = false;
+    };
+  };
+
+  services.fail2ban = {
+    enable = true;
+    ignoreIP = [
+      "127.0.0.1"
+      "192.168.1.0/24" # Local network
+    ];
+  };
+
+  # ===== Core Services =====
+
+  # Jellyfin Media Server - Stream media from your NAS
+  services.jellyfin = {
+    enable = true;
+    openFirewall = true;
+  };
+
+  # Prometheus - Collect system metrics
+  services.prometheus = {
+    enable = true;
+    port = 9090;
+
+    exporters = {
+      node = {
+        enable = true;
+        enabledCollectors = [ "systemd" ];
+        port = 9100;
+      };
+    };
+
+    scrapeConfigs = [
+      {
+        job_name = "nexus";
+        static_configs = [
+          {
+            targets = [
+              "127.0.0.1:${toString config.services.prometheus.exporters.node.port}"
+            ];
+          }
+        ];
+      }
+      {
+        job_name = "cortex";
+        static_configs = [
+          {
+            targets = [
+              "cortex.home:9100"
+            ];
+          }
+        ];
+      }
+    ];
+  };
+
+  # Grafana - Visualize metrics with dashboards (disabled - needs secret_key)
+  # services.grafana = {
+  #   enable = true;
+  #   settings = {
+  #     server = {
+  #       http_addr = "0.0.0.0";
+  #       http_port = 3000;
+  #       domain = "nexus.home";
+  #       root_url = "http://nexus.home:3000/";
+  #     };
+  #     security = {
+  #       admin_user = "admin";
+  #       admin_password_file = config.sops.secrets."nexus/grafana_admin_password".path;
+  #     };
+  #   };
+  #
+  #   provision = {
+  #     enable = true;
+  #     datasources.settings.datasources = [
+  #       {
+  #         name = "Prometheus";
+  #         type = "prometheus";
+  #         url = "http://127.0.0.1:${toString config.services.prometheus.port}";
+  #         isDefault = true;
+  #       }
+  #     ];
+  #   };
+  # };
+
+  # OpenProject persistent volume
+  systemd.tmpfiles.rules = [
+    # NAS mounts
+    "d /mnt/nas 0755 root root -"
+    "d /mnt/nas/movies 0755 root root -"
+    "d /mnt/nas/tvshows 0755 root root -"
+    "d /mnt/nas/music 0755 root root -"
+  ];
+
+  virtualisation.podman.enable = true;
+
+  # ===== Optional Services (disabled for now) =====
+  # Uncomment these when you're ready to add them:
+
+  # Home Assistant - Smart home automation
+  # services.home-assistant = {
+  #   enable = true;
+  #   extraComponents = [ "esphome" "met" "radio_browser" ];
+  #   config = {
+  #     default_config = {};
+  #     http = {
+  #       server_host = "0.0.0.0";
+  #       server_port = 8123;
+  #     };
+  #   };
+  # };
+
+  # Loki + Promtail - Log aggregation (like grep for all your logs)
+  services.loki = {
+    enable = true;
+    configuration = {
+      server = {
+        http_listen_port = 3100;
+        grpc_listen_port = 9096;
+      };
+      common = {
+        path_prefix = "/var/lib/loki";
+        storage = {
+          filesystem = {
+            chunks_directory = "/var/lib/loki/chunks";
+            rules_directory = "/var/lib/loki/rules";
+          };
+        };
+      };
+      schema_config = {
+        configs = [
+          {
+            from = "2024-01-01";
+            store = "tsdb";
+            object_store = "filesystem";
+            schema = "v13";
+            index = {
+              prefix = "index_";
+              period = "24h";
+            };
+          }
+        ];
+      };
+      limits_config = {
+        allow_structured_metadata = false;
+      };
+    };
+  };
+  services.promtail.enable = true;
+
+  # AdGuard Home - DNS-level ad blocking
+  services.adguardhome = {
+    enable = true;
+    port = 53;
+  };
+
+  # ===== Firewall Configuration =====
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [
+      22 # SSH
+      53 # AdGuard Home DNS
+      3000 # Grafana
+      8080 # Leantime
+      8096 # Jellyfin HTTP
+      8920 # Jellyfin HTTPS
+      9090 # Prometheus (optional - can access via Grafana)
+      # Forgejo, Buildbot, and Harmonia ports are opened by their respective modules
+    ];
+    allowedUDPPorts = [
+      53 # AdGuard Home DNS
+      1900 # DLNA/UPnP discovery
+      7359 # Jellyfin discovery
+    ];
+  };
+
+  # ===== Module Configuration =====
+  modules = {
+    features = {
+      # Hardware
+      bluetooth.enable = false; # Headless server
+      audio.enable = false; # No local audio needed
+      networking = {
+        enable = true;
+        hostName = "${hostName}";
+      };
+      # Services
+      containerization.enable = true; # Podman for OCI containers
+      syncthing.enable = false; # Enable if needed
+      printing.enable = false; # Headless server
+      # Security
+      security = {
+        enable = true; # Enable security module (sudo, polkit, etc.)
+        hardening.enable = true; # Full server hardening profile (fail2ban, auditd, SSH, kernel, monitoring)
+      };
+      # CI/CD and Git Forge
+      forgejo = {
+        enable = true;
+        domain = "nexus.home";
+        httpPort = 3300;
+        sshPort = 3022;
+      };
+      buildbot-nix = {
+        enable = true;
+        domain = "nexus.home"; # Buildbot web UI served via nginx
+        topic = "build-with-buildbot"; # Only build repos with this topic
+      };
+      binary-cache = {
+        enable = true;
+        port = 5000;
+      };
+    };
+  };
+
+  # ===== Additional System Packages =====
+  environment.systemPackages = with pkgs; [
+    # Jellyfin packages
+    jellyfin
+    jellyfin-web
+    jellyfin-ffmpeg
+
+    # Monitoring tools
+    htop
+    btop
+
+    # Network tools
+    iftop
+    nethogs
+
+    # System utilities
+    tmux
+    wget
+    curl
+    sqlite
+
+    # Jellyfin utilities
+    libva-utils # Provides vainfo to check hardware video acceleration
+  ];
+
+  # System State Version handled by modules/system/default.nix
+}
