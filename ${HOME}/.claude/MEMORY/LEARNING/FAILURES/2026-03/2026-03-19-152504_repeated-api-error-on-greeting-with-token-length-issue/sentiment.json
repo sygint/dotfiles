@@ -1,8 +1,0 @@
-{
-  "rating": 3,
-  "summary": "Repeated API error upon greeting",
-  "detailed_context": "Syg is trying to initiate a conversation with PAI but keeps encountering the same API error message. This indicates that PAI is failing to respond correctly to Syg's simple 'hello' command, leading to frustration due to repeated failure on a basic interaction.",
-  "session_id": "4b6abcc8-85e4-4a2e-9ee9-4ce1d98f7c3e",
-  "captured_at": "2026-03-19T22:25:04.331Z",
-  "transcript_source": "4b6abcc8-85e4-4a2e-9ee9-4ce1d98f7c3e.jsonl"
-}

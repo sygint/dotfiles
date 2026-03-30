@@ -25,7 +25,6 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     nixos-secrets.url = "path:/home/syg/.config/nixos-secrets";
     nixos-secrets.flake = false;
-    devenv-bootstrap.url = "path:/home/syg/.config/nixos/archive/devenv-bootstrap";
     import-tree.url = "github:vic/import-tree";
 
     # Fleet management with Colmena
@@ -68,9 +67,9 @@
     flake-parts.lib.mkFlake { inherit inputs; } {
       # Import flake modules
       imports = [
-        ./flake-modules/nixos-configurations.nix
-        ./flake-modules/home-configurations.nix
-        ./flake-modules/colmena.nix
+        ./modules/flake/nixos-configurations.nix
+        ./modules/flake/home-configurations.nix
+        ./modules/flake/colmena.nix
       ];
 
       # Systems to support
