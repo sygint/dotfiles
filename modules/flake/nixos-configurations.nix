@@ -5,6 +5,9 @@ let
   # Import shared constants and system definitions
   shared = import ./lib.nix { inherit inputs; };
   inherit (shared) systems hostVars;
+
+  # Harmonix config for CLI
+  harmonixConfig = import ../../harmonix-config.nix;
 in
 {
   flake.nixosConfigurations = lib.mapAttrs (
@@ -18,6 +21,7 @@ in
         inherit
           self
           inputs
+          harmonixConfig
           ;
         userVars = vars.user;
         fh = inputs.fh;

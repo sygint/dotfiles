@@ -70,6 +70,11 @@
       # Systems to support
       systems = [ "x86_64-linux" ];
 
+      # Lib for custom outputs
+      flake.lib = {
+        # harmonixConfig is now read from hosts/default.nix directly
+      };
+
       # Per-system outputs (packages, devShells, etc.)
       perSystem =
         {
@@ -188,14 +193,24 @@
             ];
           };
 
-          # Colmena app wrapper for fleet CLI
-          apps.colmena = {
+          # Harmonix CLI (local development version)
+          apps.harmonix = {
             type = "app";
-            program = "${pkgs.writeShellScript "colmena-wrapper" ''
-              exec ${pkgs.colmena}/bin/colmena "$@"
-            ''}";
-            meta.description = "Colmena deployment tool for NixOS fleet management";
+            program = "${pkgs.writeShellScriptBin "harmonix-wrapper" ''exec /home/syg/Projects/open-source/harmonix/bin/harmonix "$@"''}/bin/harmonix-wrapper";
           };
+
+          # Colmena hive - exposed at top level for harmonix CLI
+          # Calls colmena directly with the flake config
+          packages.colmenaHive = pkgs.writeShellScriptBin "colmena-hive" ''
+            set -e
+            flakeDir="$(cd "$(dirname "$0")/.." && pwd)"
+            host="$1"
+            shift
+            exec nix --accept-flake-config run \
+              github:zhaofengli/colmena -- \
+              -v --on "$host" --impure \
+              -i "$flakeDir"
+          '';
         };
     };
 }

@@ -126,6 +126,14 @@ in
       gpuFanSpeed = 50;
     };
 
+    # Forgejo self-hosted git forge
+    features.forgejo = {
+      enable = true;
+      domain = "git.cortex.home";
+      httpPort = 3300;
+      sshPort = 3022;
+    };
+
     # Sunshine game streaming
     features.sunshine = true;
 
@@ -230,6 +238,14 @@ in
         iptables -A nixos-fw -p tcp --dport 9100 -s 192.168.0.0/16 -j nixos-fw-accept
         iptables -A nixos-fw -p tcp --dport 9100 -s 10.0.0.0/8 -j nixos-fw-accept
         iptables -A nixos-fw -p tcp --dport 9100 -s 172.16.0.0/12 -j nixos-fw-accept
+
+        # Forgejo - local networks only
+        iptables -A nixos-fw -p tcp --dport 3300 -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 3300 -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 3300 -s 172.16.0.0/12 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 3022 -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 3022 -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 3022 -s 172.16.0.0/12 -j nixos-fw-accept
 
         # ICMP ping - local networks only
         iptables -A nixos-fw -p icmp --icmp-type echo-request -s 192.168.0.0/16 -j nixos-fw-accept
