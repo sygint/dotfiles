@@ -118,11 +118,18 @@ in
     };
 
     # Enable AI services (llmster/LM Studio, NVIDIA, CUDA, etc.)
+    # Use legacy ai-services module shape so existing hosts validate.
     features.ai-services = {
       enable = true;
-      enableLlamaServer = true;
-      enableOllmcp = true;
+      enableLlamaServer = true; # keep legacy flag for compatibility
+      llmster = {
+        enable = true;
+        package = null; # fallback to llama-server
+        host = "127.0.0.1";
+        port = 1234;
+      };
       enableOpenWebui = true;
+      enableOllmcp = true;
       enableGpuFanControl = true;
       gpuFanSpeed = 50;
     };

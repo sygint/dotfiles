@@ -63,6 +63,13 @@ in
     };
   };
 
+  # Import per-service submodules (kept at module top-level)
+  imports = [
+    ./services/llmster.nix
+    ./services/openwebui.nix
+    ./services/ollama.nix
+  ];
+
   config = lib.mkIf cfg.enable {
     # Enable GPU driver userspace libraries (creates /run/opengl-driver/lib)
     # CRITICAL: Without this, libcuda.so.1 is not discoverable and Ollama
@@ -131,29 +138,7 @@ in
       };
     };
 
-    # Enable LLMStudio llmster (headless LM Studio) service
-    # If a proper llmster package is provided via cfg.llmster.package it will
-    # be used. Otherwise we fall back to llama-server for compatibility.
-    systemd.services.llmster = lib.mkIf cfg.enableLlamaServer {
-      description = "LLMStudio llmster (headless LM Studio)";
-      wantedBy = [ "multi-user.target" ];
-      after = [ "network.target" ];
-      serviceConfig = let
-        # Prefer user-supplied package if present, otherwise fallback
-        llmsterExe = if cfg.llmster.package != null then "${cfg.llmster.package}/bin/llmster" else "${pkgs.llama-cpp}/bin/llama-server";
-        extra = lib.concatStringsSep " " cfg.llmster.extraArgs;
-      in {
-        Type = "simple";
-        Restart = "on-failure";
-        RestartSec = 10;
-        ExecStart = ''${llmsterExe} --host ${cfg.llmster.host} --port ${toString cfg.llmster.port} ${extra}'';
-        # Environment for GPU acceleration
-        Environment = "CUDA_VISIBLE_DEVICES=0";
-        # Resource limits
-        MemoryMax = "80%";
-        Nice = -10;
-      };
-    };
+    # Split services into submodules (imports are placed at module top-level)
 
     # Enable Open WebUI (formerly Ollama WebUI) - works with both Ollama and llmster
     # Note: Using port 8888 to avoid conflict with SearXNG on 8080
