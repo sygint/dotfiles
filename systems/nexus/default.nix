@@ -16,16 +16,12 @@ let
   inherit (systemVars.user) username;
 in
 {
-  imports = [
-    ./hardware.nix
-    ./disk-config.nix
-    # Import all modules (features, system, home)
-    ../../modules
-    # These require upstream flake modules (buildbot-nix, harmonia)
-    # that are only imported on nexus via flake-modules/lib.nix
-    ../../modules/features/_buildbot-nix
-    ../../modules/features/_binary-cache
-  ]
+   imports = [
+     ./hardware.nix
+     ./disk-config.nix
+     # Import all modules (features, system, home)
+     ../../modules
+   ]
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {
       inherit
@@ -361,22 +357,13 @@ in
         enable = true; # Enable security module (sudo, polkit, etc.)
         hardening.enable = true; # Full server hardening profile (fail2ban, auditd, SSH, kernel, monitoring)
       };
-      # CI/CD and Git Forge
-      forgejo = {
-        enable = true;
-        domain = "nexus.home";
-        httpPort = 3300;
-        sshPort = 3022;
-      };
-      buildbot-nix = {
-        enable = true;
-        domain = "nexus.home"; # Buildbot web UI served via nginx
-        topic = "build-with-buildbot"; # Only build repos with this topic
-      };
-      binary-cache = {
-        enable = true;
-        port = 5000;
-      };
+   # CI/CD and Git Forge
+       forgejo = {
+         enable = true;
+         domain = "nexus.home";
+         httpPort = 3300;
+         sshPort = 3022;
+       };
     };
   };
 

@@ -364,11 +364,11 @@ in
         httpPort = 3300;
         sshPort = 3022;
       };
-      buildbot-nix = {
-        enable = true;
-        domain = "nexus.home"; # Buildbot web UI served via nginx
-        topic = "build-with-buildbot"; # Only build repos with this topic
-      };
+      # buildbot-nix = {
+      #   enable = true;
+      #   domain = "nexus.home"; # Buildbot web UI served via nginx
+      #   topic = "build-with-buildbot"; # Only build repos with this topic
+      # };
       binary-cache = {
         enable = true;
         port = 5000;

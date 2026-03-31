@@ -1,7 +1,7 @@
 { self, inputs, ... }:
 let
   inherit (inputs.nixpkgs) lib;
-  fleetConfig = import ../fleet-config.nix;
+  fleetConfig = import ../../fleet-config.nix;
 
   # Import shared constants and system definitions — same source as nixos-configurations.nix
   shared = import ./lib.nix { inherit inputs; };

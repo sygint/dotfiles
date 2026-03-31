@@ -27,8 +27,8 @@
     nixos-secrets.flake = false;
     import-tree.url = "github:vic/import-tree";
 
-    # Fleet management with Colmena
-    nixos-fleet.url = "path:/home/syg/Projects/open-source/nixos-fleet";
+    # Fleet management with Colmena (commented out - directory doesn't exist)
+    # nixos-fleet.url = "path:/home/syg/Projects/open-source/nixos-fleet";
 
     # Dank Material Shell - Quickshell-based desktop shell for Wayland
     dank-material-shell.url = "github:AvengeMedia/DankMaterialShell";
@@ -42,12 +42,7 @@
     swhkd.url = "github:waycrate/swhkd";
     swhkd.inputs.nixpkgs.follows = "nixpkgs";
 
-    # CI/CD - Buildbot-nix for Nix flake builds
-    buildbot-nix.url = "github:nix-community/buildbot-nix";
 
-    # Binary cache - Harmonia for serving build artifacts
-    harmonia.url = "github:nix-community/harmonia";
-    harmonia.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   nixConfig = {
@@ -187,7 +182,6 @@
               nixpkgs-fmt
               just
               go
-              inputs'.nixos-fleet.packages.fleet
               fleet-sleep
               fleet-wake
               fleet-dev

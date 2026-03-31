@@ -56,7 +56,6 @@ in
     sharedModules = [
       inputs.nix-flatpak.homeManagerModules.nix-flatpak
       inputs.dank-material-shell.homeModules.dank-material-shell
-      inputs.noctalia-shell.homeModules.default
       {
         stylix.targets.librewolf.enable = false;
         # We manage noctalia's settings.json as a mutable dotfile via
@@ -117,13 +116,15 @@ in
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = let
-        qs = inputs.noctalia-shell.inputs.noctalia-qs.packages.${pkgs.stdenv.hostPlatform.system}.default;
-      in pkgs.writeShellScript "rfkill-unblock" ''
-        # 5s delay ensures we run after the EC's spurious rfkill event (fires ~0-1s after session start)
-        ${pkgs.coreutils}/bin/sleep 5
-        ${pkgs.util-linux}/bin/rfkill unblock all
-        echo "Unblocked all rfkill devices"
+      ExecStart =
+        let
+          qs = inputs.noctalia-shell.inputs.noctalia-qs.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        in
+        pkgs.writeShellScript "rfkill-unblock" ''
+          # 5s delay ensures we run after the EC's spurious rfkill event (fires ~0-1s after session start)
+          ${pkgs.coreutils}/bin/sleep 5
+          ${pkgs.util-linux}/bin/rfkill unblock all
+          echo "Unblocked all rfkill devices"
 
         # Notify noctalia-shell so it updates its WiFi indicator.
         # Instance ID changes every boot, so discover it dynamically.
