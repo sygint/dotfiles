@@ -12,8 +12,38 @@ let
   cfg = config.modules.features.ai-services;
 in
 {
-  options.modules.features.ai-services = {
-    enable = lib.mkEnableOption "AI services with Ollama and NVIDIA CUDA support";
+    options.modules.features.ai-services = {
+    enable = lib.mkEnableOption "AI services with Ollama/LLMStudio and NVIDIA CUDA support";
+    enableLlamaServer = lib.mkEnableOption "Enable LLMStudio llama-server (headless LM Studio)";
+    # New llmster support: allow providing a package or configure host/port
+    llmster = {
+      enable = lib.mkEnableOption "Enable llmster (LM Studio headless server)";
+      package = lib.mkOption {
+        type = lib.types.nullOr lib.types.package;
+        default = null;
+        description = ''
+          Nix package that provides the `llmster` executable.
+          If null, the module falls back to using the `llama-server` binary
+          (for compatibility). To use a proper llmster package, set this
+          to a derivation from your flake (for example: `pkgs.callPackage ./pkgs/llmster {}`).
+        '';
+      };
+      host = lib.mkOption {
+        type = lib.types.str;
+        default = "127.0.0.1";
+        description = "Address llmster should bind to (keep local for security)";
+      };
+      port = lib.mkOption {
+        type = lib.types.int;
+        default = 1234;
+        description = "TCP port for llmster to listen on";
+      };
+      extraArgs = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+        description = "Additional command-line arguments passed to llmster";
+      };
+    };
     enableOllmcp = lib.mkEnableOption "Enable ollmcp for MCP tool support (filesystem, git, web search)";
     enableWebSearch = lib.mkEnableOption "Enable self-hosted web search via SearXNG" // {
       default = true;
@@ -101,45 +131,39 @@ in
       };
     };
 
-    # Enable Ollama LLM service with CUDA acceleration
-    services.ollama = {
-      enable = true;
-      # Enable CUDA acceleration for RTX 5090
-      package = pkgs.ollama-cuda;
-      # Listen on all interfaces so we can access from other machines on the network
-      host = "0.0.0.0";
-      port = 11434;
-
-      # Environment variables for optimal GPU performance
-      environmentVariables = {
-        # Allow Ollama to use most available VRAM (RTX 5090 has 32GB)
-        # Leave ~2GB for display/system overhead
-        OLLAMA_MAX_VRAM = "30000000000"; # 30GB
-        # Enable CUDA graphs for better performance
-        CUDA_LAUNCH_BLOCKING = "0";
+    # Enable LLMStudio llmster (headless LM Studio) service
+    # If a proper llmster package is provided via cfg.llmster.package it will
+    # be used. Otherwise we fall back to llama-server for compatibility.
+    systemd.services.llmster = lib.mkIf cfg.enableLlamaServer {
+      description = "LLMStudio llmster (headless LM Studio)";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network.target" ];
+      serviceConfig = let
+        # Prefer user-supplied package if present, otherwise fallback
+        llmsterExe = if cfg.llmster.package != null then "${cfg.llmster.package}/bin/llmster" else "${pkgs.llama-cpp}/bin/llama-server";
+        extra = lib.concatStringsSep " " cfg.llmster.extraArgs;
+      in {
+        Type = "simple";
+        Restart = "on-failure";
+        RestartSec = 10;
+        ExecStart = ''${llmsterExe} --host ${cfg.llmster.host} --port ${toString cfg.llmster.port} ${extra}'';
+        # Environment for GPU acceleration
+        Environment = "CUDA_VISIBLE_DEVICES=0";
+        # Resource limits
+        MemoryMax = "80%";
+        Nice = -10;
       };
-
-      # Preload models optimized for RTX 5090 (32GB VRAM)
-      # NOTE: Only models that fit entirely in VRAM for best performance
-      # Avoided 70B+ models which require RAM offloading (too slow)
-      loadModels = [
-        "llama3.2:3b" # Llama 3.2 3B - Ultra-fast baseline (~2GB VRAM)
-        "qwen2.5:7b" # Qwen 2.5 7B - Excellent general purpose (~4GB VRAM)
-        "deepseek-r1:14b" # DeepSeek R1 14B - Strong reasoning (~8GB VRAM)
-        "qwen2.5-coder:32b" # Qwen 2.5 Coder 32B - Best coding model (~17GB VRAM)
-        "command-r:35b" # Command-R 35B - Excellent for RAG/long context (~19GB VRAM)
-        "mixtral:8x7b" # Mixtral 8x7B - MoE architecture, great performance (~26GB VRAM)
-      ];
     };
 
-    # Enable Open WebUI (formerly Ollama WebUI)
+    # Enable Open WebUI (formerly Ollama WebUI) - works with both Ollama and llmster
     # Note: Using port 8888 to avoid conflict with SearXNG on 8080
     services.open-webui = lib.mkIf cfg.enableOpenWebui {
       enable = true;
       host = "0.0.0.0";
       port = 8888;
       environment = {
-        OLLAMA_API_BASE_URL = "http://localhost:11434";
+        # Point to llmster if enabled, otherwise Ollama
+        OLLAMA_API_BASE_URL = if cfg.enableLlamaServer then ''http://localhost:${toString cfg.llmster.port}'' else "http://localhost:11434";
         WEBUI_AUTH = "true";
         WEBUI_NAME = "Cortex AI - RTX 5090";
         ENABLE_RAG_WEB_LOADER_SSL_VERIFICATION = "false";

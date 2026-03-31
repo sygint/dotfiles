@@ -117,9 +117,10 @@ in
       hardening.enable = true; # Enable fail2ban, auditd, SSH hardening, kernel hardening
     };
 
-    # Enable AI services (Ollama, NVIDIA, CUDA, etc.)
+    # Enable AI services (llmster/LM Studio, NVIDIA, CUDA, etc.)
     features.ai-services = {
       enable = true;
+      enableLlamaServer = true;
       enableOllmcp = true;
       enableOpenWebui = true;
       enableGpuFanControl = true;
@@ -223,6 +224,11 @@ in
         iptables -A nixos-fw -p tcp --dport 22 -s 192.168.0.0/16 -j nixos-fw-accept
         iptables -A nixos-fw -p tcp --dport 22 -s 10.0.0.0/8 -j nixos-fw-accept
         iptables -A nixos-fw -p tcp --dport 22 -s 172.16.0.0/12 -j nixos-fw-accept
+
+        # llmster (LM Studio headless) - local networks only
+        iptables -A nixos-fw -p tcp --dport 1234 -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 1234 -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 1234 -s 172.16.0.0/12 -j nixos-fw-accept
 
         # Ollama API - local networks only
         iptables -A nixos-fw -p tcp --dport 11434 -s 192.168.0.0/16 -j nixos-fw-accept
