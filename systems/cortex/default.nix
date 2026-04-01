@@ -126,15 +126,26 @@ in
       hardening.enable = true; # Enable fail2ban, auditd, SSH hardening, kernel hardening
     };
 
-    # AI services (llmster, Open WebUI, Ollama)
+    # AI services (LM Studio daemon, Open WebUI, Ollama)
     features.ai = {
       enable = true;
-      # Per-service configuration mapped to modules.features.ai
+      # LM Studio headless daemon (real lms, not llama-server)
       llmster = {
         enable = true;
-        package = null; # fallback to llama-server
-        host = "127.0.0.1";
+        host = "0.0.0.0";
         port = 1234;
+        user = "friday";
+        home = "/var/lib/friday";
+        cors = true;
+        gpuOffload = "max";
+        # Models to auto-download on first boot
+        models = [
+          "qwen/qwq-32b"
+          "google/gemma-3-27b"
+          "qwen/qwen3-coder-30b"
+        ];
+        # Auto-load this model into memory
+        defaultModel = "qwen/qwq-32b";
       };
       openWebui = {
         enable = true;
@@ -142,6 +153,16 @@ in
         port = 8888;
       };
       ollama.enable = true;
+    };
+
+    # Caddy reverse proxy — friendly URLs without port numbers
+    features.caddy = {
+      enable = true;
+      reverseProxies = {
+        "git.cortex.home" = "localhost:3300"; # Forgejo
+        "chat.cortex.home" = "localhost:8888"; # Open WebUI
+        "ai.cortex.home" = "localhost:1234"; # LM Studio API
+      };
     };
 
     # Forgejo self-hosted git forge
@@ -159,12 +180,7 @@ in
     features.power-management = {
       enable = true;
       wakeOnLan.interface = "enp3s0";
-      autoSuspend = {
-        enable = true;
-        idleMinutes = 30;
-        gpuAware = true; # Don't suspend if GPU is active
-        gpuThreshold = 5; # GPU util % threshold
-      };
+      autoSuspend.enable = false;
     };
   };
 
@@ -241,6 +257,11 @@ in
         iptables -A nixos-fw -p tcp --dport 22 -s 192.168.0.0/16 -j nixos-fw-accept
         iptables -A nixos-fw -p tcp --dport 22 -s 10.0.0.0/8 -j nixos-fw-accept
         iptables -A nixos-fw -p tcp --dport 22 -s 172.16.0.0/12 -j nixos-fw-accept
+
+        # Caddy HTTP (reverse proxy) - local networks only
+        iptables -A nixos-fw -p tcp --dport 80 -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 80 -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 80 -s 172.16.0.0/12 -j nixos-fw-accept
 
         # llmster (LM Studio headless) - local networks only
         iptables -A nixos-fw -p tcp --dport 1234 -s 192.168.0.0/16 -j nixos-fw-accept

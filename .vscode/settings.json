@@ -14,5 +14,6 @@
   
   // Ensure direnv is loaded for git operations
   "git.enabled": true,
-  "git.path": "git"
+  "git.path": "git",
+  "specstory.cloudSync.enabled": "never"
 }

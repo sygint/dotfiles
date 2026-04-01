@@ -58,7 +58,7 @@ in
         server = {
           DOMAIN = cfg.domain;
           HTTP_PORT = cfg.httpPort;
-          ROOT_URL = "http://${cfg.domain}:${toString cfg.httpPort}/";
+          ROOT_URL = "http://${cfg.domain}/";
           # Use a separate SSH port to avoid conflict with system SSH
           SSH_PORT = cfg.sshPort;
           START_SSH_SERVER = true;

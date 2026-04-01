@@ -12,7 +12,6 @@
 }:
 let
   systemVars = import ./variables.nix;
-  fleetConfig = import ../../fleet-config.nix;
   inherit (systemVars.system) hostName;
   inherit (systemVars.user) username;
 in
@@ -134,11 +133,8 @@ in
   # Security: Require password for admin operations
   security.sudo.wheelNeedsPassword = true;
 
-  # Network configuration with Jellyfin server access
-  networking.extraHosts = ''
-    ${fleetConfig.hosts.cortex.ip} cortex.home cortex
-    ${fleetConfig.infrastructure.nas.ip} ${fleetConfig.infrastructure.nas.fqdn} ${fleetConfig.infrastructure.nas.hostname}
-  '';
+  # Network configuration
+  # Note: /etc/hosts entries are generated fleet-wide by modules/system/networking.nix
 
   modules = {
     features = {
