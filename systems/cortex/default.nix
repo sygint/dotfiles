@@ -112,26 +112,36 @@ in
 
   # Security hardening and monitoring
   modules = {
+    # NVIDIA GPU hardware
+    hardware.nvidia = {
+      enable = true;
+      fanControl = {
+        enable = true;
+        speed = 50;
+      };
+    };
+
     features.security = {
       enable = true;
       hardening.enable = true; # Enable fail2ban, auditd, SSH hardening, kernel hardening
     };
 
-    # Enable AI services (llmster/LM Studio, NVIDIA, CUDA, etc.)
-    # Use legacy ai-services module shape so existing hosts validate.
-    features.ai-services = {
+    # AI services (llmster, Open WebUI, Ollama)
+    features.ai = {
       enable = true;
-      enableLlamaServer = true; # keep legacy flag for compatibility
+      # Per-service configuration mapped to modules.features.ai
       llmster = {
         enable = true;
         package = null; # fallback to llama-server
         host = "127.0.0.1";
         port = 1234;
       };
-      enableOpenWebui = true;
-      enableOllmcp = true;
-      enableGpuFanControl = true;
-      gpuFanSpeed = 50;
+      openWebui = {
+        enable = true;
+        host = "0.0.0.0";
+        port = 8888;
+      };
+      ollama.enable = true;
     };
 
     # Forgejo self-hosted git forge
@@ -243,9 +253,9 @@ in
         iptables -A nixos-fw -p tcp --dport 11434 -s 172.16.0.0/12 -j nixos-fw-accept
 
         # Open WebUI - local networks only
-        iptables -A nixos-fw -p tcp --dport 8080 -s 192.168.0.0/16 -j nixos-fw-accept
-        iptables -A nixos-fw -p tcp --dport 8080 -s 10.0.0.0/8 -j nixos-fw-accept
-        iptables -A nixos-fw -p tcp --dport 8080 -s 172.16.0.0/12 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 8888 -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 8888 -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 8888 -s 172.16.0.0/12 -j nixos-fw-accept
 
         # Prometheus node exporter - local networks only
         iptables -A nixos-fw -p tcp --dport 9100 -s 192.168.0.0/16 -j nixos-fw-accept

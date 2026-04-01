@@ -15,7 +15,10 @@ let
   # For .nix files, import directly. For directories, import default.nix
   makePath =
     name: type: if type == "directory" then ./. + "/${name}/default.nix" else ./. + "/${name}";
-  importPaths = map (name: makePath name entries.${name}) moduleNames;
+  # Ensure `ai` feature is imported first (if present) to keep ordering predictable
+  moduleNamesNoAI = builtins.filter (n: n != "ai") moduleNames;
+  aiPath = ./. + "/ai/default.nix";
+  importPaths = (if builtins.pathExists aiPath then [ aiPath ] else []) ++ map (name: makePath name entries.${name}) moduleNamesNoAI;
 in
 {
   imports = importPaths;

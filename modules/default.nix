@@ -11,6 +11,7 @@
   # importing features, system, and home separately.
 
   imports = [
+    ./hardware # Hardware modules (GPU, sensors, firmware)
     ./features # All feature modules
     ./system # System base + ai-services, etc.
   ];
