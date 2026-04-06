@@ -159,6 +159,9 @@ in
 
   modules = {
     features = {
+      # Fleet PKI — trust the fleet CA so browsers accept *.home certs
+      pki.enable = true;
+
       # Hardware
       bluetooth.enable = true;
       audio.enable = true;
@@ -168,6 +171,7 @@ in
       };
       # Core
       zsh.enable = true;
+      security.enable = true;
       mullvad.enable = true; # Unified system + home config
       virtualization = {
         enable = true;

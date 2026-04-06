@@ -14,6 +14,12 @@ in
     mkEnableOption "Brave web browser with privacy-focused configuration";
 
   config = mkIf cfg.enable {
+    # System-level Chromium policy — Brave reads /etc/chromium/policies/managed/
+    # Treats intranet destinations (.home TLD) as navigations, not searches
+    programs.chromium.extraOpts = {
+      IntranetRedirectBehavior = 1;
+    };
+
     home-manager.users.${userVars.username} = {
       programs.chromium = {
         enable = true;

@@ -75,6 +75,9 @@ in
             # other
             "sidebar.revamp" = true; # Enable the revamped sidebar, needed for verticalTabs
             "sidebar.verticalTabs.enabled" = false; # Disable vertical tabs sidebar
+
+            # Treat .home as a valid TLD (fleet local domain)
+            "browser.fixup.domainsuffixwhitelist.home" = true;
             "extensions.screenshots.disabled" = true;
             "browser.topsites.contile.enabled" = false;
             "browser.urlbar.showSearchSuggestionsFirst" = false;

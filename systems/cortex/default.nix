@@ -138,11 +138,18 @@ in
         home = "/var/lib/friday";
         cors = true;
         gpuOffload = "max";
-        # Models to auto-download on first boot
+        # Models to auto-download on first boot.
+        # Names are LM Studio search terms (not HuggingFace repo paths).
+        # Use @quant suffix to pin quantization, e.g. "model@q5_k_m".
         models = [
+          # Base models
           "qwen/qwq-32b"
           "google/gemma-3-27b"
           "qwen/qwen3-coder-30b"
+          # Opus 4.6 distills (Qwen 3.5 fine-tunes)
+          "qwen3.5-27b-opus"          # 27B dense — ~17 GB at Q4_K_S
+          "qwen3.5-35b-a3b-opus"      # 35B MoE (3B active) — small on VRAM
+          "qwen3.5-9b-opus"           # 9B — fast inference, good quality
         ];
         # Auto-load this model into memory
         defaultModel = "qwen/qwq-32b";
@@ -162,6 +169,15 @@ in
         "git.cortex.home" = "localhost:3300"; # Forgejo
         "chat.cortex.home" = "localhost:8888"; # Open WebUI
         "ai.cortex.home" = "localhost:1234"; # LM Studio API
+      };
+    };
+
+    # Fleet PKI — CA trust + server TLS certificate for HTTPS
+    features.pki = {
+      enable = true;
+      serverCert = {
+        certFile = ../../certs/cortex.crt;
+        keySecret = "pki/cortex_key";
       };
     };
 
@@ -262,6 +278,11 @@ in
         iptables -A nixos-fw -p tcp --dport 80 -s 192.168.0.0/16 -j nixos-fw-accept
         iptables -A nixos-fw -p tcp --dport 80 -s 10.0.0.0/8 -j nixos-fw-accept
         iptables -A nixos-fw -p tcp --dport 80 -s 172.16.0.0/12 -j nixos-fw-accept
+
+        # Caddy HTTPS (reverse proxy) - local networks only
+        iptables -A nixos-fw -p tcp --dport 443 -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 443 -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 443 -s 172.16.0.0/12 -j nixos-fw-accept
 
         # llmster (LM Studio headless) - local networks only
         iptables -A nixos-fw -p tcp --dport 1234 -s 192.168.0.0/16 -j nixos-fw-accept

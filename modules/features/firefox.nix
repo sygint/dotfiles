@@ -68,6 +68,9 @@ in
             "toolkit.telemetry.unified" = false;
             "toolkit.telemetry.archive.enabled" = false;
 
+            # Treat .home as a valid TLD (fleet local domain)
+            "browser.fixup.domainsuffixwhitelist.home" = true;
+
             # UI preferences
             "browser.toolbars.bookmarks.visibility" = "newtab";
             "browser.startup.page" = 3; # Restore previous session
