@@ -36,12 +36,10 @@ in
       polkit.enable = true;
     };
 
-    # Enable gnome-keyring for secure storage (works in all desktop environments)
-    services.gnome.gnome-keyring.enable = true;
-
-    # PAM configuration for gnome-keyring automatic unlock on TTY login
+    # Enable gnome-keyring via PAM (manual configuration for SDDM)
     security.pam.services = {
       login.enableGnomeKeyring = true;
+      sddm.enableGnomeKeyring = true;
     };
 
     # Graphical askpass for sudo/SSH in environments without a TTY (e.g. VSCode terminal).
@@ -57,7 +55,8 @@ in
     environment.systemPackages =
       with pkgs;
       [
-        libsecret # For secret-tool command-line access
+        libsecret
+        gnome-keyring
         openssh-askpass # GTK3 graphical password prompt for sudo/SSH
       ]
       ++ (optionals cfg.hardening.enable [

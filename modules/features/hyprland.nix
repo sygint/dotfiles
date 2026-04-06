@@ -346,6 +346,11 @@ in
             };
           };
 
+          home.activation.keyring-setup = ''
+            mkdir -p ~/.local/share/keyrings
+            chmod 700 ~/.local/share/keyrings
+          '';
+
           home.file = {
             ".config/hypr/hyprlock.conf" = {
               source = hyprlockConf;
