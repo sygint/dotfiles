@@ -9,7 +9,14 @@ let
 in
 
 {
-  flake.colmena = {
+  # Declare colmena as a known flake output to avoid flake-parts warnings
+  options.flake.colmena = lib.mkOption {
+    type = lib.types.lazyAttrsOf lib.types.raw;
+    default = { };
+    description = "Colmena deployment configuration";
+  };
+
+  config.flake.colmena = {
     meta = {
       # Colmena expects nixpkgs at top level - use flake input path
       nixpkgs = inputs.nixpkgs.outPath;
