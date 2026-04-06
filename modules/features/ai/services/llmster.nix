@@ -201,14 +201,26 @@ in
       script = ''
         set -euo pipefail
 
+        # Snapshot installed model keys so we can skip what's already present
+        installed=$(${lmsBin} ls --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[].modelKey' || true)
+        is_installed() { echo "$installed" | ${pkgs.gnugrep}/bin/grep -qiF "$1"; }
+
         ${lib.concatMapStringsSep "\n" (model: ''
-          echo "Ensuring model: ${model}"
-          ${lmsBin} get "${model}" --yes 2>/dev/null || echo "Model ${model} already present or download failed"
+          if is_installed "${model}"; then
+            echo "Already installed: ${model}"
+          else
+            echo "Downloading: ${model}"
+            if ${lmsBin} get "${model}" --yes; then
+              echo "Downloaded: ${model}"
+            else
+              echo "WARNING: failed to download ${model}" >&2
+            fi
+          fi
         '') lcfg.models}
 
         ${lib.optionalString (lcfg.defaultModel != null) ''
           echo "Loading default model: ${lcfg.defaultModel}"
-          ${lmsBin} load "${lcfg.defaultModel}" --gpu ${lcfg.gpuOffload} --yes || echo "Failed to load ${lcfg.defaultModel}"
+          ${lmsBin} load "${lcfg.defaultModel}" --gpu ${lcfg.gpuOffload} --yes || echo "WARNING: failed to load ${lcfg.defaultModel}" >&2
         ''}
 
         echo "Model provisioning complete."
