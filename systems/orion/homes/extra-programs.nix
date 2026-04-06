@@ -4,6 +4,7 @@ let
   opencode = pkgs.callPackage ../../../packages/opencode.nix { };
   opencode-desktop = pkgs.callPackage ../../../packages/opencode-desktop.nix { };
   opencode-lmstudio-sync = pkgs.callPackage ../../../packages/opencode-lmstudio-sync.nix { };
+  lms-promote = pkgs.callPackage ../../../packages/lms-promote.nix { };
 in
 {
   # Extra user-specific packages for syg
@@ -19,6 +20,7 @@ in
     opencode
     opencode-desktop
     opencode-lmstudio-sync
+    lms-promote
     solaar
     slack
     tea

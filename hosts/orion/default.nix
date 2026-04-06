@@ -156,9 +156,15 @@ in
   environment.shells = with pkgs; [ zsh ];
 
   # Add cortex to local hosts for DNS resolution (temporary until UDM DNS fixed)
-  networking.extraHosts = ''
-    ${fleetConfig.hosts.cortex.ip} cortex.home cortex
-  '';
+  # Includes all service subdomains from fleet-config
+  networking.extraHosts =
+    let
+      cortex = fleetConfig.hosts.cortex;
+      serviceHosts = lib.attrValues cortex.services;
+    in
+    ''
+      ${cortex.ip} cortex.home cortex ${lib.concatStringsSep " " serviceHosts}
+    '';
 
   modules = {
     features = {

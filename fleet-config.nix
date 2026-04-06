@@ -111,6 +111,7 @@
         git = "git.cortex.home"; # Forgejo (port 3300)
         chat = "chat.cortex.home"; # Open WebUI (port 8888)
         ai = "ai.cortex.home"; # LM Studio API (port 1234)
+        projects = "projects.cortex.home"; # Vikunja PM (port 3456)
       };
 
       # Network interfaces

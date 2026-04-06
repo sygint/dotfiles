@@ -22,6 +22,15 @@ in
         enable = true;
 
         policies = {
+          # Trust the fleet CA for *.home services.
+          # ImportEnterpriseRoots scans /usr/lib/mozilla/certificates/ etc.,
+          # which don't exist on NixOS.  Install explicitly points Firefox
+          # at the PEM file (resolves to a /nix/store path at eval time).
+          Certificates = {
+            ImportEnterpriseRoots = true;
+            Install = [ ../../certs/ca.crt ];
+          };
+
           ExtensionSettings =
             with builtins;
             let

@@ -72,6 +72,7 @@
     userDirs = {
       enable = true;
       createDirectories = false;  # Don't create unnecessary directories
+      setSessionVariables = true;
     };
   };
 

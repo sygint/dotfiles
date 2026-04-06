@@ -6,7 +6,7 @@
 #
 # With TLS (when PKI server cert is configured):
 #   Serves HTTPS on port 443 with the fleet CA-signed certificate
-#   Also serves HTTP on port 80 (no forced redirect, for API compat)
+#   HTTP on port 80 redirects to HTTPS (permanent 301)
 #
 # Example:
 #   modules.features.caddy = {
@@ -38,10 +38,14 @@ let
   # TLS is available when PKI module provides a server cert
   hasTLS = pkiCfg.enable && pkiCfg.serverCert != null;
 
-  # Build HTTP virtualHosts (always present)
+  # Build HTTP virtualHosts
+  # When TLS is available, HTTP vhosts redirect to HTTPS.
+  # Without TLS they reverse-proxy normally.
   httpHosts = lib.mapAttrs' (hostname: upstream:
     lib.nameValuePair "http://${hostname}" {
-      extraConfig = "reverse_proxy ${upstream}";
+      extraConfig = if hasTLS
+        then "redir https://{host}{uri} permanent"
+        else "reverse_proxy ${upstream}";
     }
   ) cfg.reverseProxies;
 

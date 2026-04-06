@@ -197,6 +197,7 @@
           apps.harmonix = {
             type = "app";
             program = "${pkgs.writeShellScriptBin "harmonix-wrapper" ''exec /home/syg/Projects/open-source/harmonix/bin/harmonix "$@"''}/bin/harmonix-wrapper";
+            meta.description = "Harmonix fleet orchestration CLI (local development)";
           };
 
           # Colmena hive - exposed at top level for harmonix CLI

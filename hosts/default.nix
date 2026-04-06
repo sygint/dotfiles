@@ -58,6 +58,7 @@
         "workstation"
         "local"
       ];
+      services = { };
 
       # Network interfaces
       interfaces = {
@@ -105,6 +106,14 @@
         "gpu"
       ];
 
+      # Service subdomains → resolved via /etc/hosts fleet-wide
+      services = {
+        git = "git.cortex.home"; # Forgejo (port 3300)
+        chat = "chat.cortex.home"; # Open WebUI (port 8888)
+        ai = "ai.cortex.home"; # LM Studio API (port 1234)
+        projects = "projects.cortex.home"; # Vikunja PM (port 3456)
+      };
+
       # Network interfaces
       interfaces = {
         ethernet = {
@@ -149,6 +158,7 @@
         "remote"
         "services"
       ];
+      services = { };
 
       # Network interfaces
       interfaces = {
@@ -192,6 +202,7 @@
         "htpc"
         "remote"
       ];
+      services = { };
 
       # Network interfaces
       interfaces = {
@@ -232,6 +243,7 @@
     #   hostname = "hostname";
     #   fqdn = "hostname.home";
     #   ip = "192.168.1.x";
+    #   services = { };  # Optional: service subdomains resolved via /etc/hosts
     #
     #   interfaces = {
     #     ethernet = {

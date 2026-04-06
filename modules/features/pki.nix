@@ -73,7 +73,6 @@ in
   config = mkIf cfg.enable {
     # 1. Trust the fleet CA on this machine
     # This works for Chrome, curl, and most apps that use the system store.
-    # Firefox on NixOS also respects this via p11-kit integration.
     security.pki.certificateFiles = [ cfg.caCertFile ];
 
     # 2. Deploy server cert + key (only when serverCert is configured)

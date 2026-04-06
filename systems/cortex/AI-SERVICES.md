@@ -77,6 +77,16 @@ The following models are automatically downloaded on first boot:
 - **Access**: Used by MCP tools for AI-powered web search
 - **Purpose**: Self-hosted metasearch engine for privacy-preserving web searches
 
+### Vikunja (Project Management)
+- **URL**: `http://projects.cortex.home` (via Caddy reverse proxy)
+- **Direct**: `http://192.168.1.7:3456`
+- **Access**: Available from all hosts on the local network
+- **Authentication**: Enabled (username/password required)
+- **Database**: SQLite (at `/var/lib/vikunja/vikunja.db`)
+- **Features**: Projects, tasks, milestones, deadlines, priorities, labels/tags, kanban/list/Gantt views, progress tracking, CalDAV
+- **Registration**: Enabled on initial deploy; disable after creating your admin account by setting `enableRegistration = false` in `systems/cortex/default.nix`
+- **NixOS Module**: `modules/features/vikunja.nix`
+
 ### API Examples
 
 **List models**:
@@ -240,7 +250,13 @@ ssh jarvis@192.168.1.7 "ollama run llama3.2:3b 'Count to 10' --verbose"
    - MCP tool integration for AI-powered searches
    - No external API keys required
 
-3. **Additional Models**: Consider adding:
+3. **Project Management**: ✅ Implemented (port 3456)
+   - Vikunja self-hosted PM at `projects.cortex.home`
+   - Projects, milestones, deadlines, priorities, tags
+   - Kanban, list, and Gantt chart views
+   - SQLite database (no external DB required)
+
+4. **Additional Models**: Consider adding:
    - `codellama:34b` - Specialized coding model
    - `mixtral:8x7b` - Mixture of experts for versatility
    - `yi:34b` - High-quality general purpose model

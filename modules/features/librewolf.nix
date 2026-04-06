@@ -22,6 +22,15 @@ in
         # Valid strings for installation_mode are "allowed", "blocked",
         # "force_installed" and "normal_installed".
         policies = {
+          # Trust the fleet CA for *.home services.
+          # ImportEnterpriseRoots scans /usr/lib/mozilla/certificates/ etc.,
+          # which don't exist on NixOS.  Install explicitly points the browser
+          # at the PEM file (resolves to a /nix/store path at eval time).
+          Certificates = {
+            ImportEnterpriseRoots = true;
+            Install = [ ../../certs/ca.crt ];
+          };
+
           DisableTelemetry = true;
           DisableFirefoxStudies = true;
           EnableTrackingProtection = {

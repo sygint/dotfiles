@@ -169,6 +169,7 @@ in
         "git.cortex.home" = "localhost:3300"; # Forgejo
         "chat.cortex.home" = "localhost:8888"; # Open WebUI
         "ai.cortex.home" = "localhost:1234"; # LM Studio API
+        "projects.cortex.home" = "localhost:3456"; # Vikunja PM
       };
     };
 
@@ -187,6 +188,14 @@ in
       domain = "git.cortex.home";
       httpPort = 3300;
       sshPort = 3022;
+    };
+
+    # Vikunja project management
+    features.vikunja = {
+      enable = true;
+      domain = "projects.cortex.home";
+      port = 3456;
+      enableRegistration = false;
     };
 
     # Sunshine game streaming
@@ -311,6 +320,11 @@ in
         iptables -A nixos-fw -p tcp --dport 3022 -s 192.168.0.0/16 -j nixos-fw-accept
         iptables -A nixos-fw -p tcp --dport 3022 -s 10.0.0.0/8 -j nixos-fw-accept
         iptables -A nixos-fw -p tcp --dport 3022 -s 172.16.0.0/12 -j nixos-fw-accept
+
+        # Vikunja (project management) - local networks only
+        iptables -A nixos-fw -p tcp --dport 3456 -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 3456 -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -A nixos-fw -p tcp --dport 3456 -s 172.16.0.0/12 -j nixos-fw-accept
 
         # ICMP ping - local networks only
         iptables -A nixos-fw -p icmp --icmp-type echo-request -s 192.168.0.0/16 -j nixos-fw-accept
