@@ -1,0 +1,8 @@
+{
+  "$schema": "file:///home/syg/.cache/.bun/install/global/node_modules/@dungle-scrubs/tallow/schemas/settings.schema.json",
+  "theme": "catppuccin-mocha",
+  "enableSkillCommands": false,
+  "lastChangelogVersion": "0.9.4",
+  "defaultProvider": "lmstudio",
+  "defaultModel": "qwen3.5-35b-a3b-claude-4.6-opus-reasoning-distilled-i1"
+}

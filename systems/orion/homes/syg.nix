@@ -117,6 +117,14 @@ in
   home.file.".claude-code-router/config.json".source =
     mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/claude-code-router/config.json";
 
+  # Tallow config - routes to LM Studio on cortex (same as CCR)
+  home.file.".tallow/models.json".source =
+    mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/tallow/models.json";
+  home.file.".tallow/auth.json".source =
+    mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/tallow/auth.json";
+  home.file.".tallow/settings.json".source =
+    mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/dotfiles/.config/tallow/settings.json";
+
   # Enable XDG user directories
   # xdg = {
   #   enable = true;

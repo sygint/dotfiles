@@ -360,6 +360,12 @@ in
       gh # GitHub CLI for PR and repo management
       direnv
       lazygit
+      ripgrep
+      tmux
+
+      # Tallow agent dependencies
+      sqlite # Session persistence and recall
+      dendrite-scraper # Enhanced web fetching for bot-guarded/JS-heavy sites
 
       # System-specific tools
       fh.packages.x86_64-linux.default

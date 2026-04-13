@@ -1,0 +1,226 @@
+{
+  "providers": {
+    "lmstudio": {
+      "baseUrl": "http://192.168.1.7:1234/v1",
+      "apiKey": "lm-studio",
+      "api": "openai-completions",
+      "compat": {
+        "maxTokensField": "max_tokens",
+        "supportsStore": false,
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false,
+        "supportsUsageInStreaming": false,
+        "supportsStrictMode": false
+      },
+      "models": [
+        {
+          "id": "qwen3.5-35b-a3b-claude-4.6-opus-reasoning-distilled-i1",
+          "name": "Qwen 3.5 35B MoE Opus Distill (default)",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen3.5-35b-a3b-claude-4.6-opus-reasoning-distilled",
+          "name": "Qwen 3.5 35B MoE Opus Distill",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen3.5-27b-claude-4.6-opus-reasoning-distilled",
+          "name": "Qwen 3.5 27B Opus Distill",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen3.5-9b-claude-4.6-opus-reasoning-distilled-v2",
+          "name": "Qwen 3.5 9B Opus Distill v2",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen/qwen3-coder-30b",
+          "name": "Qwen 3 Coder 30B",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "mistralai/devstral-small-2-2512",
+          "name": "Devstral Small 2",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen/qwen2.5-coder-32b",
+          "name": "Qwen 2.5 Coder 32B",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen2.5-coder-32b-instruct",
+          "name": "Qwen 2.5 Coder 32B Instruct",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "olympiccoder-32b",
+          "name": "OlympicCoder 32B",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen3.5-27b",
+          "name": "Qwen 3.5 27B",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "lfm2-24b-a2b",
+          "name": "LFM2 24B MoE",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen/qwq-32b",
+          "name": "QwQ 32B",
+          "reasoning": true,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "mistralai/codestral-22b-v0.1",
+          "name": "Codestral 22B",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "google/gemma-3-27b",
+          "name": "Gemma 3 27B",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen/qwen3.5-35b-a3b",
+          "name": "Qwen 3.5 35B MoE (base)",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen/qwen2.5-coder-14b",
+          "name": "Qwen 2.5 Coder 14B",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen/qwen3-vl-30b",
+          "name": "Qwen 3 VL 30B",
+          "reasoning": false,
+          "input": ["text", "image"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "bytedance/seed-oss-36b",
+          "name": "Seed OSS 36B",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "openai/gpt-oss-20b",
+          "name": "GPT OSS 20B",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "mistral-2x24b-moe-power-magistral-devstral-reasoning-ultimate-44b-i1",
+          "name": "Mistral 2x24B MoE Ultimate 44B",
+          "reasoning": true,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "zai-org/glm-4.7-flash",
+          "name": "GLM 4.7 Flash",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "mistralai/ministral-3-14b-reasoning",
+          "name": "Ministral 3 14B Reasoning",
+          "reasoning": true,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        },
+        {
+          "id": "google/gemma-3-4b",
+          "name": "Gemma 3 4B",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "contextWindow": 32768,
+          "maxTokens": 16384
+        }
+      ]
+    }
+  }
+}

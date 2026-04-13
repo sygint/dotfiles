@@ -1,0 +1,105 @@
+{
+  "defaultAction": "SCMP_ACT_ERRNO",
+  "architectures": [
+    "SCMP_ARCH_X86_64"
+  ],
+  "syscalls": [
+    {
+      "names": [
+        "accept",
+        "accept4",
+        "bind",
+        "connect",
+        "getpeername",
+        "getsockname",
+        "getsockopt",
+        "ioctl",
+        "listen",
+        "poll",
+        "ppoll",
+        "pselect6",
+        "recvfrom",
+        "recvmmsg",
+        "recvmsg",
+        "select",
+        "sendmmsg",
+        "sendmsg",
+        "sendto",
+        "setsockopt",
+        "socket",
+        "socketpair"
+      ],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "names": [
+        "dup",
+        "dup2",
+        "dup3",
+        "fcntl",
+        "flock",
+        "fsync",
+        "ftruncate",
+        "getdents",
+        "getdents64",
+        "lseek",
+        "mmap",
+        "mprotect",
+        "msync",
+        "munmap",
+        "pread64",
+        "pwrite64",
+        "read",
+        "readdir64",
+        "readlink",
+        "readv",
+        "rename",
+        "truncate",
+        "unlink",
+        "write",
+        "writev"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "names": [
+        "exit",
+        "exit_group",
+        "fork",
+        "getpid",
+        "getppid",
+        "kill",
+        "pause",
+        "pipe",
+        "pipe2",
+        "prctl",
+        "setpgid",
+        "setpgrp",
+        "setsid",
+        "sigaction",
+        "sigaltstack",
+        "signalfd",
+        "signalfd4",
+        "sigreturn",
+        "spare61",
+        "sbrk",
+        "vfork"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "names": [
+        "clock_nanosleep",
+        "nanosleep"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "names": [
+        "clone",
+        "clone3"
+      ],
+      "action": "SCMP_ACT_ERRNO"
+    }
+  ]
+}
