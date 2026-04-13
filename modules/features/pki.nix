@@ -25,6 +25,7 @@
   config,
   lib,
   pkgs,
+  hasSecrets ? false,
   ...
 }:
 
@@ -33,6 +34,7 @@ let
     mkEnableOption
     mkOption
     mkIf
+    mkMerge
     types
     ;
 
@@ -70,25 +72,34 @@ in
     };
   };
 
-  config = mkIf cfg.enable {
-    # 1. Trust the fleet CA on this machine
-    # This works for Chrome, curl, and most apps that use the system store.
-    security.pki.certificateFiles = [ cfg.caCertFile ];
+  config = mkIf cfg.enable (mkMerge [
+    {
+      # 1. Trust the fleet CA on this machine
+      # This works for Chrome, curl, and most apps that use the system store.
+      security.pki.certificateFiles = [ cfg.caCertFile ];
 
-    # 2. Deploy server cert + key (only when serverCert is configured)
-    sops.secrets = mkIf (cfg.serverCert != null) {
-      ${cfg.serverCert.keySecret} = {
-        owner = "caddy";
-        group = "caddy";
-        mode = "0400";
-        restartUnits = [ "caddy.service" ];
+      # Make the server cert available at a stable path for Caddy
+      # The cert is public so we just symlink it; the key comes from sops.
+      environment.etc = mkIf (cfg.serverCert != null) {
+        "pki/server.crt".source = cfg.serverCert.certFile;
       };
-    };
+    }
 
-    # Make the server cert available at a stable path for Caddy
-    # The cert is public so we just symlink it; the key comes from sops.
-    environment.etc = mkIf (cfg.serverCert != null) {
-      "pki/server.crt".source = cfg.serverCert.certFile;
-    };
-  };
+    # 2. Deploy server cert key via sops (only when sops-nix is available)
+    # lib.optionalAttrs prevents the sops option definition from existing
+    # at all on hosts without sops-nix (e.g. axon), unlike mkIf which
+    # still registers the definition and fails option validation.
+    # Note: only guard on hasSecrets (a specialArg, no recursion).
+    # The serverCert null check uses mkIf (lazy) to avoid recursion.
+    (lib.optionalAttrs hasSecrets {
+      sops.secrets = mkIf (cfg.serverCert != null) {
+        ${cfg.serverCert.keySecret} = {
+          owner = "caddy";
+          group = "caddy";
+          mode = "0400";
+          restartUnits = [ "caddy.service" ];
+        };
+      };
+    })
+  ]);
 }
