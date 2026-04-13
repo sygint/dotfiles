@@ -42,6 +42,9 @@
     swhkd.url = "github:waycrate/swhkd";
     swhkd.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Git hooks via Nix — replaces hand-written .git/hooks/
+    git-hooks-nix.url = "github:cachix/git-hooks.nix";
+    git-hooks-nix.inputs.nixpkgs.follows = "nixpkgs";
 
   };
 
@@ -65,6 +68,7 @@
         ./modules/flake/nixos-configurations.nix
         ./modules/flake/home-configurations.nix
         ./modules/flake/colmena.nix
+        inputs.git-hooks-nix.flakeModule
       ];
 
       # Systems to support
@@ -179,9 +183,56 @@
           # Formatter
           formatter = pkgs.nixpkgs-fmt;
 
+          # Pre-commit hooks via git-hooks.nix
+          pre-commit.settings.hooks = {
+            # Nix formatting (matches the flake formatter)
+            nixpkgs-fmt.enable = true;
+
+            # Nix linter — catches anti-patterns and suggests improvements
+            statix.enable = true;
+
+            # Dead code detection — finds unused let bindings, inputs, etc.
+            deadnix.enable = true;
+
+            # Secret detection — prevents accidental credential commits
+            ripsecrets.enable = true;
+
+            # Custom: detect broken relative imports in staged Nix files
+            check-nix-imports = {
+              enable = true;
+              name = "Check Nix imports";
+              entry = "${pkgs.writeShellScript "check-nix-imports" ''
+                set -euo pipefail
+                exit_code=0
+                for nix_file in "$@"; do
+                  if [ -f "$nix_file" ]; then
+                    dir="$(dirname "$nix_file")"
+                    while IFS= read -r import_line; do
+                      tmp="''${import_line#*./}"
+                      if [ "$tmp" != "$import_line" ]; then
+                        import_path="./''${tmp%%[\"  ]*}"
+                        full_path="$dir/$import_path"
+                        if [ ! -f "$full_path" ] && [ ! -d "$full_path" ] && [ ! -f "''${full_path}.nix" ]; then
+                          echo "Broken import in $nix_file: $import_path"
+                          exit_code=1
+                        fi
+                      fi
+                    done < <(grep '^\s*\./' "$nix_file" 2>/dev/null || true)
+                  fi
+                done
+                exit $exit_code
+              ''}";
+              files = "\\.nix$";
+              language = "system";
+            };
+          };
+
           # Dev shell
           devShells.default = pkgs.mkShell {
-            packages = with pkgs; [
+            shellHook = ''
+              ${config.pre-commit.shellHook}
+            '';
+            packages = config.pre-commit.settings.enabledPackages ++ (with pkgs; [
               git
               nixd
               nixpkgs-fmt
@@ -190,7 +241,7 @@
               fleet-sleep
               fleet-wake
               fleet-dev
-            ];
+            ]);
           };
 
           # Harmonix CLI (local development version)
