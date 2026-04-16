@@ -120,7 +120,7 @@ in
 
   # Add cortex to local hosts for DNS resolution (temporary until UDM DNS fixed)
   networking.extraHosts = ''
-    ${fleetConfig.hosts.cortex.ip} cortex.home cortex
+    ${fleetConfig.hosts.cortex.ip} cortex.home cortex git.cortex.home
   '';
 
   modules = {
