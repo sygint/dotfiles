@@ -273,6 +273,24 @@ in
     chrony.enable = true;
   };
 
+  # Forgejo - Self-hosted Git service
+  services.forgejo = {
+    enable = true;
+    user = "forgejo";
+    group = "forgejo";
+    settings = {
+      server = {
+        DOMAIN = "git.cortex.home";
+        ROOT_URL = "https://git.cortex.home/";
+        HTTP_PORT = 3000;
+        SSH_PORT = 22;
+      };
+      security = {
+        INSTALL_LOCK = true;
+      };
+    };
+  };
+
   # Note: System hardening sysctl settings are configured in the security module
   # (modules/system/system/security.nix) via security.hardening.enable = true;
 
