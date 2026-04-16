@@ -147,6 +147,7 @@ in
       waybar.enable = false; # Disabled in favor of hyprpanel
       screenshots.enable = true;
       noctalia-shell.enable = true;
+      swhkd.enable = true;
       wayland.enable = true;
       # Development tools
       git.enable = true;
