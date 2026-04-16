@@ -28,15 +28,16 @@ let
       ];
       hasSecrets = true;
     };
-    nexus = {
-      path = ../systems/nexus;
-      modules = [
-        inputs.disko.nixosModules.disko
-        inputs.home-manager.nixosModules.home-manager
-        inputs.sops-nix.nixosModules.sops
-      ];
-      hasSecrets = true;
-    };
+    # nexus = {
+    #   path = ../systems/nexus;
+    #   modules = [
+    #     inputs.disko.nixosModules.disko
+    #     inputs.home-manager.nixosModules.home-manager
+    #     inputs.sops-nix.nixosModules.sops
+    #   ];
+    #   hasSecrets = true;
+    # };
+    # Disabled - functionality being rolled into cortex
     axon = {
       path = ../systems/axon;
       modules = [
