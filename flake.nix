@@ -25,6 +25,8 @@
     opencode.url = "github:anomalyco/opencode";
     devenv-bootstrap.url = "path:/home/syg/.config/nixos/archive/devenv-bootstrap";
     import-tree.url = "github:vic/import-tree";
+    git-hooks-nix.url = "github:cachix/git-hooks.nix";
+    git-hooks-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   nixConfig = {
@@ -47,12 +49,13 @@
         ./flake-modules/nixos-configurations.nix
         ./flake-modules/home-configurations.nix
         ./flake-modules/deploy.nix
+        ./flake-modules/pre-commit-hooks.nix
       ];
 
       # Systems to support
       systems = [ "x86_64-linux" ];
 
-      # Per-system outputs (packages, devShells, etc.)
+      # Per-system outputs (devShells, formatter, checks)
       perSystem =
         {
           config,
@@ -63,18 +66,11 @@
           ...
         }:
         {
-          # Formatter
+          # Formatter — nixpkgs-fmt works everywhere; nixfmt via pre-commit hooks in dev shell
           formatter = pkgs.nixpkgs-fmt;
 
-          # Dev shell
-          devShells.default = pkgs.mkShell {
-            packages = with pkgs; [
-              git
-              nixd
-              nixpkgs-fmt
-              just
-            ];
-          };
+          # Dev shell with pre-commit hooks via git-hooks-nix
+          devShells.default = config.pre-commit.devShell;
         };
     };
 }
