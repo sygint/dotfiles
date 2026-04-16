@@ -37,6 +37,8 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    swhkd.url = "github:waycrate/swhkd";
+    swhkd.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   nixConfig = {
