@@ -39,6 +39,8 @@
     };
     swhkd.url = "github:waycrate/swhkd";
     swhkd.inputs.nixpkgs.follows = "nixpkgs";
+    niri.url = "github:YaLTeR/niri";
+    niri.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   nixConfig = {

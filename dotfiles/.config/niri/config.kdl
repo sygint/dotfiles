@@ -1,0 +1,343 @@
+// ═══════════════════════════════════════════════════════════════════════════════
+// Niri Configuration — Scrollable Tiling Compositor
+// ═══════════════════════════════════════════════════════════════════════════════
+// Template variables (@var@) are substituted by modules/features/niri.nix
+// Application launchers, media keys, screenshots, and brightness are handled
+// by swhkd (compositor-agnostic). Only compositor-specific binds live here.
+//
+// Config format: KDL — https://kdl.dev
+// Niri wiki: https://yalter.github.io/niri/Configuration:-Introduction
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MONITORS — Generated from Nix configuration
+// ─────────────────────────────────────────────────────────────────────────────
+
+@monitors@
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INPUT
+// ─────────────────────────────────────────────────────────────────────────────
+
+input {
+    keyboard {
+        xkb {
+            layout "us"
+        }
+    }
+
+    touchpad {
+        tap
+        // natural-scroll disabled to match Hyprland config
+    }
+
+    mouse {
+    }
+
+    // Focus window when mouse enters it
+    focus-follows-mouse max-scroll-amount="0%"
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENVIRONMENT VARIABLES
+// ─────────────────────────────────────────────────────────────────────────────
+
+environment {
+    XCURSOR_SIZE "24"
+    GDK_BACKEND "wayland"
+    QT_QPA_PLATFORM "wayland"
+    XDG_CURRENT_DESKTOP "niri"
+    XDG_SESSION_TYPE "wayland"
+    NIXOS_OZONE_WL "1"
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LAYOUT
+// ─────────────────────────────────────────────────────────────────────────────
+
+layout {
+    gaps 8
+
+    center-focused-column "on-overflow"
+
+    preset-column-widths {
+        proportion 0.25
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    default-column-width { proportion 0.33333; }
+
+    // Focus ring — Catppuccin Mocha accent colors
+    focus-ring {
+        width 3
+        active-color "#89b4fa"    // Catppuccin blue
+        inactive-color "#45475a"  // Catppuccin surface1
+    }
+
+    border {
+        off
+    }
+
+    shadow {
+        on
+        softness 20
+        spread 3
+        offset x=0 y=3
+        color "#00000050"
+    }
+
+    tab-indicator {
+        on
+        position "top"
+        width 4
+        gap 4
+        place-within-column
+        hide-when-single-tab
+        active-color "#89b4fa"    // Catppuccin blue
+        inactive-color "#45475a"  // Catppuccin surface1
+    }
+
+    struts {
+    }
+
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WORKSPACES — Generated from Nix configuration
+// ─────────────────────────────────────────────────────────────────────────────
+
+@workspaces@
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTOSTART
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Import environment variables and start niri-session.target
+// This mirrors the Hyprland pattern: services with WantedBy=graphical-session.target
+// start automatically (noctalia-shell, swhks, swhkd, etc.)
+spawn-at-startup "sh" "-c" "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE PATH NIRI_SOCKET && systemctl --user start niri-session.target"
+
+// Wallpaper
+spawn-at-startup "swww-daemon"
+spawn-at-startup "sh" "-c" "sleep 2 && swww img @wallpaperPath@"
+
+// Monitor handler
+spawn-at-startup "sh" "-c" "sleep 3 && @monitorHandler@"
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MISC
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Ask clients to omit client-side decorations
+prefer-no-csd
+
+// Disable the hotkey overlay popup on startup
+hotkey-overlay {
+    skip-at-startup
+}
+
+// Screenshots saved to ~/Pictures/Screenshots
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+animations {
+    // Use default animations
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WINDOW RULES
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Rounded corners for all windows
+window-rule {
+    geometry-corner-radius 10
+    clip-to-geometry true
+}
+
+// Suppress maximize requests from apps
+window-rule {
+    match app-id=r#".*"#
+    open-maximized false
+}
+
+// Firefox/Brave PiP as floating
+window-rule {
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+window-rule {
+    match app-id=r#"brave"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+// Floating terminal
+window-rule {
+    match app-id=r#"^floating-tui$"#
+    open-floating true
+}
+
+// Block password managers from screen capture
+window-rule {
+    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+    block-out-from "screen-capture"
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// KEYBINDINGS — Compositor-specific only
+// ─────────────────────────────────────────────────────────────────────────────
+// App launchers, media keys, screenshots, brightness, and screen lock are
+// all handled by swhkd. Only window/workspace management binds go here.
+
+binds {
+    // ── Window Management ────────────────────────────────────────────────
+
+    Mod+Shift+Q { close-window; }
+
+    // Fullscreen / Floating
+    Mod+F           { maximize-column; }
+    Mod+Shift+F     { fullscreen-window; }
+    Mod+V           { toggle-window-floating; }
+    Mod+Shift+V     { switch-focus-between-floating-and-tiling; }
+
+    // Overview
+    Mod+O repeat=false { toggle-overview; }
+
+
+    // ── Focus Navigation (HJKL) ──────────────────────────────────────────
+
+    Mod+H { focus-column-left; }
+    Mod+J { focus-window-down; }
+    Mod+K { focus-window-up; }
+    Mod+L { focus-column-right; }
+
+    // Arrow key alternatives
+    Mod+Left  { focus-column-left; }
+    Mod+Down  { focus-window-down; }
+    Mod+Up    { focus-window-up; }
+    Mod+Right { focus-column-right; }
+
+    // Alt-Tab cycle
+    Mod+Tab { focus-workspace-previous; }
+
+
+    // ── Move Windows (matches Hyprland: Mod+Shift) ────────────────────
+
+    Mod+Shift+H { move-column-left; }
+    Mod+Shift+J { move-window-down; }
+    Mod+Shift+K { move-window-up; }
+    Mod+Shift+L { move-column-right; }
+
+
+    // ── Monitor Focus & Movement (Mod+Alt) ──────────────────────────────
+
+    Mod+Alt+H { focus-monitor-left; }
+    Mod+Alt+J { focus-monitor-down; }
+    Mod+Alt+K { focus-monitor-up; }
+    Mod+Alt+L { focus-monitor-right; }
+
+    Mod+Alt+Shift+H { move-column-to-monitor-left; }
+    Mod+Alt+Shift+J { move-column-to-monitor-down; }
+    Mod+Alt+Shift+K { move-column-to-monitor-up; }
+    Mod+Alt+Shift+L { move-column-to-monitor-right; }
+
+
+    // ── Workspaces ───────────────────────────────────────────────────────
+
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
+
+    // Workspace scroll (relative)
+    Mod+Ctrl+J     { focus-workspace-down; }
+    Mod+Ctrl+K     { focus-workspace-up; }
+    Mod+Page_Down { focus-workspace-down; }
+    Mod+Page_Up   { focus-workspace-up; }
+
+    Mod+Ctrl+Shift+J    { move-column-to-workspace-down; }
+    Mod+Ctrl+Shift+K    { move-column-to-workspace-up; }
+
+    // Mouse wheel workspace switching
+    Mod+WheelScrollDown      cooldown-ms=150 { focus-workspace-down; }
+    Mod+WheelScrollUp        cooldown-ms=150 { focus-workspace-up; }
+    Mod+Ctrl+WheelScrollDown cooldown-ms=150 { move-column-to-workspace-down; }
+    Mod+Ctrl+WheelScrollUp   cooldown-ms=150 { move-column-to-workspace-up; }
+
+
+    // ── Column Operations (Niri-specific) ────────────────────────────────
+
+    // Consume/expel windows from columns
+    Mod+BracketLeft  { consume-or-expel-window-left; }
+    Mod+BracketRight { consume-or-expel-window-right; }
+    Mod+Comma        { consume-window-into-column; }
+    Mod+Period       { expel-window-from-column; }
+
+    // Column width presets (cycle 1/3, 1/2, 2/3)
+    Mod+R            { switch-preset-column-width; }
+    Mod+Alt+R { switch-preset-window-height; }
+    Mod+Ctrl+R       { reset-window-height; }
+
+    // Reload config
+    Mod+Shift+R { spawn "niri" "msg" "action" "load-config-file"; }
+
+    // Fine-grained resize
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+
+    // Center column on screen
+    Mod+C { center-column; }
+
+    // Expand column to fill available space
+    Mod+Ctrl+F { expand-column-to-available-width; }
+
+    // Tabbed column display
+    Mod+T { toggle-column-tabbed-display; }
+
+    // First/last column
+    Mod+Home      { focus-column-first; }
+    Mod+End       { focus-column-last; }
+    Mod+Ctrl+Home { move-column-to-first; }
+    Mod+Ctrl+End  { move-column-to-last; }
+
+
+    // ── Session ──────────────────────────────────────────────────────────
+
+    // Quit niri (shows confirmation dialog)
+    Mod+Shift+E { quit; }
+
+    // Power off monitors
+    Mod+Shift+P { power-off-monitors; }
+
+    // Show hotkey overlay
+    Mod+Shift+Slash { show-hotkey-overlay; }
+
+    // ── Workspace Naming ────────────────────────────────────────────────
+    Mod+N { spawn "bash" "@renameWorkspaceScript@"; }
+
+    // Escape hatch for keyboard shortcut inhibitors
+    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+}
