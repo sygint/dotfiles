@@ -236,6 +236,7 @@ in
       security = {
         admin_user = "admin";
         admin_password_file = config.sops.secrets."nexus/grafana_admin_password".path;
+        secret_key = "SW2YcwTIb9zpOOhoPsMm"; # Hard-coded for 26.05 migration, rotate if DB has sensitive data
       };
     };
 

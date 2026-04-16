@@ -15,14 +15,6 @@ in
           user = "root"; # Activate as root (via sudo)
         };
       };
-      nexus = {
-        hostname = hosts.nexus.ip;
-        sshUser = hosts.nexus.ssh.user; # Override global SSH user for Nexus
-        profiles.system = {
-          path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nexus;
-          user = "root"; # Activate as root (via sudo)
-        };
-      };
       axon = {
         hostname = hosts.axon.ip;
         profiles.system = {

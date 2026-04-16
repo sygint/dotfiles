@@ -72,11 +72,22 @@ in
       home = "/var/lib/friday";
       createHome = true;
     };
+
+    # Forgejo service user
+    forgejo = {
+      isSystemUser = true;
+      description = "Forgejo Git Service";
+      group = "forgejo";
+      extraGroups = [ "systemd-journal" ];
+      home = "/var/lib/forgejo";
+      createHome = true;
+    };
   };
 
   # Create corresponding groups
   users.groups = {
     friday = { };
+    forgejo = { };
   };
 
   # Set timezone from global network config
