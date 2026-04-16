@@ -152,6 +152,12 @@ in
           hostName = userVars.hostName or "orion";
           scriptsDir = "${configRoot}/systems/${hostName}/scripts";
 
+          # Path to noctalia-shell binary (launched when bar = "noctalia")
+          noctaliaShell = if barCfg == "noctalia" then
+            "${inputs.noctalia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/noctalia-shell"
+          else
+            "";
+
           # Generate monitor configuration lines from Nix
           monitorConfigs = cfg.monitors;
           monitorLines = lib.concatMapStringsSep "\n" (
@@ -275,6 +281,7 @@ in
                 "@webBrowser@"
                 "@menu@"
                 "@systemBarScript@"
+                "@noctaliaShell@"
                 "@monitorHandler@"
                 "@wallpaperPath@"
                 "@monitors@"
@@ -293,6 +300,7 @@ in
                   else
                     ""
                 )
+                noctaliaShell
                 ("${scriptsDir}/monitor-handler.sh --fast --bar=" + barCfg)
                 wallpaperPath
                 monitorSection

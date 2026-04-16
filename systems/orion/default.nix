@@ -60,8 +60,10 @@ in
     # Disable stylix librewolf target to suppress warning
     sharedModules = [
       inputs.nix-flatpak.homeManagerModules.nix-flatpak
+      inputs.noctalia-shell.homeModules.default
       {
         stylix.targets.librewolf.enable = false;
+        stylix.targets.noctalia-shell.enable = false;
       }
     ];
     users.syg = import ./homes/syg.nix;
@@ -137,13 +139,14 @@ in
       hyprland = {
         enable = true;
         packages.enable = true;
-        monitors = systemVars.monitors or [];
-        workspaces = systemVars.workspaces or [];
+        monitors = systemVars.monitors or [ ];
+        workspaces = systemVars.workspaces or [ ];
       };
       hyprpanel.enable = true;
       hypridle.enable = true;
       waybar.enable = false; # Disabled in favor of hyprpanel
       screenshots.enable = true;
+      noctalia-shell.enable = true;
       wayland.enable = true;
       # Development tools
       git.enable = true;

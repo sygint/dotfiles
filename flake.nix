@@ -33,6 +33,10 @@
       url = "path:./dotfiles";
       flake = false;
     };
+    noctalia-shell = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   nixConfig = {
