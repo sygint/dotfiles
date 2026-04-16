@@ -137,6 +137,22 @@ in
 
     # Enable AI services (Ollama with NVIDIA CUDA support)
     system.ai-services.enable = true;
+
+    # Enable Forgejo self-hosted git service
+    features.forgejo = {
+      enable = true;
+      domain = "git.cortex.home";
+      httpPort = 3000;
+      sshPort = 3022;
+      adminUser = "syg";
+      adminEmail = "syg@cortex.home";
+      adminPasswordFile = lib.mkIf hasSecrets config.sops.secrets."cortex/forgejo_admin_password".path;
+      sshKeys = lib.mkIf hasSecrets [{
+        user = "syg";
+        name = "orion-deploy";
+        publicKeyFile = config.sops.secrets."cortex/forgejo_ssh_pubkey".path;
+      }];
+    };
   };
 
   security = {
@@ -271,24 +287,6 @@ in
 
     # Enable chronyd for accurate time (important for logs and security)
     chrony.enable = true;
-  };
-
-  # Forgejo - Self-hosted Git service
-  services.forgejo = {
-    enable = true;
-    user = "forgejo";
-    group = "forgejo";
-    settings = {
-      server = {
-        DOMAIN = "git.cortex.home";
-        ROOT_URL = "https://git.cortex.home/";
-        HTTP_PORT = 3000;
-        SSH_PORT = 22;
-      };
-      security = {
-        INSTALL_LOCK = true;
-      };
-    };
   };
 
   # Note: System hardening sysctl settings are configured in the security module
