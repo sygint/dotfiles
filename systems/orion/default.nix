@@ -148,6 +148,15 @@ in
       screenshots.enable = true;
       noctalia-shell.enable = true;
       swhkd.enable = true;
+      # Niri compositor
+      niri = {
+        enable = true;
+        packages.enable = true;
+        monitors = systemVars.monitors or [ ];
+        workspaces = systemVars.workspaces or [ ];
+      };
+      swayidle.enable = true;
+      sddm-noctalia.enable = true;
       wayland.enable = true;
       # Development tools
       git.enable = true;
@@ -196,10 +205,11 @@ in
   };
 
   # ════════════════════════════════════════════════════════════════════════════
-  # NO DISPLAY MANAGER - TTY LOGIN
+  # DISPLAY MANAGER - SDDM with Noctalia theme
   # ════════════════════════════════════════════════════════════════════════════
-  # Using direct TTY login to avoid PAM/session issues with display managers.
-  # Login at TTY, then Hyprland starts automatically via .zlogin.
+  # sddm-noctalia module handles SDDM enable + theme configuration.
+  # X server required for SDDM login screen.
+  services.xserver.enable = true;
 
   # Set keyboard layout for TTY console
   console.keyMap = "us";
