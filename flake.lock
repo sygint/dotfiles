@@ -169,6 +169,18 @@
         "type": "github"
       }
     },
+    "dotfiles": {
+      "flake": false,
+      "locked": {
+        "path": "./dotfiles",
+        "type": "path"
+      },
+      "original": {
+        "path": "./dotfiles",
+        "type": "path"
+      },
+      "parent": []
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -1143,6 +1155,7 @@
         "deploy-rs": "deploy-rs",
         "devenv-bootstrap": "devenv-bootstrap",
         "disko": "disko",
+        "dotfiles": "dotfiles",
         "fh": "fh",
         "flake-parts": "flake-parts",
         "git-hooks-nix": "git-hooks-nix",

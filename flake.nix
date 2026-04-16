@@ -27,6 +27,12 @@
     import-tree.url = "github:vic/import-tree";
     git-hooks-nix.url = "github:cachix/git-hooks.nix";
     git-hooks-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Desktop dotfiles (config templates for compositors, shell, etc.)
+    dotfiles = {
+      url = "path:./dotfiles";
+      flake = false;
+    };
   };
 
   nixConfig = {

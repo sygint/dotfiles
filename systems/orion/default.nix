@@ -137,6 +137,8 @@ in
       hyprland = {
         enable = true;
         packages.enable = true;
+        monitors = systemVars.monitors or [];
+        workspaces = systemVars.workspaces or [];
       };
       hyprpanel.enable = true;
       hypridle.enable = true;
