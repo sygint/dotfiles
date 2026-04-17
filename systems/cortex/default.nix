@@ -153,6 +153,13 @@ in
         publicKeyFile = config.sops.secrets."cortex/forgejo_ssh_pubkey".path;
       }];
     };
+
+    # Enable Vikunja project management
+    features.vikunja = {
+      enable = true;
+      domain = "projects.cortex.home";
+      port = 3456;
+    };
   };
 
   security = {
