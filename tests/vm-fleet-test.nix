@@ -10,11 +10,11 @@ let
     nodes = {
       testvm = { config, pkgs, lib, ... }: {
         imports = [
-          (import modulePath { 
+          (import modulePath {
             inherit config pkgs lib;
-            hasSecrets = true; 
+            hasSecrets = true;
             inputs = flake.inputs;
-            isTest = true;  # Signal that this is a test environment
+            isTest = true; # Signal that this is a test environment
           })
         ];
         # Disable features that don't work well in test VMs
