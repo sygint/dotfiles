@@ -137,6 +137,22 @@ in
 
     # Enable AI services (Ollama with NVIDIA CUDA support)
     system.ai-services.enable = true;
+
+    # Enable Forgejo self-hosted git service
+    features.forgejo = {
+      enable = true;
+      domain = "git.cortex.home";
+      httpPort = 3000;
+      sshPort = 3022;
+      adminUser = "syg";
+      adminEmail = "syg@cortex.home";
+      adminPasswordFile = lib.mkIf hasSecrets config.sops.secrets."cortex/forgejo_admin_password".path;
+      sshKeys = lib.mkIf hasSecrets [{
+        user = "syg";
+        name = "orion-deploy";
+        publicKeyFile = config.sops.secrets."cortex/forgejo_ssh_pubkey".path;
+      }];
+    };
   };
 
   security = {
