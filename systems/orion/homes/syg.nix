@@ -1,14 +1,11 @@
-{ pkgs, ... }:
+{ ... }:
 {
   imports = [
     ../../../modules/home/_base-desktop
     ../../../modules/home.nix
-    ./extra-programs.nix
   ];
 
-  home.packages = with pkgs; [
-    rofi
-  ];
+  # (rofi moved to programs.nix)
 
   # Make the monitor-setup script available in the user's PATH by
   # adding it to $HOME/bin via home.file. This avoids injecting the

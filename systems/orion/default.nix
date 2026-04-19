@@ -6,7 +6,6 @@
   config,
   pkgs,
   inputs,
-  fh,
   lib,
   hasSecrets,
   ...
@@ -31,13 +30,14 @@ in
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {
       inherit
-        config
-        lib
-        pkgs
-        inputs
-        hasSecrets
-        ;
-    })
+        {
+          config,
+          pkgs,
+          inputs,
+          lib,
+          hasSecrets,
+          ...
+        }:
   ];
 
   # Home Manager configuration
@@ -66,7 +66,7 @@ in
         stylix.targets.noctalia-shell.enable = false;
       }
     ];
-    users.syg = import ./homes/syg.nix;
+    users.syg = import ./programs.nix { inherit pkgs inputs; };
   };
 
   boot = {
@@ -268,47 +268,7 @@ in
       NH_FLAKE = "/home/${username}/.config/nixos";
     };
 
-    systemPackages = with pkgs; [
-      # Enhanced CLI applications (base has basic set)
-      # Note: bat, eza, fd, fzf, zoxide provided by features.zsh module
-      fastfetch
-      tealdeer
-      tree
-      usbutils
-      yazi
-      zellij
-
-      # Desktop applications
-      element-desktop
-      ghostty
-      gimp
-      gparted
-      keepassxc
-      kitty
-      libreoffice
-      librewolf-unwrapped
-      meld
-      nemo-with-extensions # Nemo with file-roller and other extensions
-      rocketchat-desktop
-      shiori
-      signal-desktop
-      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-
-      # Enhanced development tools (base has basic git)
-      act # gh actions cli
-      gh # GitHub CLI for PR and repo management
-      direnv
-      lazygit
-
-      # System-specific tools
-      fh.packages.x86_64-linux.default
-
-      # Qt theming support
-      libsForQt5.qt5ct
-      qt6Packages.qt6ct
-      adwaita-qt
-      adwaita-qt6
-    ];
+    # Programs now defined in programs.nix (home-manager)
   };
 
   # Extend base unfree packages with orion-specific ones
