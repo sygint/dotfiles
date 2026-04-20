@@ -74,6 +74,10 @@ in
             "media.navigator.permission.disabled" = false; # Require permission prompts
             "media.autoplay.default" = 0; # Allow autoplay (needed for calls)
             "media.autoplay.blocking_policy" = 0; # Don't block autoplay
+
+            # DNS exclusions - exclude local *.home domain from DoH
+            # This allows /etc/hosts entries for cortex.home, etc. to work
+            "network.trr.excluded-domains" = "home,*.home";
           };
         };
       };

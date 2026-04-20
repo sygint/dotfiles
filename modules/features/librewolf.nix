@@ -79,6 +79,10 @@ in
             # "browser.newtabpage.activity-stream.showSponsored" = false;
             # "browser.newtabpage.activity-stream.system.showSponsored" = false;
             # "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+
+            # DNS exclusions - exclude local *.home domain from DoH
+            # This allows /etc/hosts entries for cortex.home, etc. to work
+            "network.trr.excluded-domains" = "home,*.home";
           };
 
           ExtensionSettings =
