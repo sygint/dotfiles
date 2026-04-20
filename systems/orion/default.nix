@@ -30,14 +30,13 @@ in
   ++ lib.optionals hasSecrets [
     (import (inputs.nixos-secrets + "/default.nix") {
       inherit
-        {
-          config,
-          pkgs,
-          inputs,
-          lib,
-          hasSecrets,
-          ...
-        }:
+        config
+        pkgs
+        inputs
+        lib
+        hasSecrets
+        ;
+    })
   ];
 
   # Home Manager configuration
